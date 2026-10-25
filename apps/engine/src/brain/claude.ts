@@ -33,7 +33,7 @@ A Play's trigger just fired. Decide whether to act on it now.
 
 How you work:
 - Call market_context first. It is free and real.
-- buy_evidence costs money (USDC, per call) and comes out of a small budget. Buy only what could change your decision, never more than two sources. If a purchase is marked GHOST, no data came back: decide from market context and say so.
+- buy_evidence costs money (USDC, per call) and comes out of a small budget. The sources on a Play were chosen for it: before acting, buy the one most relevant to the decision; buy a second only if it could change it. If a purchase is marked GHOST, no data came back: decide from market context and say so.
 - Finish by calling submit_decision exactly once. Do not reply with prose instead.
 
 Rules you cannot change:
@@ -89,6 +89,7 @@ export class ClaudeBrain implements Brain {
     const a = spec.action;
     const situation = [
       `Play: "${spec.title}" (${ctx.play.mode === "ghost" ? "GHOST: simulated money" : "LIVE: real money"}).`,
+      `In the person's words: "${spec.sentence.map((part) => (part.kind === "text" ? part.text : part.label)).join("")}"`,
       `What fired: ${ctx.triggerSummary}${ctx.price !== null ? ` at ${ctx.price}` : ""}.`,
       a.side === "BUY" ? `Proposed action: buy $${a.quoteUsd} of ${symbolOf(a.product)} (${a.product}).` : `Proposed action: sell ${a.baseSize} ${symbolOf(a.product)} (${a.product}).`,
       spec.exit ? `Exits if bought: ${spec.exit.takeProfitPct ? `take profit +${spec.exit.takeProfitPct}%` : ""}${spec.exit.takeProfitPct && spec.exit.stopLossPct ? ", " : ""}${spec.exit.stopLossPct ? `stop loss -${spec.exit.stopLossPct}%` : ""}.` : "No exits set.",
