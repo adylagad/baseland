@@ -8,6 +8,12 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
+**Session 7: teammate secrets in Supabase Vault.** `baseland_engine_env`
+holds the engine `.env`, written by a service-role-only RPC from a script,
+with no secret in chat. **No Coinbase key is shared** (each participant uses
+their own). Setup steps are in the root README. `pg_net` moved out of
+`public`.
+
 **Session 6: Sonnet 5.5 decides, Haiku 5.5 drafts** (faster: draft 3 s,
 Deck 12 s). **Lock-screen approval verified** on an iPhone 16e simulator (no
 Dynamic Island, like the user's phone). Testing stays in simulators by the
