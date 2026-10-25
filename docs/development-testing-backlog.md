@@ -201,3 +201,20 @@ move the command.
 ### The MCP in harnesses other than Claude Code — Unknown
 Plain stdio MCP with standard tools and resources; only Claude Code (and the
 SDK client in tests) has run it.
+
+## Phase 4 (live money)
+
+### Real x402 payment — Known gap
+No real x402 payment has succeeded. With `portfolio_id`, a 1-cent Nansen
+fetch got 412 "rejected, no payment was created" (2026-10-25). Next: try a
+different resource and check the key's x402 scopes and the USDC-on-Base
+balance. A direct retry was blocked by this session's permission check, and
+none was attempted after.
+
+### The live Account branch — Verified (2026-10-25)
+The Rig's Account showed the real portfolio ("baseland", $3.97) after the
+trade. Live positions aren't listed (only the total).
+
+### `-connect-key-file` under XCUITest — Unknown
+The same launch argument that works with `simctl launch` left the app on
+its launch spinner under XCUITest twice (and worked twice earlier).

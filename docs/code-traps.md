@@ -175,3 +175,52 @@ Match values with `label CONTAINS`.
 once (still on Plays), and it likely explains earlier failures at the same
 step. Wait for `.runningForeground`, then tap until `isSelected` (2 of 2
 passes after).
+
+## Recording and the simulator
+
+### `simctl … booted` picks any booted simulator
+**Bit 2026-10-25.** With an iPhone 16e left booted from an earlier session,
+`xcrun simctl io booted recordVideo` and `simctl pbpaste booted` used the
+16e while the tests drove the iPhone 17: two clips recorded a home screen
+with no Dynamic Island, and the clipboard read returned junk. Address the
+device by UDID everywhere (`-destination "id=…"` too), and shut down
+simulators you aren't using.
+
+### Simulator recordings drift from the wall clock
+**Seen 2026-10-25.** A 132 s `recordVideo` file was about 3.5% short of the
+wall time it covered, so cuts placed by test timestamps landed late (the clip
+ended on the home screen). Another run matched within 0.1%. Log the
+recording's start and stop times and scale marks by length / wall time
+(`scripts/cut-clip.py` takes the scale).
+
+### The Simulator's clipboard is synced with the Mac's
+**Precaution, 2026-10-25.** Anything put on the simulator clipboard can reach
+the Mac's (and Universal Clipboard), and the Mac's can overwrite it. Never
+move a key through it: a debug build connects a Coinbase key from a file
+(`-connect-key-file`). The same launch argument hung at launch under
+XCUITest (unexplained); `simctl launch` works.
+
+### Driving Claude Code under `expect`
+**Bit 2026-10-25.** The folder-trust prompt is drawn with cursor moves
+instead of spaces ("trust␛[1Cthis"), and its cursor starts on "No, exit":
+match `(?i)trust`, then arrow down before Enter. A child session inherits
+`CLAUDECODE` / `CLAUDE_CODE_*` variables and shows warnings; unset them.
+After a turn it may ask "Teach auto mode…?", and a scripted `/exit` + Enter
+confirmed it (the wizard was closed before it ran): quit with Esc, then
+Ctrl-C twice.
+
+### Live Activities and a backgrounded app — unverified
+**2026-10-25.** A Play created while the app was in the background never
+showed in the Island. The likely cause was the wrong simulator (above), not
+iOS. The recording keeps the app open when a Play arrives anyway; whether
+iOS starts it from the background here is untested.
+
+## Coinbase x402
+
+### `x402 fetch` needs `portfolio_id`, even for a portfolio-scoped key
+**Bit 2026-10-25**, on the first real payment: HTTP 400 "portfolio_id is
+required because multiple accessible portfolios are available", although
+the key is denied the Default portfolio. `X402Evidence` sends the key's
+portfolio. With it, the next attempt got 412 "the payment attempt was
+rejected and no payment was created" (unexplained; testing backlog). Coinbase
+says not to retry a 412 with the same idempotency key.

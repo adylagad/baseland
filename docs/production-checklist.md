@@ -68,3 +68,11 @@ per machine, so anyone can make Ghost accounts on our project; nothing
 limits them.
 **Change:** rate-limit anonymous sign-ups (Supabase Auth settings or a
 captcha), and clean up idle anonymous users.
+
+### Live trading was switched on once (added 2026-10-25)
+**Now:** off again (`LIVE_TRADING_ENABLED=false`, `X402_EVIDENCE_ENABLED=false`
+on Render). `LIVE_MAX_ORDER_USD` is still 3. A debug-only app hook connects
+a key from a file for UI tests (`-connect-key-file`, `#if DEBUG`).
+**Change:** for production, live trading per user (not engine-wide) with an
+explicit opt-in flow, and no debug hooks in release builds (they're compiled
+out today).

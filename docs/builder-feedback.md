@@ -110,3 +110,30 @@ the last trade/close with a `market_status` field outside trading hours.
 (Exa, Nansen, Glassnode, Massive, Arkham, You.com). **Ask:** a category
 field (news / onchain / derivatives / equities) and a stable id per resource,
 so agents don't key on URLs.
+
+## 2026-10-25: the live test (one real trade, x402 attempts)
+
+### Attached exits on a market buy work exactly as hoped
+**Tried:** `orders create` market BUY $3 ETH-USDC with
+`attached_take_profit_price` / `attached_stop_loss_price`, after `orders
+preview` with the same fields. **Happened:** filled at $2,329.58 with a
+`trigger_bracket_gtc` attached; the preview's fee estimate ($0.02676) matched
+the fill ($0.02673). This is the right primitive for agents.
+
+### `x402 fetch` asks for `portfolio_id` from a key scoped to one portfolio
+**Happened:** 400 "portfolio_id is required because multiple accessible
+portfolios are available", although the same key gets 403 on the Default
+portfolio. **Workaround:** pass the key's portfolio. **Ask:** default x402
+funding to the key's scoped portfolio, as orders do.
+
+### x402 rejected with 412 and no reason
+**Happened:** with `portfolio_id`, a 1-cent Nansen flow-intelligence fetch
+(input exactly per discovery's schema) returned 412 "the payment attempt was
+rejected and no payment was created; … use a new idempotency_key". Nothing
+says why (balance on Base? scope? the resource?). **Ask:** a reason code on
+rejections, and an x402 dry run that checks funding and scopes.
+
+### `orders get` doesn't return our `client_order_id`
+**Happened:** we create orders with a persisted `client_order_id` (our
+idempotency key), but `orders get` shows `client_order_id: None`. **Ask:**
+echo it back, so a client can reconcile after a crash.
