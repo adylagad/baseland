@@ -209,6 +209,10 @@ final class LockScreenApprovalTests: XCTestCase {
 final class RigTests: XCTestCase {
     func testRigEditsAndReplay() throws {
         continueAfterFailure = false
+        // TEST_RUNNER_APPEARANCE=dark runs the same test on the dark surface
+        // (simctl's appearance setting doesn't reach the test run).
+        if ProcessInfo.processInfo.environment["APPEARANCE"] == "dark" { XCUIDevice.shared.appearance = .dark }
+        defer { XCUIDevice.shared.appearance = .light }
         let app = XCUIApplication()
         app.launchArguments = ["-reset-session"]
         app.launch()
