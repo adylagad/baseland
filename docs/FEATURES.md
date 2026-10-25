@@ -36,6 +36,10 @@ index below.
 
 | Feature | Latest record | Status |
 | --- | --- | --- |
+| The Rig (Brain, Senses, Instincts, Hands, Leash) | [phase-05](./features/phase-05-rig.md#the-rig-a-plug-and-play-agent) | Shipped |
+| Replay against real past prices | [phase-05](./features/phase-05-rig.md#replay-a-play-against-real-past-prices) | Shipped (crypto buys) |
+| Account (Ghost; live read-only) | [phase-05](./features/phase-05-rig.md#account) | Shipped (live branch untested) |
+| Cartridge share and import | [phase-05](./features/phase-05-rig.md#cartridges-share-and-import) | Shipped (UI flow untested) |
 | Approve from the Dynamic Island / lock screen | [phase-03](./features/phase-03-island.md#approve-from-the-lock-screen-iphones-without-a-dynamic-island) | Shipped (both verified in simulators) |
 | Kill switch: app, Control Center, Siri | [phase-03](./features/phase-03-island.md#kill-switch-in-the-app-control-center-siri) | Shipped (app verified; CC/Siri unverified) |
 | The Deck: swipe to arm, chips, composer | [phase-03](./features/phase-03-island.md#the-deck-swipe-to-arm) | Shipped (voice unverified) |
@@ -61,6 +65,7 @@ index below.
 
 | Phase | Record |
 | --- | --- |
+| 05 The Rig | [phase-05-rig.md](./features/phase-05-rig.md) |
 | 03 Island (iPhone app) | [phase-03-island.md](./features/phase-03-island.md) |
 | 02 The agent | [phase-02-the-agent.md](./features/phase-02-the-agent.md) |
 | 01 Engine core | [phase-01-engine-core.md](./features/phase-01-engine-core.md) |

@@ -13,7 +13,7 @@ The Baseland iPhone app: SwiftUI, a Live Activity for each running Play, and
 | `BaselandKit/` | Swift package shared by both: `PlayStage`, `PlayActivityAttributes`, `Theme` tokens, and the Island views themselves |
 | `Shared/` | App Intents (Approve / Skip / Pause / Stop all), compiled into the app **and** the widget. They are `LiveActivityIntent`s, so they always run in the app's process |
 | `App/Services/` | Engine API, Supabase sign-in + Realtime, Live Activity sync, the background keep-alive, voice |
-| `App/Views/` | Onboarding, the Deck, the chip editor, Plays, a Play's page and its Tape, Settings |
+| `App/Views/` | Onboarding, the Deck, the chip editor, Plays, a Play's page and its Tape, the Rig, Replay, Settings |
 | `UITests/` | End-to-end UI tests against the deployed engine (Ghost only) |
 
 The Island views live in BaselandKit so the app's **Island Lab** (Settings →
@@ -43,7 +43,10 @@ Launch arguments:
 - `-tab-plays`, `-open-play <id>` jump to a screen.
 - `-BaselandEngineURL http://localhost:8787` points the app at a local engine.
 
-UI tests (real engine, Ghost only; about 2 minutes, screenshots to a folder):
+UI tests (real engine, Ghost only; screenshots to a folder). `BaselandFlowTests`,
+`IslandApprovalTests` and `RigTests` run on the iPhone 17; run
+`LockScreenApprovalTests` on the iPhone 16e (no Dynamic Island). Add
+`TEST_RUNNER_APPEARANCE=dark` to run `RigTests` in dark mode:
 
 ```sh
 TEST_RUNNER_SHOTS_DIR=/tmp/shots xcodebuild test -scheme Baseland \

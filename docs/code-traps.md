@@ -145,3 +145,20 @@ test.
 and `/v1/me` didn't go live until the job was re-run. The workflow now
 retries 4 times with growing waits. If `/health` doesn't show the pushed
 commit, check the run.
+
+### zod 4: `.default({})` on an object skips its nested defaults
+**Precaution, 2026-10-24** (caught while writing the Rig schema): zod 4
+returns a `.default` value as-is, unparsed, so `z.object({...}).default({})`
+yields `{}` without the inner defaults. Use `.prefault({})`. The Rig schema
+test pins the fully defaulted shape.
+
+### A SwiftUI Form's rows don't exist until scrolled to (XCUITest)
+**Bit 2026-10-24.** The Rig test's Nansen switch wasn't found, because the
+Form loads rows lazily; and tapping a Toggle row's centre hits the label,
+which doesn't toggle. Scroll until `exists && isHittable`, then tap the
+switch's right edge, and assert its `value`.
+
+### `simctl ui appearance dark` doesn't reach an XCUITest run
+**Bit 2026-10-24.** Screenshots meant to be dark came out light. Set
+`XCUIDevice.shared.appearance = .dark` inside the test
+(`TEST_RUNNER_APPEARANCE=dark` for `RigTests`).

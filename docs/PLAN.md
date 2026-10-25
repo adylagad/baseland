@@ -97,11 +97,11 @@ from the Island, see the fill in the Tape.
 
 ## Phase 5 — Advanced ("The Rig")
 
-- [ ] Rig screens: Brain, Senses, Instincts, Hands, Leash.
-- [ ] Account: portfolios, balances, positions, open orders, fees.
-- [ ] Replay a Play against historical data (crypto candles from Coinbase;
+- [x] Rig screens: Brain, Senses, Instincts, Hands, Leash.
+- [x] Account: portfolios, balances, positions, open orders, fees.
+- [x] Replay a Play against historical data (crypto candles from Coinbase;
       stocks via Massive over x402). Always GHOST.
-- [ ] Cartridge export / import.
+- [x] Cartridge export / import.
 
 ## Phase 6 — Reuse and submission
 

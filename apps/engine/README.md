@@ -44,6 +44,9 @@ Tests never call Coinbase: the CLI is replaced by
 | POST | `/v1/deck/:id/{arm,skip}` | user | Arm a card (`{ mode?, cartridge? }`) or skip it |
 | POST | `/v1/plays/draft` | user | `{ text }` → `{ cartridge }` |
 | POST | `/v1/cartridges/preview` | user | Validate an edited cartridge and regenerate its sentence |
+| GET / PUT | `/v1/rig` | user | Your Rig (Brain, Senses, Instincts, Hands, Leash) and its catalog |
+| GET | `/v1/account` | user | Ghost cash and positions; connected portfolio (read-only) |
+| POST | `/v1/replay` | user | `{ cartridge, days }` → how it would have done on real past prices (simulated) |
 
 "User" means `Authorization: Bearer <Supabase access token>`, verified with
 `getClaims`.

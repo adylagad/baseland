@@ -177,3 +177,16 @@ On an iPhone 16e simulator (no Dynamic Island), Approve on the locked
 screen's Live Activity filled the Play. The user's iPhone has Live
 Activities but no Dynamic Island, so this is its approval path. Device
 testing is deferred by the user's choice; simulators only for now.
+
+## Phase 5 (the Rig)
+
+### Live Account branch — Unknown
+`/v1/account` for a connected key (portfolio balances, fee tier, open
+orders via `orders list`) has never run against a funded portfolio.
+
+### Share sheet and cartridge import in the app — Likely fine
+Built on `ShareLink` and the tested preview route; no UI test drives them.
+
+### Replay of stocks and selling Plays — Known gap
+Refused with the reason. Stocks need a price history source (Massive over
+x402, simulated for now).
