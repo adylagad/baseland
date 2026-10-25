@@ -204,3 +204,80 @@ final class LockScreenApprovalTests: XCTestCase {
         }
     }
 }
+
+/// The Rig: change the Brain and a Sense, replay a card against real prices.
+final class RigTests: XCTestCase {
+    func testRigEditsAndReplay() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-reset-session"]
+        app.launch()
+        app.buttons["Start in Ghost"].tap()
+        XCTAssertTrue(app.otherElements["deckCard"].firstMatch.waitForExistence(timeout: 90), "no Deck")
+
+        // Replay the top card from its context menu.
+        app.otherElements["deckCard"].firstMatch.press(forDuration: 1.0)
+        let replay = app.buttons["Replay against real prices"].firstMatch
+        XCTAssertTrue(replay.waitForExistence(timeout: 5))
+        replay.tap()
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Replay · real prices'")).firstMatch.waitForExistence(timeout: 10))
+        sleep(5)
+        shot("40-replay-24h")
+        app.buttons["7 days"].tap()
+        sleep(5)
+        shot("41-replay-7d")
+        app.swipeDown(velocity: .fast)
+        sleep(1)
+
+        // The Rig.
+        app.tabBars.buttons["Rig"].tap()
+        XCTAssertTrue(app.navigationBars["The Rig"].waitForExistence(timeout: 10))
+        sleep(2)
+        shot("42-rig-top")
+        app.buttons.matching(NSPredicate(format: "label CONTAINS 'Haiku 5.5'")).firstMatch.tap()
+        sleep(2)
+        let nansen = app.switches.matching(NSPredicate(format: "label CONTAINS 'Nansen smart-money flows'")).firstMatch
+        // The Form loads rows lazily: scroll until the switch exists.
+        for _ in 0..<6 where !(nansen.exists && nansen.isHittable) { app.swipeUp(velocity: .slow) }
+        XCTAssertTrue(nansen.waitForExistence(timeout: 5))
+        // Tap the switch itself; the row's centre is its label, which doesn't toggle.
+        nansen.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5)).tap()
+        sleep(2)
+        XCTAssertEqual(nansen.value as? String, "0", "the Sense didn't switch off")
+        shot("43-rig-senses")
+        app.swipeUp()
+        app.swipeUp()
+        sleep(1)
+        shot("44-rig-hands-leash")
+        app.swipeUp()
+        app.swipeUp()
+        sleep(1)
+        shot("45-rig-account")
+
+        // Persisted: relaunch reads the Rig back from the engine.
+        app.terminate()
+        app.launchArguments = []
+        app.launch()
+        app.tabBars.buttons["Rig"].tap()
+        XCTAssertTrue(app.navigationBars["The Rig"].waitForExistence(timeout: 20))
+        let haiku = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Haiku 5.5'")).firstMatch
+        XCTAssertTrue(haiku.waitForExistence(timeout: 10))
+        XCTAssertTrue(haiku.isSelected, "the Brain choice didn't persist")
+        let nansenAgain = app.switches.matching(NSPredicate(format: "label CONTAINS 'Nansen smart-money flows'")).firstMatch
+        for _ in 0..<6 where !(nansenAgain.exists && nansenAgain.isHittable) { app.swipeUp(velocity: .slow) }
+        XCTAssertTrue(nansenAgain.waitForExistence(timeout: 5))
+        XCTAssertEqual(nansenAgain.value as? String, "0", "the Sense change didn't persist")
+        shot("46-rig-after-relaunch")
+    }
+
+    private func shot(_ name: String) {
+        let png = XCUIScreen.main.screenshot().pngRepresentation
+        let a = XCTAttachment(data: png, uniformTypeIdentifier: "public.png")
+        a.name = name
+        a.lifetime = .keepAlways
+        add(a)
+        if let dir = ProcessInfo.processInfo.environment["SHOTS_DIR"] {
+            try? png.write(to: URL(fileURLWithPath: dir).appendingPathComponent("\(name).png"))
+        }
+    }
+}
