@@ -8,6 +8,11 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
+**Session 6: Sonnet 5.5 decides, Haiku 5.5 drafts** (faster: draft 3 s,
+Deck 12 s). **Lock-screen approval verified** on an iPhone 16e simulator (no
+Dynamic Island, like the user's phone). Testing stays in simulators by the
+user's choice.
+
 **Session 5: Phase 3, the iPhone app, built and verified in the simulator.**
 Onboarding → Deck (swipe to arm, chip editors, say a Play) → Plays → a
 Play's page with the Tape. Live Activities are driven by the engine over
