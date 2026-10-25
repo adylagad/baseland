@@ -53,3 +53,18 @@ tick woke a sleeping instance (it timed out at 10 s during the cold start),
 and the next returned 200 from the same instance.
 **Change:** drop the job (`select cron.unschedule('keep-engine-awake')`) once
 the engine runs on an always-on instance.
+
+### Harness tokens are long-lived bearer tokens (added 2026-10-25)
+**Now:** a `bl_` token never expires until it is replaced or disconnected.
+`pnpm connect-claude bl_…` passes it on the command line (so shell history
+keeps it), and Claude Code stores it in plain text in `~/.claude.json`. The
+engine checks it with one database update per request (`last_used_at`).
+**Change:** an OAuth device flow for the MCP, short-lived tokens with
+refresh, scopes per token, and throttled `last_used_at` writes.
+
+### The MCP ships the Supabase publishable key and signs in anonymously (added 2026-10-25)
+**Now:** without a token, `packages/mcp` creates an anonymous Supabase user
+per machine, so anyone can make Ghost accounts on our project; nothing
+limits them.
+**Change:** rate-limit anonymous sign-ups (Supabase Auth settings or a
+captcha), and clean up idle anonymous users.
