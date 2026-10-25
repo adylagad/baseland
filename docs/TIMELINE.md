@@ -8,6 +8,12 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-25 — [context](./context/2026-10-25.md)
 
+**Session 2: SpacetimeDB core on `feature/spacetime-core`.** Transactional
+private Plays/Tape, a public Ghost Arena projection, authenticated iPhone
+event relay, and a guarded import script. The module is published on
+Maincloud and the merged branch passes TS, cloud integration and iOS build
+checks. Render remains on `main`; no source rows were imported.
+
 **Session 1: Phase 6, the Baseland MCP and the Claude Code skill.** Claude
 Code can draft, replay, arm and stop **Ghost** Plays that appear on the
 user's Island.
