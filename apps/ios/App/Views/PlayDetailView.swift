@@ -54,7 +54,7 @@ struct PlayDetailView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 StagePill(stage: play.state, ghost: play.isGhost)
-                if play.isGhost { GhostBadge() }
+                if play.isGhost { GhostBadge() } else { LiveBadge() }
                 Spacer()
                 if !play.state.isTerminal {
                     Text(timerInterval: Date.now...max(play.windowEnd, .now), countsDown: true)

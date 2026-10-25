@@ -36,6 +36,9 @@ index below.
 
 | Feature | Latest record | Status |
 | --- | --- | --- |
+| Arm a Play with real money (LIVE button, confirmation, LIVE badge) | [phase-04](./features/phase-04-live-money.md#arm-a-play-with-real-money-from-the-app) | Shipped (simulator, real key) |
+| Live order end to end | [phase-04](./features/phase-04-live-money.md#live-order-end-to-end-one-real-trade) | Shipped (one real ETH fill, 2026-10-25) |
+| Real x402 evidence for live Plays | [phase-04](./features/phase-04-live-money.md#real-x402-evidence-for-live-plays--not-working-yet) | Built; no payment has succeeded |
 | Connect Claude Code from the app (masked token) | [phase-06](./features/phase-06-reuse.md#connect-claude-code-from-the-app) | Shipped (simulator e2e) |
 | Baseland MCP server + Claude Code skill (harness tokens) | [phase-06](./features/phase-06-reuse.md#baseland-mcp-server-and-claude-code-skill) | Shipped (Claude Code verified) |
 | The Rig (Brain, Senses, Instincts, Hands, Leash) | [phase-05](./features/phase-05-rig.md#the-rig-a-plug-and-play-agent) | Shipped |
@@ -68,6 +71,7 @@ index below.
 | Phase | Record |
 | --- | --- |
 | 06 Reuse and submission | [phase-06-reuse.md](./features/phase-06-reuse.md) |
+| 04 Live money | [phase-04-live-money.md](./features/phase-04-live-money.md) |
 | 05 The Rig | [phase-05-rig.md](./features/phase-05-rig.md) |
 | 03 Island (iPhone app) | [phase-03-island.md](./features/phase-03-island.md) |
 | 02 The agent | [phase-02-the-agent.md](./features/phase-02-the-agent.md) |

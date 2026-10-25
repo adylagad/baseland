@@ -6,6 +6,7 @@ struct DeckView: View {
     @Environment(AppModel.self) private var model
     @State private var editing: EditingChip?
     @State private var showSettings = false
+    @State private var confirmingLive: Draft?
 
     struct EditingChip: Identifiable {
         let draftId: String
@@ -42,6 +43,23 @@ struct DeckView: View {
             .presentationDetents([.height(360)])
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
+        .confirmationDialog(
+            "Arm with real money?",
+            isPresented: Binding(get: { confirmingLive != nil }, set: { if !$0 { confirmingLive = nil } }),
+            titleVisibility: .visible,
+            presenting: confirmingLive
+        ) { draft in
+            Button("Arm LIVE", role: .destructive) { Task { await model.arm(draft, mode: "live") } }
+            Button("Cancel", role: .cancel) {}
+        } message: { draft in
+            Text(liveMessage(draft))
+        }
+    }
+
+    private func liveMessage(_ draft: Draft) -> String {
+        let amount = draft.cartridge[path: "action.quoteUsd"]?.double.map { Format.usd($0) } ?? "the amount on the card"
+        let portfolio = model.me?.coinbase.portfolio?.name ?? "your portfolio"
+        return "Up to \(amount) from your Coinbase portfolio “\(portfolio)”. The agent still asks you before it buys, and the Leash caps every order."
     }
 
     private var header: some View {
@@ -101,7 +119,7 @@ struct DeckView: View {
             .glassEffect(.regular.interactive(), in: Circle())
             .accessibilityLabel("Skip this Play")
             .accessibilityIdentifier("skipButton")
-            Text("Swipe right to arm in Ghost")
+            Text(model.canGoLive ? "Swipe right for Ghost" : "Swipe right to arm in Ghost")
                 .font(Theme.label(12))
                 .foregroundStyle(Theme.inkMuted)
             Button { if let d = model.drafts.first { Task { await model.arm(d) } } } label: {
@@ -110,6 +128,15 @@ struct DeckView: View {
             .glassEffect(.regular.tint(Theme.Stage.done).interactive(), in: Circle())
             .accessibilityLabel("Arm this Play in Ghost")
             .accessibilityIdentifier("armButton")
+            // Real money only with a connected key and live trading on; never a swipe.
+            if model.canGoLive {
+                Button { confirmingLive = model.drafts.first } label: {
+                    Text("LIVE").font(Theme.money(13, weight: .bold)).tracking(1).foregroundStyle(.white).frame(width: 54, height: 54)
+                }
+                .glassEffect(.regular.tint(Theme.Stage.stopped).interactive(), in: Circle())
+                .accessibilityLabel("Arm this Play with real money")
+                .accessibilityIdentifier("armLiveButton")
+            }
         }
         .opacity(model.drafts.isEmpty ? 0 : 1)
     }

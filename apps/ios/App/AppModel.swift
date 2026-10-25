@@ -156,6 +156,9 @@ final class AppModel {
         }
     }
 
+    /// A connected key and an engine with live trading switched on.
+    var canGoLive: Bool { me?.coinbase.connected == true && me?.liveTradingEnabled == true }
+
     /// Swipe right.
     func arm(_ draft: Draft, mode: String = "ghost") async {
         drafts.removeAll { $0.id == draft.id }
@@ -166,7 +169,7 @@ final class AppModel {
                 try await api.createPlay(cartridge: draft.cartridge, mode: mode)
             }
             merge(play)
-            show(mode == "ghost" ? "Armed in Ghost. It's in your Dynamic Island." : "Armed live.")
+            show(mode == "ghost" ? "Armed in Ghost. It's in your Dynamic Island." : "Armed LIVE with real money. It asks before it buys.")
             UINotificationFeedbackGenerator().notificationOccurred(.success)
         } catch {
             drafts.insert(draft, at: 0)

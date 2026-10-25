@@ -60,7 +60,7 @@ struct PlayRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
                     Text(play.title).font(Theme.label(16, weight: .semibold)).foregroundStyle(Theme.ink)
-                    if play.isGhost { GhostBadge(compact: true) }
+                    if play.isGhost { GhostBadge(compact: true) } else { LiveBadge(compact: true) }
                 }
                 Text(play.headline).font(Theme.label(13)).foregroundStyle(Theme.inkSoft).lineLimit(2)
             }

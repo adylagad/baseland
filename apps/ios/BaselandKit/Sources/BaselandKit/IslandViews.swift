@@ -53,6 +53,25 @@ public struct GhostBadge: View {
     }
 }
 
+/// The opposite of GHOST: this Play trades real money. Solid, so the two can
+/// never be confused at a glance.
+public struct LiveBadge: View {
+    var compact: Bool
+
+    public init(compact: Bool = false) { self.compact = compact }
+
+    public var body: some View {
+        Text("LIVE")
+            .font(Theme.money(compact ? 9 : 10, weight: .bold))
+            .tracking(1.2)
+            .foregroundStyle(.white)
+            .padding(.horizontal, compact ? 5 : 7)
+            .padding(.vertical, compact ? 1.5 : 3)
+            .background(Capsule().fill(Theme.Stage.stopped))
+            .accessibilityLabel("Real money")
+    }
+}
+
 public struct ProgressTrack: View {
     let progress: Double
     let color: Color
@@ -198,7 +217,7 @@ public struct IslandExpandedTrailing: View {
 
     public var body: some View {
         VStack(alignment: .trailing, spacing: 4) {
-            if attributes.isGhost { GhostBadge(compact: true) }
+            if attributes.isGhost { GhostBadge(compact: true) } else { LiveBadge(compact: true) }
             if let price = state.price {
                 Text(Format.price(price))
                     .font(Theme.money(15, weight: .semibold))
@@ -272,7 +291,7 @@ public struct LockScreenCard<Actions: View>: View {
                     .font(Theme.money(11, weight: .bold))
                     .tracking(0.8)
                     .foregroundStyle(state.stage.color)
-                if attributes.isGhost { GhostBadge(compact: true) }
+                if attributes.isGhost { GhostBadge(compact: true) } else { LiveBadge(compact: true) }
                 Spacer()
                 if let price = state.price {
                     Text("\(attributes.symbol) \(Format.price(price))")
