@@ -120,3 +120,21 @@ demo-on-bad-Wi-Fi plan).
 The end-to-end Ghost Play ran on the deployed engine
 (`baseland-engine.onrender.com`, commit 0a69896): it triggered on live ETH
 ticks and sold on its stop-loss. Hours-long stability is still unobserved.
+
+## Phase 2 (the agent)
+
+### Real x402 evidence — Known gap (deliberate, option b)
+Every purchase is simulated (`GhostEvidence`). `X402Evidence` is built but
+unwired and has never paid: the `x402 fetch` argument names
+(`input:=`, `max_amount=`, `idempotency_key=`) come from the CLI skill doc
+and are untested, and each Sense's expected `input` shape (Exa/You `query`,
+Massive ticker paths, Glassnode `a=` asset params) is unknown. Wire it and
+test with one 1-cent Sense after funding.
+
+### Claude latency on the phone — Likely fine
+Decisions took ~10-13 s, the Deck 17 s, drafts ~7 s. Creation no longer
+blocks on the decision; the Deck and drafting UI need visible progress.
+
+### Stock Plays — Known gap
+No stock price source while the market is closed (Coinbase returns none).
+Drafting refuses stocks, and the Deck is crypto-only.

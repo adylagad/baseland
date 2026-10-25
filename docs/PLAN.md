@@ -57,13 +57,13 @@ approval, fills, writes a full Tape. Tests green.
 
 ## Phase 2 — The agent
 
-- [ ] Brain interface + Claude implementation (structured decision output).
-- [ ] Evidence tools: x402 discover/fetch with per-Play budget enforced by the
+- [x] Brain interface + Claude implementation (structured decision output).
+- [x] Evidence tools: x402 discover/fetch with per-Play budget enforced by the
       engine; receipts to the Tape. At least two providers working.
-- [ ] Decision step wired into the runtime at `Deciding`.
-- [ ] Sentence → chips → cartridge parser (Haiku).
-- [ ] Deck generator: suggested Plays from holdings + a seeded event calendar.
-- [ ] Instincts as prompt modules.
+- [x] Decision step wired into the runtime at `Deciding`.
+- [x] Sentence → chips → cartridge parser (Haiku).
+- [x] Deck generator: suggested Plays from holdings + a seeded event calendar.
+- [x] Instincts as prompt modules.
 
 **Exit check:** a Ghost Play's decision cites x402 evidence with receipts;
 "buy five bucks of ETH if it breaks 4k" becomes a valid cartridge.

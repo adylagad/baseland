@@ -95,3 +95,18 @@ let an agent hand its exits to the exchange, which is exactly right for an
 agent that might be asleep. It's mentioned in passing in the CLI help;
 Baseland relies on it for live Plays. **Ask:** document it prominently as the
 recommended pattern for agents.
+
+## 2026-10-24: Phase 2
+
+### Equity products return no price while the market is closed
+`coinbase products get NVDA-USD` returns product metadata with **no price
+field** on a weekend, and the public market endpoint 404s for equities. An
+agent can't even show the last close. **Workaround:** stock Plays are refused
+until market hours (or until we buy Massive data over x402). **Ask:** return
+the last trade/close with a `market_status` field outside trading hours.
+
+### The x402 catalog is a great Sense menu
+`x402 resources` (free) gave us 93 priced resources to build a menu from
+(Exa, Nansen, Glassnode, Massive, Arkham, You.com). **Ask:** a category
+field (news / onchain / derivatives / equities) and a stable id per resource,
+so agents don't key on URLs.
