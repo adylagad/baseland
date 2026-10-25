@@ -78,7 +78,9 @@ baseland/
 ## Tech stack (decided 2026-10-24)
 
 ### iOS
-- Swift + SwiftUI, deployment target **iOS 18** (Control Center controls).
+- Swift + SwiftUI, deployment target **iOS 26** (the user's call,
+  2026-10-24: use the current design language, Liquid Glass, without
+  availability checks).
 - **ActivityKit** Live Activities (lock screen, compact, minimal, expanded).
 - **App Intents**: `LiveActivityIntent` for Approve / Skip / Pause,
   App Shortcuts for Siri, a `ControlWidget` kill switch.

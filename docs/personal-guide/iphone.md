@@ -5,8 +5,8 @@ that the install expires after **7 days** and there is no push (APNs) or
 TestFlight.
 
 You need an iPhone **with a Dynamic Island** (iPhone 14 Pro or later, any
-iPhone 15 or newer) on **iOS 18 or later**. iOS 18 is the minimum for the
-Control Center kill switch.
+iPhone 15 or newer) on **iOS 26 or later**, the app's minimum (decided
+2026-10-24, for the current design language).
 
 ## Once
 
