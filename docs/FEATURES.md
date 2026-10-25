@@ -36,10 +36,13 @@ index below.
 
 | Feature | Latest record | Status |
 | --- | --- | --- |
-| _none yet_ | | |
+| Connect a Coinbase key (engine) | [phase-00](./features/phase-00-foundations.md#connect-a-coinbase-key-engine) | Shipped |
+| Live quote endpoint | [phase-00](./features/phase-00-foundations.md#live-quote-endpoint) | Shipped |
+| Health endpoint | [phase-00](./features/phase-00-foundations.md#health-endpoint) | Shipped |
+| Core schema | [phase-00](./features/phase-00-foundations.md#core-schema) | Shipped |
 
 ## Phases
 
 | Phase | Record |
 | --- | --- |
-| _none yet: the first file is created with the first shipped feature_ | |
+| 00 Foundations | [phase-00-foundations.md](./features/phase-00-foundations.md) |
