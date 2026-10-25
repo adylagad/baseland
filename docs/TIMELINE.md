@@ -8,6 +8,17 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-25 — [context](./context/2026-10-25.md)
 
+**Session 2: one real trade, and Phase 6 done.** With the user's go-ahead,
+a LIVE Play bought $2.97 of ETH, approved from the Dynamic Island, filled
+on Coinbase with exits attached. The Tape matches `orders get`. Live
+trading is off again.
+
+- **Real x402 never paid** (400 portfolio_id, then 412; nothing charged).
+  Failures are now on the Tape.
+- The app arms LIVE only through a confirmation; LIVE badges everywhere.
+- Submission: three recorded clips (4:20) in `media/`, the Devpost doc with
+  a timed voiceover script, and a 4-slide deck. The final cut is the user's.
+
 **Session 1: Phase 6, the Baseland MCP and the Claude Code skill.** Claude
 Code can draft, replay, arm and stop **Ghost** Plays that appear on the
 user's Island.
