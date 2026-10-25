@@ -148,3 +148,59 @@ final class IslandApprovalTests: XCTestCase {
         }
     }
 }
+
+/// iPhones without a Dynamic Island show Live Activities on the lock screen.
+/// Approve from there, with the phone locked.
+final class LockScreenApprovalTests: XCTestCase {
+    func testApproveFromTheLockScreen() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-reset-session"]
+        app.launch()
+        app.buttons["Start in Ghost"].tap()
+
+        let composer = app.textFields["composer"].firstMatch
+        XCTAssertTrue(composer.waitForExistence(timeout: 30))
+        composer.tap()
+        composer.typeText("buy 2 dollars of eth now\n")
+        XCTAssertTrue(app.staticTexts["Your words"].firstMatch.waitForExistence(timeout: 60))
+        app.buttons["armButton"].tap()
+        app.tabBars.buttons["Plays"].tap()
+        XCTAssertTrue(app.staticTexts["Your call"].firstMatch.waitForExistence(timeout: 60), "the agent never asked")
+
+        // Lock, then wake to the lock screen.
+        XCUIDevice.shared.perform(NSSelectorFromString("pressLockButton"))
+        sleep(2)
+        XCUIDevice.shared.perform(NSSelectorFromString("pressLockButton"))
+        sleep(3)
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        if let dir = ProcessInfo.processInfo.environment["SHOTS_DIR"] {
+            try? springboard.debugDescription.write(toFile: dir + "/lockscreen-tree.txt", atomically: true, encoding: .utf8)
+        }
+        shot("30-lock-screen")
+
+        let approve = springboard.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Approve'")).firstMatch
+        XCTAssertTrue(approve.waitForExistence(timeout: 10), "no Approve button on the lock screen")
+        approve.tap()
+        sleep(6)
+        shot("31-lock-screen-after-approve")
+
+        // Unlock and confirm in the app.
+        XCUIDevice.shared.press(.home)
+        sleep(2)
+        app.activate()
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Bought'")).firstMatch.waitForExistence(timeout: 30), "the lock-screen approval didn't fill")
+        shot("32-app-after-lock-approve")
+    }
+
+    private func shot(_ name: String) {
+        let png = XCUIScreen.main.screenshot().pngRepresentation
+        let a = XCTAttachment(data: png, uniformTypeIdentifier: "public.png")
+        a.name = name
+        a.lifetime = .keepAlways
+        add(a)
+        if let dir = ProcessInfo.processInfo.environment["SHOTS_DIR"] {
+            try? png.write(to: URL(fileURLWithPath: dir).appendingPathComponent("\(name).png"))
+        }
+    }
+}
