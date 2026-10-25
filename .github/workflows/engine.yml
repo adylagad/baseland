@@ -1,0 +1,56 @@
+# Tests the engine on every change to it, and deploys main to Render only when
+# the tests pass. Render's own auto-deploy is off: the service was created from
+# the public repo URL, which Render cannot watch, and one deployer is simpler.
+#
+# Needs the repo secret RENDER_DEPLOY_HOOK: the service's deploy hook URL
+# (Render → baseland-engine → Settings → Deploy Hook). It can only deploy this
+# one service, unlike an account API key.
+name: engine
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - apps/engine/**
+      - packages/**
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - tsconfig.base.json
+      - .github/workflows/engine.yml
+  pull_request:
+    paths:
+      - apps/engine/**
+      - packages/**
+      - pnpm-lock.yaml
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm -r test
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency: render-deploy
+    steps:
+      - name: Trigger a Render deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "::error::RENDER_DEPLOY_HOOK secret is not set; see docs/personal-guide/render.md"
+            exit 1
+          fi
+          curl -fsS -X POST "$RENDER_DEPLOY_HOOK?ref=$GITHUB_SHA" > /dev/null
+          echo "Deploy of $GITHUB_SHA requested; /health reports the commit as 'version'."
