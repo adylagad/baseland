@@ -1,0 +1,61 @@
+# Development testing backlog
+
+Behaviour that is **built but unverified**, or **unknown and worth finding out
+before a demo finds it out for us**.
+
+An item leaves this list when it has been *run* and the result written down in
+a [context log](./context/), not when the code looks right.
+
+**Confidence** is how sure we are it works today:
+
+- **Unknown**: no idea which way it goes
+- **Likely fine**: the code (or docs) read correctly, but nothing has run it
+- **Known gap**: it does not work, deliberately
+
+---
+
+## Platform unknowns to settle in Phase 0
+
+### Live Activities with a free Apple ID (Personal Team) — Likely fine
+Live Activities need only `NSSupportsLiveActivities`, not a paid entitlement.
+Widget extensions can be signed by a Personal Team. Confirm on the device.
+
+### `LiveActivityIntent` buttons while the app is suspended — Likely fine
+The system should launch the app in the background to run the intent. Confirm
+that Approve from the Dynamic Island reaches the engine with the app
+suspended, and also after it has been killed.
+
+### Background keep-alive keeps Realtime updates flowing — Unknown
+How long the app stays alive on the lock screen with the chosen keep-alive,
+and whether iOS throttles it under Low Power Mode.
+
+### Control Center control with a free Apple ID — Unknown
+iOS 18 control widgets live in the widget extension. They should work, but
+nothing has confirmed it.
+
+### Which USDC balance pays for x402 when the key is scoped to the Baseland portfolio — Unknown
+Coinbase docs say x402 uses "your retail USDC balance on Base". With a key
+scoped to a non-default portfolio, it is unclear whether payments draw from
+that portfolio or the primary one. Test with a 1-cent resource.
+
+### `coinbase` CLI behaviour on Render (Linux, no libsecret) — Unknown
+We pass keys via env vars, not the keychain. Confirm the CLI reads
+`COINBASE_KEY_ID` / `COINBASE_KEY_SECRET` and writes nothing secret to disk.
+
+### Coinbase public ticker WebSocket from Render — Likely fine
+Outbound WebSockets should be unaffected by the free tier, but the 15-minute
+sleep counts only inbound traffic. Confirm the ping keeps the process awake.
+
+## Coinbase key (production, scoped to "baseland")
+
+### Verified 2026-10-24
+The production key authenticates. `portfolios list` shows Default and
+baseland. `portfolios get baseland` works ($0). `portfolios get Default` is
+**denied (403)**, so the scoping holds. `products get ETH-USDC` returns a live
+price, `x402 resources` returns the catalog (You.com search, 0.105 USDC per
+call), and `fees` shows the Intro tier (taker 0.9%, maker 0.5%).
+
+### `balance` on the scoped portfolio — Known gap, re-check after funding
+It returns 400 "cannot access the specified portfolio" even with the correct
+uuid. Possibly because the portfolio is empty, or because it is a CONSUMER
+portfolio. Use `portfolios get` until re-checked with funds in it.
