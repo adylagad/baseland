@@ -71,3 +71,44 @@ every write must state whether it was Ghost.
 **Verified (2026-10-24):** migrations applied; security advisor re-run; an
 anonymous user's profile was created by the trigger (`ghost`,
 `ghost_starting_usd = 100`).
+
+## Play Live Activity (Dynamic Island + lock screen)
+
+**What it does:** a Play is shown as a Live Activity with four
+presentations, all driven by `PlayActivityAttributes` (static: playId,
+title, symbol, isGhost) and its `ContentState` (stage, headline, price,
+progress 0–1, pnlUSD, pendingAmountUSD, endsAt):
+
+- **Compact leading:** stage dot + symbol (`● ETH`). A GHOST Play's dot is
+  ringed with a dashed lavender line.
+- **Compact trailing:** depends on stage: armed/watching/paused → countdown
+  to `endsAt` (H:MM:SS); deciding → amber `sparkles`; awaiting → the amount
+  in coral with a question mark (`$3.00?`); executing → a circular-arrows
+  symbol; done → signed P&L, green or red; killed/expired/failed → the stage
+  label.
+- **Minimal:** a ring that fills toward the trigger in the stage color
+  (full while awaiting), with a centre dot that is lavender for GHOST.
+- **Expanded:** stage label + title (leading); GHOST badge + price
+  (trailing); headline + progress bar (bottom). No buttons yet; Approve /
+  Skip / Pause arrive with App Intents in Phase 3.
+- **Lock screen:** a card with stage, GHOST badge, price, title, headline,
+  progress and countdown; a GHOST card has a dashed lavender border.
+
+**Rules:** the stage color is the only strong color. Money and prices are
+monospaced. Stage raw values match `plays.state` exactly (tested). GHOST is
+shown on every presentation.
+
+**Where:** `apps/ios/BaselandKit/Sources/BaselandKit/` (`PlayStage`,
+`PlayActivityAttributes`, `Theme`, `IslandViews`, `DemoPlay`),
+`apps/ios/Widgets/PlayLiveActivity.swift`,
+`apps/ios/App/LiveActivityController.swift`; a development screen, the
+Island Lab (`App/IslandLabView.swift`), renders every presentation for
+every stage.
+
+**Verified (2026-10-24):** seen in the iPhone 17 / iOS 26.5 simulator's real
+Dynamic Island for watching, deciding, awaiting and done (screenshots), and
+updating while another app was in front. Expanded and lock screen were
+verified only through the Island Lab's rendering of the same views. 5 Swift
+Testing tests pass. Device behaviour is listed in the testing backlog.
+
+**Ghost / Live:** both; the demo Play is always GHOST.

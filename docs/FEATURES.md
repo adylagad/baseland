@@ -36,6 +36,7 @@ index below.
 
 | Feature | Latest record | Status |
 | --- | --- | --- |
+| Play Live Activity (Dynamic Island + lock screen) | [phase-00](./features/phase-00-foundations.md#play-live-activity-dynamic-island--lock-screen) | Shipped (simulator) |
 | Connect a Coinbase key (engine) | [phase-00](./features/phase-00-foundations.md#connect-a-coinbase-key-engine) | Shipped |
 | Live quote endpoint | [phase-00](./features/phase-00-foundations.md#live-quote-endpoint) | Shipped |
 | Health endpoint | [phase-00](./features/phase-00-foundations.md#health-endpoint) | Shipped |

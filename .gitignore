@@ -21,6 +21,9 @@ apps/ios/*.xcodeproj
 apps/ios/*.xcworkspace
 DerivedData/
 build/
+# SwiftPM (xcodebuild in a package dir writes an index store here)
+.build/
+.swiftpm/
 *.xcuserstate
 xcuserdata/
 

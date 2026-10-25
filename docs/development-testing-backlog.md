@@ -59,3 +59,25 @@ call), and `fees` shows the Intro tier (taker 0.9%, maker 0.5%).
 It returns 400 "cannot access the specified portfolio" even with the correct
 uuid. Possibly because the portfolio is empty, or because it is a CONSUMER
 portfolio. Use `portfolios get` until re-checked with funds in it.
+
+## Live Activity (Phase 0)
+
+### Seen in the simulator 2026-10-24
+The demo Play's Live Activity appears in the iPhone 17 (iOS 26.5) simulator's
+Dynamic Island and updates while another app is in front: watching (blue dot
+plus countdown), deciding (amber sparkles), awaiting (`$3.00?` coral), done
+(`+$0.12` green), each with the dashed GHOST ring.
+
+### Update rate is throttled — Known, needs a device check
+Local updates every 4 s arrived visibly slower (after ~25 s it was still on
+step 5 of 7). Real Plays change stage rarely, but a live price in the
+expanded view will not tick every second. Re-check on the iPhone with
+`NSSupportsLiveActivitiesFrequentUpdates`, which is already set.
+
+### Background updates on a real phone — Unknown
+The simulator kept updating while backgrounded; a real iPhone suspends apps
+much sooner. This is what the keep-alive in Phase 3 is for.
+
+### Expanded and lock-screen presentations on the device — Unknown
+Only verified as rendered in the in-app Island Lab (same views), not
+long-pressed on the real Island or seen on a real lock screen.

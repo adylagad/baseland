@@ -63,3 +63,19 @@ ticks and a subscription ack for **`ETH-USD`**. Coinbase unified the USD and
 USDC books. A watcher that matches incoming ticks by the cartridge's product
 id never fires. Normalize both sides (`-USDC` → `-USD`) when matching ticks,
 but keep the cartridge's id for orders.
+
+## iOS
+
+### Hold a Live Activity's id, never the `Activity` object
+**Bit 2026-10-24.** Storing `Activity<PlayActivityAttributes>` on a
+`@MainActor` controller and calling `await current?.update(...)` fails to
+compile under Swift 6: "sending 'self.current.some' risks causing data races".
+`Activity` is not Sendable. Keep only `activity.id`, and do the
+update or end in a `nonisolated static` helper that looks the activity up in
+`Activity<PlayActivityAttributes>.activities`.
+
+### The compact Island truncates a countdown narrower than ~58pt
+**Bit 2026-10-24.** `Text(timerInterval:)` in 13pt mono with
+`.frame(maxWidth: 52)` rendered as `5:59:…` in the real Dynamic Island. 12pt
+mono at a fixed 58pt width fits `5:59:58`. Check any trailing-compact change
+on the simulator; the Island Lab preview does not enforce the system's width.
