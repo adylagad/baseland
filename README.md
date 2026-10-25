@@ -11,11 +11,13 @@ Built for the CalHacks 2026 Coinbase prompt, **Trading Agents** track.
 - How it works: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Build plan: [`docs/PLAN.md`](docs/PLAN.md)
 
-> **Status:** Phases 0–3 and 5 built, plus the MCP: engine live at
+> **Status:** all phases built: engine live at
 > `https://baseland-engine.onrender.com` (CI-deployed), iPhone app verified in
 > the simulator, including approving from the Dynamic Island and the lock
-> screen. Real-money trading (Phase 4) is switched off; everything runs in
-> GHOST.
+> screen, plus the Baseland MCP. One real trade ran on 2026-10-25 ($3 of ETH,
+> approved from the Island; see `docs/features/phase-04-live-money.md`).
+> Live trading is switched off again, so the hosted engine runs everything in
+> GHOST. Real x402 payments haven't succeeded yet.
 
 ## How one Play runs
 
