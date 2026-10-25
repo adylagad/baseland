@@ -96,3 +96,15 @@ Render's GitHub app isn't connected to `adylagad/baseland`. Until it is,
 deploy with the Render MCP's `trigger_deploy` (service
 `srv-dbem50nb9u1s73a6ofq0`) and confirm `/health` reports the new commit in
 `version`. Requests during the instance swap can return a Render 502 page.
+
+## Engine HTTP
+
+### Fastify answers an empty JSON body with 400
+**Bit 2026-10-24**, in the first end-to-end Ghost Play: `POST
+/v1/plays/:id/approve` with `Content-Type: application/json` and no body
+returned 400 ("Body cannot be empty..."), so approval silently failed.
+Unit tests didn't catch it because `inject()` sends no content type
+without a payload. Fixed in `buildServer` with a JSON parser that treats an
+empty body as none, plus a route test that sends exactly that request. Any
+client (including iOS URLSession code that always sets the header) is
+affected if this parser is removed.

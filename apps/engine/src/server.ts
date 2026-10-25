@@ -28,6 +28,20 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
   });
   const auth = requireUser(deps.verifyToken);
 
+  // Action endpoints (approve, kill, ...) take no body, but clients often send
+  // `Content-Type: application/json` anyway; Fastify's default parser answers
+  // those with 400. Treat an empty JSON body as no body (docs/code-traps.md).
+  app.removeContentTypeParser("application/json");
+  app.addContentTypeParser("application/json", { parseAs: "string" }, (_req, body, done) => {
+    const text = String(body);
+    if (text.trim() === "") return done(null, undefined);
+    try {
+      done(null, JSON.parse(text));
+    } catch {
+      const err = Object.assign(new Error("invalid JSON body"), { statusCode: 400 });
+      done(err, undefined);
+    }
+  });
 
   // Pinged every 5 minutes by a Supabase cron job to keep the Render free
   // instance awake (migration keep_engine_awake).

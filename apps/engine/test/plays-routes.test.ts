@@ -49,6 +49,21 @@ describe("Play routes", () => {
     expect((await app.inject({ method: "POST", url: `/v1/plays/${play.id}/resume`, headers: alice })).statusCode).toBe(409);
   });
 
+  it("accepts action POSTs with a JSON content type and an empty body (found end to end)", async () => {
+    const { app } = await setup();
+    const play = (await app.inject({ method: "POST", url: "/v1/plays", headers: alice, payload: { cartridge: examples.ethNow } })).json();
+    const res = await app.inject({
+      method: "POST",
+      url: `/v1/plays/${play.id}/approve`,
+      headers: { ...alice, "content-type": "application/json" },
+      payload: "",
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().state).toBe("done");
+    const junk = await app.inject({ method: "POST", url: "/v1/plays", headers: { ...alice, "content-type": "application/json" }, payload: "{nope" });
+    expect(junk.statusCode).toBe(400);
+  });
+
   it("kill-all", async () => {
     const { app } = await setup();
     await app.inject({ method: "POST", url: "/v1/plays", headers: alice, payload: { cartridge: examples.ethNow } });
