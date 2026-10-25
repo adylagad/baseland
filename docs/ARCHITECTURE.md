@@ -3,8 +3,10 @@
 How Baseland is put together, why, and what it cannot do. This is also the
 basis of the "Architecture" section of the hackathon submission.
 
-Status: **planned, nothing built yet** (2026-10-24). Where this file and the
-code disagree, the code wins and this file is wrong — report it.
+Status: **Phase 0 built** (2026-10-24): schema, engine (health, quotes, key
+connection) deployed to Render, and the Live Activity in the simulator. Where
+this file and the code disagree, the code wins and this file is wrong —
+report it.
 
 ---
 
@@ -84,10 +86,16 @@ the lock screen. That keep-alive is **hackathon-only** (would fail App Review)
 
 ### Hosting: Render free web service + keep-alive ping
 Free, Docker-capable, long-running Node. Free services sleep after 15 minutes
-without *inbound* traffic (outbound WebSockets don't count), so an external
-pinger (cron-job.org or similar) hits `/health` every 10 minutes. 750 free
-hours/month covers one service running 24/7. All state is in Supabase, so a
-restart only re-arms Plays from the database; nothing is lost.
+without *inbound* traffic (outbound WebSockets don't count), so a Supabase
+`pg_cron` + `pg_net` job (`keep-engine-awake`) calls `/health` every 5
+minutes. No third-party pinger is needed. 750 free hours/month covers one
+service running 24/7. All state is in Supabase, so a restart only re-arms
+Plays from the database; nothing is lost.
+
+Deploys come from GitHub Actions (`.github/workflows/engine.yml`): a push to
+`main` that touches the engine runs typecheck and tests, and only then calls
+the service's Render deploy hook. Render's own auto-deploy is off because the
+service was created from the public repo URL, which Render cannot watch.
 
 ### Ghost is a gateway, not a flag sprinkled everywhere
 The Play runtime talks to a `TradingGateway` interface. `CoinbaseGateway`
@@ -141,8 +149,8 @@ Realtime is enabled on `plays` and `tape`, filtered by owner via RLS.
 - **x402 budget is enforced by us,** not Coinbase (only a 5 USDC per-payment
   cap exists upstream). x402 payments are irreversible.
 - **Coinbase has no fill webhooks**; the engine polls order status.
-- **Render free tier sleeps** without the external ping; a cold start takes
-  about a minute and pauses watchers.
+- **Render free tier sleeps** if the Supabase cron ping stops; a cold start
+  takes about a minute and pauses watchers.
 - **One portfolio per key.** Futures only work in the default portfolio, so
   futures Plays need a second key or are out of scope.
 - **Judges cannot install the iOS app** without TestFlight (needs a paid

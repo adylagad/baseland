@@ -25,7 +25,8 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
   });
   const auth = requireUser(deps.verifyToken);
 
-  // Pinged every 10 minutes to keep the Render free instance awake.
+  // Pinged every 5 minutes by a Supabase cron job to keep the Render free
+  // instance awake (migration keep_engine_awake).
   app.get("/health", async () => ({
     ok: true,
     version: deps.version ?? "dev",

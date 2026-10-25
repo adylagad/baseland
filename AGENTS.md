@@ -20,8 +20,9 @@ The full product is in [`docs/IDEA.md`](docs/IDEA.md) and the system in
 those without asking the user.** This is a hackathon: a polished, reliable
 core beats a wide, flaky one.
 
-Status: **planning done, nothing built** (2026-10-24). Build order is in
-[`docs/PLAN.md`](docs/PLAN.md).
+Status: **Phase 0 done** (2026-10-24): schema, engine deployed to Render,
+Live Activity in the simulator. Build order is in
+[`docs/PLAN.md`](docs/PLAN.md); history in the timeline below.
 
 ## Hard rules: money, credentials, honesty
 
@@ -101,9 +102,14 @@ baseland/
 - **Supabase** (Postgres + Auth + Realtime) for all state; the engine uses the
   service role and verifies user JWTs with `getClaims()`, never
   `getSession()`.
-- **Hosting:** Render free web service (Docker) plus an external `/health`
-  ping every 10 minutes. All state lives in Supabase, so the engine
-  rehydrates armed Plays on boot.
+- **Hosting:** Render free web service (Docker), kept awake by a Supabase
+  `pg_cron` ping to `/health` every 5 minutes. All state lives in Supabase,
+  so the engine rehydrates armed Plays on boot.
+- **Deploys:** GitHub Actions (`.github/workflows/engine.yml`) runs typecheck
+  and tests on every engine change and deploys `main` through the service's
+  Render deploy hook only if they pass. Render auto-deploy is off. If the
+  workflow can't deploy, use the Render MCP's `trigger_deploy`, then confirm
+  `/health` reports the new commit as `version`.
 
 ### Why these, briefly
 AI runs only at decision points; watchers are deterministic. Ghost is a
