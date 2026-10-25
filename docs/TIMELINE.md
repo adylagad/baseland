@@ -8,6 +8,18 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
+**Session 4: Phase 2, the agent, done.** Claude decides at each trigger
+(rules fallback), drafts Plays from a sentence, and deals a Deck from live
+prices. Evidence purchases are **simulated** (option b) at real catalog prices.
+
+- Models write flat Drafts; code builds cartridges, resolves products and
+  generates chips (`cartridgeFromDraft`, `sentenceFor`).
+- Live bugs fixed: a "wait" verdict re-asked Claude on every tick (now a
+  5-min cooldown, 4-decision cap), and creating a Play blocked on the
+  decision (now background).
+- Defaults are `claude-opus-5-5` per the claude-api skill; AGENTS.md still
+  says Sonnet/Haiku (flagged to the user). No stock prices on weekends.
+
 **Session 3: Phase 1, the engine core, done.** A Ghost Play now runs end to
 end on live Coinbase prices, locally and on Render.
 
