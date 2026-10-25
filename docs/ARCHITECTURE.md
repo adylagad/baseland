@@ -3,13 +3,16 @@
 How Baseland is put together, why, and what it cannot do. This is also the
 basis of the "Architecture" section of the hackathon submission.
 
-Status: **Phases 0–3 and 5 built, Phase 6 under way** (2026-10-25): engine
-(Play runtime, Claude Brain with simulated x402 evidence, drafting, Deck,
-Rig, Replay) deployed to Render by CI; iPhone app verified in the simulator,
-including approval from the Dynamic Island and the lock screen; the Baseland
-MCP and Claude Code skill. Phase 4 (real money) and the rest of the
-submission remain. Where this file and the code disagree, the code
-wins and this file is wrong — report it.
+Status: **all phases built** (2026-10-25): engine (Play runtime, Claude
+Brain, drafting, Deck, Rig, Replay) deployed to Render by CI; iPhone app
+verified in the simulator, including approval from the Dynamic Island and
+the lock screen; the Baseland MCP and Claude Code skill. **One real trade
+ran:** a live Play bought $2.97 of ETH, approved from the Dynamic Island,
+filled on Coinbase with exits attached (`features/phase-04-live-money.md`).
+Live trading is switched off again. Real x402 evidence is built but no
+payment has succeeded yet (Coinbase rejected both attempts; nothing was
+charged), so evidence stays simulated. Where this file and the code
+disagree, the code wins and this file is wrong — report it.
 
 ---
 
