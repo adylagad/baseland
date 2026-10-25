@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, preHandlerHookHandler } from "fastify";
 import { z } from "zod";
-import { Cartridge, Mode, sentenceFor } from "@baseland/play-schema";
+import { Cartridge, Mode, sentenceFor, type Rig } from "@baseland/play-schema";
 import type { DeckStore } from "../brain/deck-store.js";
 import { DraftError, type Drafter } from "../brain/drafter.js";
 import { PlayError, type PlayRuntime } from "../plays/runtime.js";
@@ -17,6 +17,8 @@ export interface DeckRouteDeps {
   deck: DeckStore;
   /** Short description of what the user holds, for the Deck prompt. */
   holdingsOf(userId: string): Promise<string>;
+  /** The user's Rig; drafts and the Deck follow its Hands, Senses and Leash. */
+  rigFor?(userId: string): Promise<Rig>;
   clock?: () => number;
 }
 
@@ -36,7 +38,8 @@ export function deckRoutes(app: FastifyInstance, d: DeckRouteDeps) {
         if (fresh.length) return { cards: fresh };
       }
       const recent = (await d.runtime.list(req.userId)).slice(0, 8).map((p) => p.title);
-      const drafts = await d.drafter.deck({ holdings: await d.holdingsOf(req.userId), recentTitles: recent });
+      const rig = await d.rigFor?.(req.userId);
+      const drafts = await d.drafter.deck({ holdings: await d.holdingsOf(req.userId), recentTitles: recent, rig });
       return { cards: await d.deck.replace(req.userId, drafts.map((c) => ({ spec: c.cartridge, rationale: c.rationale }))) };
     } catch (err) {
       return fail(reply, err);
@@ -70,7 +73,7 @@ export function deckRoutes(app: FastifyInstance, d: DeckRouteDeps) {
     const body = z.object({ text: z.string().min(2).max(500) }).safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "expected { text }" });
     try {
-      return { cartridge: await d.drafter.fromSentence(body.data.text) };
+      return { cartridge: await d.drafter.fromSentence(body.data.text, await d.rigFor?.(req.userId)) };
     } catch (err) {
       return fail(reply, err);
     }

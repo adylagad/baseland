@@ -1,7 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
-import { Cartridge, cartridgeFromDraft, Draft } from "@baseland/play-schema";
+import { Cartridge, cartridgeFromDraft, defaultRig, Draft, type Rig } from "@baseland/play-schema";
+import { senseById } from "./senses.js";
 import { MarketError, type MarketData } from "../market/public.js";
 import { DEFAULT_DRAFT_MODEL, fallbackOptions } from "./models.js";
 
@@ -20,7 +21,6 @@ export class DraftError extends Error {
 }
 
 export const DECK_PRODUCTS = ["BTC", "ETH", "SOL", "XRP", "DOGE", "LINK", "AVAX", "ADA"] as const;
-const DEFAULT_CRYPTO_SENSES = ["exa.news", "nansen.flows"];
 
 export interface DrafterOptions {
   client?: Anthropic;
@@ -47,8 +47,8 @@ export class Drafter {
   }
 
   /** "buy 5 bucks of eth if it breaks 2400" → a valid cartridge. */
-  async fromSentence(text: string): Promise<Cartridge> {
-    const snapshot = await this.snapshot();
+  async fromSentence(text: string, rig: Rig = defaultRig()): Promise<Cartridge> {
+    const snapshot = await this.snapshot(rig.hands.assets);
     const res = await this.client.beta.messages.parse({
       model: this.model,
       max_tokens: 8000,
@@ -58,12 +58,13 @@ export class Drafter {
       messages: [{ role: "user", content: `Live prices:\n${snapshot}\n\nThe person said: ${JSON.stringify(text)}` }],
     });
     if (res.stop_reason === "refusal" || !res.parsed_output) throw new DraftError("Couldn't turn that into a Play. Try naming an asset and an amount.");
-    return this.build(res.parsed_output);
+    return this.build(res.parsed_output, rig);
   }
 
   /** Up to `count` suggested Plays from live prices and what the user holds. */
-  async deck(opts: { count?: number; holdings?: string; recentTitles?: string[] } = {}): Promise<DeckCardDraft[]> {
-    const snapshot = await this.snapshot();
+  async deck(opts: { count?: number; holdings?: string; recentTitles?: string[]; rig?: Rig } = {}): Promise<DeckCardDraft[]> {
+    const rig = opts.rig ?? defaultRig();
+    const snapshot = await this.snapshot(rig.hands.assets);
     const res = await this.client.beta.messages.parse({
       model: this.model,
       max_tokens: 12000,
@@ -77,6 +78,7 @@ export class Drafter {
             `Live prices (24h change):\n${snapshot}`,
             `Holdings: ${opts.holdings ?? "none yet"}`,
             `Plays they already ran recently: ${opts.recentTitles?.length ? opts.recentTitles.join("; ") : "none"}`,
+            `Only use these assets: ${rig.hands.assets.join(", ")}. Keep every amount at or under $${rig.leash.maxOrderUsd}.`,
             `Write ${opts.count ?? 5} cards.`,
           ].join("\n\n"),
         },
@@ -86,7 +88,7 @@ export class Drafter {
     const out: DeckCardDraft[] = [];
     for (const card of res.parsed_output.cards) {
       try {
-        out.push({ cartridge: await this.build(card), rationale: card.rationale });
+        out.push({ cartridge: await this.build(card, rig), rationale: card.rationale });
       } catch {
         // A card that doesn't resolve or validate is dropped, not shown broken.
       }
@@ -94,20 +96,27 @@ export class Drafter {
     return out;
   }
 
-  /** Draft → resolved product → cartridge → validated. */
-  async build(d: Draft): Promise<Cartridge> {
+  /** Draft → resolved product → cartridge (shaped by the Rig) → validated. */
+  async build(d: Draft, rig: Rig = defaultRig()): Promise<Cartridge> {
     if (d.assetClass === "stock") {
       throw new DraftError(
         `Stock Plays need live stock prices, which Coinbase doesn't publish while the market is closed. ${d.symbol.toUpperCase()} will work in market hours; crypto works now.`,
       );
     }
-    const product = await this.resolveCrypto(d.symbol);
+    const symbol = d.symbol.toUpperCase();
+    if (!rig.hands.assets.includes(symbol)) throw new DraftError(`${symbol} isn't in your Rig's Hands. Add it in the Rig to trade it.`);
+    const product = await this.resolveCrypto(symbol);
     const filled: Draft = {
       ...d,
-      amountUsd: d.side === "BUY" ? d.amountUsd ?? 5 : null,
+      // Never draft an order the Rig's Leash would refuse.
+      amountUsd: d.side === "BUY" ? Math.min(d.amountUsd ?? 5, rig.leash.maxOrderUsd) : null,
       lastsMin: d.lastsMin > 0 ? d.lastsMin : 360,
     };
-    const parsed = Cartridge.safeParse(cartridgeFromDraft(filled, product, { senses: DEFAULT_CRYPTO_SENSES, evidenceBudgetUsdc: 0.1 }));
+    const senses = rig.senses.enabled.filter((id) => senseById(id)?.assets !== "stock");
+    const built = cartridgeFromDraft(filled, product, { senses, evidenceBudgetUsdc: Math.min(rig.senses.budgetUsdc, rig.leash.maxEvidenceUsdc) });
+    // "Don't ask" said out loud wins; otherwise the Rig's approval policy.
+    built.decision = { instinct: d.instinct, ask: d.ask === "never" ? "never" : rig.hands.ask };
+    const parsed = Cartridge.safeParse(built);
     if (!parsed.success) {
       throw new DraftError("That Play doesn't add up yet.", parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`));
     }
@@ -128,9 +137,9 @@ export class Drafter {
     throw new DraftError(`Coinbase doesn't list ${sym}.`);
   }
 
-  private async snapshot(): Promise<string> {
+  private async snapshot(assets: readonly string[] = DECK_PRODUCTS): Promise<string> {
     const rows = await Promise.all(
-      DECK_PRODUCTS.map(async (s) => {
+      assets.map(async (s) => {
         try {
           const q = await this.market.quote(`${s}-USDC`);
           return `${s}: $${q.price} (${q.change24hPct !== null ? `${q.change24hPct.toFixed(2)}%` : "n/a"})`;
