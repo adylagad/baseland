@@ -25,6 +25,8 @@ Buy ETH now · ETH flat near $2,363, nothing unusual. Buy $2 of ETH? · Skip |
 Approve $2") → tap Approve → the Play fills ("Bought 0.00083884 ETH at
 $2,362.79") with the app in the background. **Not yet seen on a real iPhone.**
 
+→ extended in phase-03 (lock-screen approval, verified on an iPhone 16e simulator)
+
 ## Kill switch: in the app, Control Center, Siri
 
 The Plays toolbar has **Stop all** (with a confirmation). A Control Center
@@ -119,3 +121,21 @@ default on 2026-10-24.
 
 **Verified (2026-10-24), live:** draft in 3.0 s (6.7 s on Opus), Deck in
 12.3 s (17 s), Sonnet decision in 14 s (skip, with reasons). 97 engine tests.
+
+## Approve from the lock screen (iPhones without a Dynamic Island)
+
+Extends "Approve from the Dynamic Island (and the lock screen)". Restated:
+every iPhone on iOS 26 shows a running Play as a Live Activity on the **lock
+screen**. While it asks, it shows the stage, GHOST, the title, the agent's
+headline and **Skip / Approve $N**, tappable with the phone locked. iPhones
+with a Dynamic Island also get the compact, minimal and expanded Island
+views with the same buttons. Orders above $25 open the app for Face ID. The
+buttons are LiveActivityIntents running in the app's process. iOS asks
+"Allow Live Activities from Baseland?" on the lock screen the first time.
+
+**Verified (2026-10-24):** XCUITest `LockScreenApprovalTests` on an
+**iPhone 16e simulator (no Dynamic Island)**, matching the user's phone:
+lock → the card reads "YOUR CALL · Buy ETH now · Calm market, mild uptrend.
+Buy $2 of ETH? · Skip | Approve $2" → tap Approve on the locked screen → the
+card flips to "DONE · Bought 0.00083782 ETH at $2,365.67", and the app shows
+the fill.

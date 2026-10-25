@@ -171,3 +171,9 @@ Matters only for test cleanup today.
 The app refetches `/v1/me` when a `fill` or `state` Tape row arrives over
 Realtime. The UI test screenshots were taken before a fill reached the
 header; not explicitly checked.
+
+### Lock-screen approval — Answered 2026-10-24: works (simulator)
+On an iPhone 16e simulator (no Dynamic Island), Approve on the locked
+screen's Live Activity filled the Play. The user's iPhone has Live
+Activities but no Dynamic Island, so this is its approval path. Device
+testing is deferred by the user's choice; simulators only for now.

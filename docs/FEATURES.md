@@ -36,7 +36,7 @@ index below.
 
 | Feature | Latest record | Status |
 | --- | --- | --- |
-| Approve from the Dynamic Island / lock screen | [phase-03](./features/phase-03-island.md#approve-from-the-dynamic-island-and-the-lock-screen) | Shipped (simulator) |
+| Approve from the Dynamic Island / lock screen | [phase-03](./features/phase-03-island.md#approve-from-the-lock-screen-iphones-without-a-dynamic-island) | Shipped (both verified in simulators) |
 | Kill switch: app, Control Center, Siri | [phase-03](./features/phase-03-island.md#kill-switch-in-the-app-control-center-siri) | Shipped (app verified; CC/Siri unverified) |
 | The Deck: swipe to arm, chips, composer | [phase-03](./features/phase-03-island.md#the-deck-swipe-to-arm) | Shipped (voice unverified) |
 | Plays and the Tape (app) | [phase-03](./features/phase-03-island.md#plays-and-the-tape) | Shipped |

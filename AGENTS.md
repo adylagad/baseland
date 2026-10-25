@@ -237,9 +237,18 @@ concern per commit, pushed as you go.**
   -destination 'platform=iOS Simulator,name=iPhone 17' build`, then run in
   the simulator and take screenshots (`xcrun simctl io booted screenshot`).
   The Dynamic Island and Live Activity must be *seen*, not assumed.
-- **Device-only behaviour** (Island buttons while suspended, keep-alive,
-  Control Center) is verified on the user's iPhone, or listed in the testing
-  backlog as unverified.
+- **iOS end to end:** the XCUITests drive the real app against the deployed
+  engine (Ghost only) and write screenshots; look at them.
+  `TEST_RUNNER_SHOTS_DIR=<dir> xcodebuild test -scheme Baseland -destination
+  'platform=iOS Simulator,name=iPhone 17' -derivedDataPath build/dd` covers
+  the words → Island → Tape flow and Dynamic Island approval; run
+  `-only-testing:BaselandUITests/LockScreenApprovalTests` on the **iPhone 16e**
+  simulator (no Dynamic Island, like the user's phone) for lock-screen
+  approval. Delete the anonymous test users afterwards.
+- **Device-only behaviour** (keep-alive over time, Control Center, Siri,
+  voice, Face ID) is listed in the testing backlog as unverified. The user's
+  iPhone has Live Activities but **no Dynamic Island**; testing stays in the
+  simulator for now (the user's call, 2026-10-24).
 - **Coinbase:** read-only calls and `--dry-run` freely; anything that spends
   money needs rule 1.
 
