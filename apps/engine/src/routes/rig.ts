@@ -96,7 +96,7 @@ export function rigRoutes(app: FastifyInstance, d: RigRouteDeps) {
     return { ghost, live };
   });
 
-  app.post("/v1/replay", { preHandler: d.auth }, async (req, reply) => {
+  app.post("/v1/replay", { preHandler: d.auth, config: { harness: true } }, async (req, reply) => {
     const body = z.object({ cartridge: z.unknown(), days: z.number().min(0.25).max(7).default(1) }).safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "expected { cartridge, days }" });
     const spec = Cartridge.safeParse(body.data.cartridge);

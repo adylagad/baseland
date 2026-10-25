@@ -14,6 +14,7 @@ import { supabasePlayStore } from "./plays/store.js";
 import { CoinbaseGateway, GhostGateway } from "./trading/gateway.js";
 import { loadConfig } from "./config.js";
 import { supabaseCredentialStore } from "./credentials/store.js";
+import { supabaseHarnessTokenStore } from "./harness/tokens.js";
 import { createPublicMarket } from "./market/public.js";
 import { buildServer } from "./server.js";
 
@@ -98,6 +99,7 @@ const app = buildServer(
       },
     },
     credentialsSecret: config.CREDENTIALS_SECRET,
+    harnessTokens: supabaseHarnessTokenStore(db),
     version: process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? "dev",
   },
   {

@@ -69,7 +69,7 @@ export function deckRoutes(app: FastifyInstance, d: DeckRouteDeps) {
     return { skipped: true };
   });
 
-  app.post("/v1/plays/draft", { preHandler: d.auth }, async (req, reply) => {
+  app.post("/v1/plays/draft", { preHandler: d.auth, config: { harness: true } }, async (req, reply) => {
     const body = z.object({ text: z.string().min(2).max(500) }).safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "expected { text }" });
     try {
@@ -80,7 +80,7 @@ export function deckRoutes(app: FastifyInstance, d: DeckRouteDeps) {
   });
 
   /** After a chip edit: validate and regenerate the sentence. No AI involved. */
-  app.post("/v1/cartridges/preview", { preHandler: d.auth }, async (req, reply) => {
+  app.post("/v1/cartridges/preview", { preHandler: d.auth, config: { harness: true } }, async (req, reply) => {
     const body = z.object({ cartridge: z.unknown() }).safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "expected { cartridge }" });
     const parsed = Cartridge.safeParse(body.data.cartridge);

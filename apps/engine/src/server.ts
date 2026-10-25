@@ -9,6 +9,8 @@ import { playRoutes } from "./routes/plays.js";
 import { deckRoutes, type DeckRouteDeps } from "./routes/deck.js";
 import { meRoutes } from "./routes/me.js";
 import { rigRoutes, type RigRouteDeps } from "./routes/rig.js";
+import { harnessRoutes } from "./routes/harness.js";
+import { harnessVerifier, type HarnessTokenStore } from "./harness/tokens.js";
 import type { PlayStore } from "./plays/store.js";
 import type { PlayRuntime } from "./plays/runtime.js";
 
@@ -22,6 +24,8 @@ export interface EngineDeps {
   words?: Omit<DeckRouteDeps, "auth" | "runtime">;
   me?: { plays: Pick<PlayStore, "ghostCashUsd">; liveTradingEnabled: boolean };
   rig?: Omit<RigRouteDeps, "auth" | "credentials" | "run" | "market">;
+  /** Harness tokens (the Baseland MCP); without a store none are accepted. */
+  harnessTokens?: HarnessTokenStore;
   version?: string;
 }
 
@@ -33,7 +37,7 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
     // Never log bodies or auth headers: they carry keys and tokens.
     logger: opts.logger ?? false,
   });
-  const auth = requireUser(deps.verifyToken);
+  const auth = requireUser(deps.verifyToken, deps.harnessTokens && harnessVerifier(deps.harnessTokens));
 
   // Action endpoints (approve, kill, ...) take no body, but clients often send
   // `Content-Type: application/json` anyway; Fastify's default parser answers
@@ -68,6 +72,7 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
   playRoutes(app, { auth, runtime: deps.runtime });
   if (deps.words) deckRoutes(app, { auth, runtime: deps.runtime, ...deps.words });
   if (deps.me) meRoutes(app, { auth, credentials: deps.credentials, ...deps.me });
+  if (deps.harnessTokens) harnessRoutes(app, { auth, tokens: deps.harnessTokens });
   if (deps.rig) rigRoutes(app, { auth, credentials: deps.credentials, run: deps.run, market: deps.market, ...deps.rig });
 
   return app;

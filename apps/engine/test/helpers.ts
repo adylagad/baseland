@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import type { CliRunner } from "../src/coinbase/cli.js";
 import { CoinbaseCliError } from "../src/coinbase/cli.js";
 import { memoryCredentialStore } from "../src/credentials/store.js";
+import { memoryHarnessTokenStore } from "../src/harness/tokens.js";
 import type { MarketData } from "../src/market/public.js";
 import { buildServer } from "../src/server.js";
 import { harness } from "./harness.js";
@@ -54,7 +55,7 @@ export const fakeMarket: MarketData = {
   },
 };
 
-export function testServer(run: CliRunner, store = memoryCredentialStore(), h = harness()) {
+export function testServer(run: CliRunner, store = memoryCredentialStore(), h = harness(), harnessTokens = memoryHarnessTokenStore()) {
   const app = buildServer({
     verifyToken,
     run,
@@ -64,6 +65,7 @@ export function testServer(run: CliRunner, store = memoryCredentialStore(), h = 
     runtime: h.runtime,
     me: { plays: h.store, liveTradingEnabled: false },
     rig: { rigs: memoryRigStore(), plays: h.store, candles: syntheticCandles },
+    harnessTokens,
   });
-  return { app, store, h };
+  return { app, store, h, harnessTokens };
 }
