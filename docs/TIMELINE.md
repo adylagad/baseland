@@ -19,9 +19,9 @@ end on live Coinbase prices, locally and on Render.
   are engine-watched.
 - Running it found two bugs the tests missed: empty JSON bodies → 400, and
   deleted Plays still in memory. Both fixed.
-- iOS target is now **26**. CI tests the engine and deploys via a Render
-  deploy hook that **the user must add as a secret**. Until then, deploy with
-  `trigger_deploy`.
+- iOS target is now **26**. **CI tests the engine and auto-deploys main to
+  Render** via a deploy hook secret (verified: push → tests → deploy →
+  `/health` shows the commit). `trigger_deploy` is only a fallback.
 
 **Session 2: Phase 0 built and deployed.** Repo public at
 `adylagad/baseland`. Engine live at `baseland-engine.onrender.com`. The demo
