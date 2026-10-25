@@ -484,7 +484,17 @@ export class PlayRuntime {
     if (intent.side === "BUY" && cur.spec.exit && ledger.entryPrice !== null) {
       const { takeProfit, stopLoss } = exitPrices(cur.spec.exit, ledger.entryPrice);
       const exits = [takeProfit && `TP ${money(takeProfit)}`, stopLoss && `SL ${money(stopLoss)}`].filter(Boolean).join(", ");
-      if (!gateway.simulated) return this.finish(cur, "done", `${bought} Exits held by Coinbase (${exits}).`, 0);
+      if (!gateway.simulated) {
+        // The prices Coinbase holds are the ones sent with the order (priced
+        // from the preview), not ones recomputed from the fill.
+        const sent = (await this.d.store.tape(cur.id)).filter((t) => t.kind === "order" && t.payload.stage === "submitting").at(-1)
+          ?.payload.request as { attachedTakeProfitPrice?: string; attachedStopLossPrice?: string } | undefined;
+        const held = [
+          sent?.attachedTakeProfitPrice && `TP ${money(Number(sent.attachedTakeProfitPrice))}`,
+          sent?.attachedStopLossPrice && `SL ${money(Number(sent.attachedStopLossPrice))}`,
+        ].filter(Boolean).join(", ");
+        return this.finish(cur, "done", `${bought} Exits held by Coinbase (${held || exits}).`, 0);
+      }
       const next = await this.transition(cur, "watching", {}, { phase: "exit", progress: 0, pnlUsd: 0, headline: `${bought} Watching ${exits}.` });
       this.watch(next);
       return next;
@@ -592,6 +602,9 @@ export class PlayRuntime {
         }),
       // Same Play, same Sense, same count of earlier purchases → same key, so a
       // retry after a crash reuses it instead of paying twice.
+      failed: async (senseId, error) => {
+        await this.tape(p, "error", { stage: "evidence", senseId, error: error.slice(0, 300) });
+      },
       keyFor: async (senseId) => {
         const n = (await this.d.store.tape(p.id)).filter((t) => t.kind === "evidence" && t.payload.senseId === senseId).length;
         return deterministicKey("x402", p.id, senseId, String(n));
