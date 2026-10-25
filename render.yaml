@@ -1,0 +1,25 @@
+# Render blueprint for the engine. Secrets are set in the dashboard (sync: false).
+services:
+  - type: web
+    name: baseland-engine
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./apps/engine/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - apps/engine/**
+        - packages/**
+        - pnpm-lock.yaml
+    envVars:
+      - key: SUPABASE_URL
+        value: https://vxapuqgqvecokhmfmnjl.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: CREDENTIALS_SECRET
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
