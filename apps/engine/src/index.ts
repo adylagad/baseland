@@ -6,7 +6,7 @@ import { CoinbaseTickerFeed } from "./market/feed.js";
 import { ClaudeBrain } from "./brain/claude.js";
 import { supabaseDeckStore } from "./brain/deck-store.js";
 import { Drafter } from "./brain/drafter.js";
-import { GhostEvidence } from "./brain/evidence.js";
+import { GhostEvidence, X402Evidence } from "./brain/evidence.js";
 import { FallbackBrain, RuleBrain, type Brain } from "./plays/brain.js";
 import { supabaseRigStore } from "./rig/store.js";
 import { PlayRuntime } from "./plays/runtime.js";
@@ -49,7 +49,8 @@ const claudeBrain = (model: string, effort: "low" | "medium" | "high"): Brain =>
 };
 const brain: Brain = claudeBrain(config.BRAIN_MODEL, config.BRAIN_EFFORT);
 const rigs = supabaseRigStore(db);
-// Evidence is simulated (the user's choice until the portfolio is funded).
+// Ghost Plays always simulate evidence. Live Plays pay over x402 from the
+// user's own key only when X402_EVIDENCE_ENABLED is on.
 const evidence = new GhostEvidence();
 const plays = supabasePlayStore(db);
 
@@ -60,7 +61,12 @@ const runtime = new PlayRuntime({
   brain,
   rigFor: (userId) => rigs.get(userId),
   brainFor: (rig) => claudeBrain(rig.brain.model, rig.brain.effort),
-  evidenceFor: async () => evidence,
+  async evidenceFor(play) {
+    if (play.mode !== "live" || !config.X402_EVIDENCE_ENABLED) return evidence;
+    const cred = await credentials.get(play.userId);
+    if (!cred) return evidence;
+    return new X402Evidence(run, { keyId: cred.keyId, secret: decryptSecret(cred.secretCiphertext, config.CREDENTIALS_SECRET) });
+  },
   limits: { liveTradingEnabled: config.LIVE_TRADING_ENABLED, hardMaxOrderUsd: config.LIVE_MAX_ORDER_USD },
   hasLiveAccess: async (userId) => (await credentials.get(userId)) !== null,
   async gatewayFor(play) {
@@ -112,7 +118,7 @@ const app = buildServer(
 
 log = app.log;
 app.log.info(
-  { liveTradingEnabled: config.LIVE_TRADING_ENABLED, liveMaxOrderUsd: config.LIVE_MAX_ORDER_USD, brain: brain.name, evidence: "ghost" },
+  { liveTradingEnabled: config.LIVE_TRADING_ENABLED, liveMaxOrderUsd: config.LIVE_MAX_ORDER_USD, brain: brain.name, x402Evidence: config.X402_EVIDENCE_ENABLED },
   "engine config",
 );
 

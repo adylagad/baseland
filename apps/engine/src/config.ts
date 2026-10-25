@@ -16,6 +16,12 @@ const Env = z.object({
     .enum(["true", "false"])
     .default("false")
     .transform((v) => v === "true"),
+  // Real x402 payments for live Plays' evidence (Ghost Plays always simulate).
+  // Off unless set to "true"; the user switches it on with live trading.
+  X402_EVIDENCE_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
   // Ceiling on any single live order, whatever a cartridge says.
   LIVE_MAX_ORDER_USD: z.coerce.number().positive().max(100).default(10),
   // The Brain. Without a key the engine runs on the rules Brain alone.

@@ -11,7 +11,7 @@ import {
 import type { PriceFeed, Tick } from "../market/feed.js";
 import type { MarketData } from "../market/public.js";
 import type { OrderRequest, OrderStatus, TradingGateway } from "../trading/gateway.js";
-import type { EvidenceProvider } from "../brain/evidence.js";
+import { deterministicKey, type EvidenceProvider } from "../brain/evidence.js";
 import type { Brain, EvidenceHandle } from "./brain.js";
 import { checkOrder, type OrderIntent } from "./leash.js";
 import { ledgerOf, unrealizedPnlUsd, type FillPayload } from "./ledger.js";
@@ -590,6 +590,12 @@ export class PlayRuntime {
           payload: { senseId: r.senseId, provider: r.provider, query: r.query, costUsdc: r.costUsdc, simulated: r.simulated, excerpt: r.content.slice(0, 400) },
           idempotencyKey: `ev-${r.idempotencyKey}`,
         }),
+      // Same Play, same Sense, same count of earlier purchases → same key, so a
+      // retry after a crash reuses it instead of paying twice.
+      keyFor: async (senseId) => {
+        const n = (await this.d.store.tape(p.id)).filter((t) => t.kind === "evidence" && t.payload.senseId === senseId).length;
+        return deterministicKey("x402", p.id, senseId, String(n));
+      },
     };
   }
 

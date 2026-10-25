@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import type { CliRunner, CoinbaseKey } from "../coinbase/cli.js";
 import type { Sense } from "./senses.js";
 
@@ -20,15 +20,29 @@ export interface EvidenceReceipt {
   idempotencyKey: string;
 }
 
+export interface EvidenceOptions {
+  maxUsdc: number;
+  /** Persisted or re-derivable, so a retry after an unknown outcome reuses it. */
+  idempotencyKey?: string;
+  /** The Play's product, for Senses whose input names an asset. */
+  product?: string;
+}
+
 export interface EvidenceProvider {
   readonly simulated: boolean;
-  fetch(sense: Sense, query: string, opts: { maxUsdc: number; idempotencyKey?: string }): Promise<EvidenceReceipt>;
+  fetch(sense: Sense, query: string, opts: EvidenceOptions): Promise<EvidenceReceipt>;
+}
+
+/** A UUID-shaped key that is the same every time for the same parts. */
+export function deterministicKey(...parts: string[]): string {
+  const h = createHash("sha256").update(parts.join("|")).digest("hex");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
 }
 
 export class GhostEvidence implements EvidenceProvider {
   readonly simulated = true;
 
-  async fetch(sense: Sense, query: string, opts: { maxUsdc: number; idempotencyKey?: string }): Promise<EvidenceReceipt> {
+  async fetch(sense: Sense, query: string, opts: EvidenceOptions): Promise<EvidenceReceipt> {
     if (sense.priceUsdc > opts.maxUsdc + 1e-9) throw new Error(`${sense.label} costs $${sense.priceUsdc}, over the remaining budget`);
     return {
       senseId: sense.id,
@@ -53,15 +67,20 @@ export class X402Evidence implements EvidenceProvider {
     private readonly key: CoinbaseKey,
   ) {}
 
-  async fetch(sense: Sense, query: string, opts: { maxUsdc: number; idempotencyKey?: string }): Promise<EvidenceReceipt> {
+  async fetch(sense: Sense, query: string, opts: EvidenceOptions): Promise<EvidenceReceipt> {
     if (sense.priceUsdc > opts.maxUsdc + 1e-9) throw new Error(`${sense.label} costs $${sense.priceUsdc}, over the remaining budget`);
-    const idempotencyKey = opts.idempotencyKey ?? randomUUID();
+    const input = sense.input ? sense.input(opts.product ?? "", query) : { query };
+    if (!input) throw new Error(`${sense.label} has no data for ${opts.product ?? "this asset"}`);
+    // Hard rule 3: the key must survive a restart, so the caller derives it.
+    if (!opts.idempotencyKey) throw new Error("a real x402 payment needs a persisted idempotency key");
+    const idempotencyKey = opts.idempotencyKey;
+    // max_amount never exceeds the catalog price or the Play's remaining budget.
     const maxAtomic = Math.floor(Math.min(opts.maxUsdc, sense.priceUsdc) * 1_000_000);
     const raw = await this.run(
       [
         "x402", "fetch",
         `resource=${sense.resource}`,
-        `input:=${JSON.stringify({ query })}`,
+        `input:=${JSON.stringify(input)}`,
         `max_amount=${maxAtomic}`,
         `idempotency_key=${idempotencyKey}`,
       ],

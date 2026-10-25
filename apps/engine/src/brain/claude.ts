@@ -136,7 +136,11 @@ export class ClaudeBrain implements Brain {
         if (!s) return `Unknown or disallowed source. Choose from: ${allowed.map((x) => x.id).join(", ")}.`;
         const remaining = ev.remainingUsdc - spent();
         if (s.priceUsdc > remaining + 1e-9) return `Over budget: ${s.id} costs $${s.priceUsdc}, $${remaining.toFixed(3)} left. Decide without it.`;
-        const receipt = await ev.provider.fetch(s, query, { maxUsdc: remaining });
+        const receipt = await ev.provider.fetch(s, query, {
+          maxUsdc: remaining,
+          product: ctx.spec.action.product,
+          idempotencyKey: await ev.keyFor?.(s.id),
+        });
         add(receipt.costUsdc);
         await ev.record(receipt);
         return receipt.content;

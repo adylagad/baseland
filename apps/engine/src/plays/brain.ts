@@ -30,6 +30,8 @@ export interface EvidenceHandle {
   remainingUsdc: number;
   /** Writes the receipt to the Tape. Called once per purchase. */
   record(receipt: EvidenceReceipt): Promise<void>;
+  /** The idempotency key for the next purchase from this Sense, re-derivable from the Tape. */
+  keyFor?(senseId: string): Promise<string>;
 }
 
 export interface Decision {
