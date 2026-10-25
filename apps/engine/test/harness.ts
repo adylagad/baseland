@@ -1,3 +1,4 @@
+import { Rig } from "@baseland/play-schema";
 import { ManualFeed } from "../src/market/feed.js";
 import type { MarketData } from "../src/market/public.js";
 import { RuleBrain, type Brain } from "../src/plays/brain.js";
@@ -15,6 +16,7 @@ export function harness(opts: {
   liveTradingEnabled?: boolean;
   hasLiveAccess?: boolean;
   ghostStartingUsd?: number;
+  rig?: unknown;
 } = {}) {
   let now = Date.parse("2026-10-25T18:00:00Z");
   const clock = {
@@ -40,6 +42,7 @@ export function harness(opts: {
     limits: { liveTradingEnabled: opts.liveTradingEnabled ?? false, hardMaxOrderUsd: 10 },
     hasLiveAccess: async () => opts.hasLiveAccess ?? false,
     gatewayFor: async (p) => (p.mode === "ghost" ? ghost : (opts.live ?? ghost)),
+    rigFor: async () => Rig.parse(opts.rig ?? {}),
     clock: clock.now,
     statusEveryMs: 0,
     pollMs: 1,

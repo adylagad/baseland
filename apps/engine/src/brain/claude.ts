@@ -92,7 +92,7 @@ export class ClaudeBrain implements Brain {
       `What fired: ${ctx.triggerSummary}${ctx.price !== null ? ` at ${ctx.price}` : ""}.`,
       a.side === "BUY" ? `Proposed action: buy $${a.quoteUsd} of ${symbolOf(a.product)} (${a.product}).` : `Proposed action: sell ${a.baseSize} ${symbolOf(a.product)} (${a.product}).`,
       spec.exit ? `Exits if bought: ${spec.exit.takeProfitPct ? `take profit +${spec.exit.takeProfitPct}%` : ""}${spec.exit.takeProfitPct && spec.exit.stopLossPct ? ", " : ""}${spec.exit.stopLossPct ? `stop loss -${spec.exit.stopLossPct}%` : ""}.` : "No exits set.",
-      `Instinct: ${INSTINCT_TEXT[(spec.decision.instinct as Instinct) in INSTINCT_TEXT ? (spec.decision.instinct as Instinct) : "steady"]}`,
+      `Instinct: ${ctx.instinctText ?? INSTINCT_TEXT[(spec.decision.instinct as Instinct) in INSTINCT_TEXT ? (spec.decision.instinct as Instinct) : "steady"]}`,
       ctx.evidence?.senses.length ? `Evidence budget left: $${ctx.evidence.remainingUsdc.toFixed(3)} USDC.` : "No evidence budget: decide from market context.",
     ].join("\n");
 

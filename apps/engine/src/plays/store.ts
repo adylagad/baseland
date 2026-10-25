@@ -103,6 +103,8 @@ export interface PlayStore {
   tape(playId: string): Promise<TapeRow[]>;
   /** Ghost cash: the profile's starting amount, minus/plus every Ghost fill. */
   ghostCashUsd(userId: string): Promise<number>;
+  /** Every fill this user has, Ghost or live. */
+  fillsForUser(userId: string, simulated: boolean): Promise<FillPayload[]>;
 }
 
 export const fillsOf = (tape: TapeRow[]): FillPayload[] =>
@@ -162,6 +164,9 @@ export function memoryPlayStore(opts: { ghostStartingUsd?: number } = {}) {
     async ghostCashUsd(userId) {
       const fills = fillsOf(tape.filter((t) => t.userId === userId && t.simulated));
       return cashAfterFills(opts.ghostStartingUsd ?? 100, fills);
+    },
+    async fillsForUser(userId, simulated) {
+      return fillsOf(tape.filter((t) => t.userId === userId && t.simulated === simulated));
     },
   };
   return store;
@@ -294,6 +299,11 @@ export function supabasePlayStore(db: SupabaseClient): PlayStore {
       if (fe) throw fail("read ghost fills", fe);
       const starting = Number(profile?.ghost_starting_usd ?? 100);
       return cashAfterFills(starting, (fills ?? []).map((f) => f.payload as FillPayload));
+    },
+    async fillsForUser(userId, simulated) {
+      const { data, error } = await db.from("tape").select("payload").eq("user_id", userId).eq("simulated", simulated).eq("kind", "fill").order("id");
+      if (error) throw fail("read fills", error);
+      return (data ?? []).map((f) => f.payload as FillPayload);
     },
   };
 }

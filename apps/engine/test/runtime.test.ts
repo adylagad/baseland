@@ -333,7 +333,8 @@ describe("live mode guards", () => {
 
   it("enforces the engine's live ceiling even if a cartridge allows more", async () => {
     const live = fakeLive({ preview: true });
-    const h = harness({ liveTradingEnabled: true, hasLiveAccess: true, live: live.gw });
+    // A permissive Rig, so the engine's ceiling is what stops it.
+    const h = harness({ liveTradingEnabled: true, hasLiveAccess: true, live: live.gw, rig: { leash: { maxOrderUsd: 100, maxPlayUsd: 100 } } });
     await h.price("ETH-USDC", 2000);
     const c = { ...clone(examples.ethNow), action: { side: "BUY", product: "ETH-USDC", quoteUsd: 20 }, leash: { maxOrderUsd: 20, maxPlayUsd: 20 } } as CartridgeInput;
     const play = await h.create(ALICE, c, "live");

@@ -1,6 +1,8 @@
 import {
   Cartridge,
+  defaultRig,
   isTerminal,
+  type Rig,
   symbolOf,
   watchedProduct,
   type Mode,
@@ -52,6 +54,10 @@ export interface RuntimeDeps {
   market: MarketData;
   brain: Brain;
   gatewayFor(play: PlayRecord): Promise<TradingGateway>;
+  /** The user's Rig, applied at decision time; absent = defaults. */
+  rigFor?(userId: string): Promise<Rig>;
+  /** The Brain a Rig asks for; absent = `brain` for everyone. */
+  brainFor?(rig: Rig): Brain;
   /** Where a Play's evidence purchases go; absent = Plays can't buy evidence. */
   evidenceFor?(play: PlayRecord): Promise<EvidenceProvider>;
   hasLiveAccess(userId: string): Promise<boolean>;
@@ -323,8 +329,11 @@ export class PlayRuntime {
 
     let decision;
     try {
-      const evidence = await this.evidenceHandle(cur);
-      decision = await this.d.brain.decide({ play: cur, spec: cur.spec, price, triggerSummary: summary, evidence });
+      const rig = await this.rig(cur.userId);
+      const brain = this.d.brainFor?.(rig) ?? this.d.brain;
+      const evidence = await this.evidenceHandle(cur, rig);
+      const instinctText = rig.instincts.overrides[cur.spec.decision.instinct as keyof Rig["instincts"]["overrides"]];
+      decision = await brain.decide({ play: cur, spec: cur.spec, price, triggerSummary: summary, evidence, instinctText });
     } catch (err) {
       await this.tape(cur, "error", { where: "brain", message: String(err) });
       return this.transition(cur, "failed", { stateReason: "The agent couldn't decide." }, { headline: "The agent couldn't decide." });
@@ -553,16 +562,22 @@ export class PlayRuntime {
   }
 
   /** The Play's evidence budget left, from the Tape, and a receipt writer. */
-  private async evidenceHandle(p: PlayRecord): Promise<EvidenceHandle | undefined> {
-    if (!this.d.evidenceFor || p.spec.evidence.senses.length === 0) return undefined;
-    const budget = Math.min(p.spec.evidence.budgetUsdc, p.spec.leash.maxEvidenceUsdc);
+  private async rig(userId: string): Promise<Rig> {
+    return (await this.d.rigFor?.(userId).catch(() => undefined)) ?? defaultRig();
+  }
+
+  private async evidenceHandle(p: PlayRecord, rig: Rig): Promise<EvidenceHandle | undefined> {
+    // Senses switched off in the Rig stop purchases even for running Plays.
+    const senses = p.spec.evidence.senses.filter((s) => rig.senses.enabled.includes(s));
+    if (!this.d.evidenceFor || senses.length === 0) return undefined;
+    const budget = Math.min(p.spec.evidence.budgetUsdc, p.spec.leash.maxEvidenceUsdc, rig.leash.maxEvidenceUsdc);
     const spent = (await this.d.store.tape(p.id)).filter((t) => t.kind === "evidence").reduce((s, t) => s + (t.costUsdc ?? 0), 0);
     const remainingUsdc = Math.max(0, Math.round((budget - spent) * 1e6) / 1e6);
     if (remainingUsdc <= 0) return undefined;
     const provider = await this.d.evidenceFor(p);
     return {
       provider,
-      senses: p.spec.evidence.senses,
+      senses,
       remainingUsdc,
       record: (r) =>
         this.d.store.appendTape({
@@ -579,8 +594,20 @@ export class PlayRuntime {
   }
 
   private async leash(p: PlayRecord, intent: OrderIntent) {
+    const rig = await this.rig(p.userId);
+    // Hands: the Rig's assets. Exits always pass, so a position can be closed.
+    if (intent.purpose === "entry" && !rig.hands.assets.includes(symbolOf(intent.product))) {
+      return { ok: false as const, reason: `${symbolOf(intent.product)} isn't in your Rig's Hands` };
+    }
+    // The Rig's Leash caps every Play's own.
+    const leash = {
+      ...p.spec.leash,
+      maxOrderUsd: Math.min(p.spec.leash.maxOrderUsd, rig.leash.maxOrderUsd),
+      maxPlayUsd: Math.min(p.spec.leash.maxPlayUsd, rig.leash.maxPlayUsd),
+      maxEvidenceUsdc: Math.min(p.spec.leash.maxEvidenceUsdc, rig.leash.maxEvidenceUsdc),
+    };
     const ledger = ledgerOf(fillsOf(await this.d.store.tape(p.id)));
-    return checkOrder(intent, p.spec.leash, {
+    return checkOrder(intent, leash, {
       playSpentUsd: ledger.spentUsd,
       playPositionBase: ledger.positionBase,
       hardMaxOrderUsd: p.mode === "live" ? this.d.limits.hardMaxOrderUsd : Number.POSITIVE_INFINITY,

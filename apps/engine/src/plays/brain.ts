@@ -18,6 +18,8 @@ export interface DecisionContext {
   triggerSummary: string;
   /** Evidence the Brain may buy for this decision; absent = none. */
   evidence?: EvidenceHandle;
+  /** The user's own wording for this Play's instinct (from the Rig). */
+  instinctText?: string;
 }
 
 export interface EvidenceHandle {
