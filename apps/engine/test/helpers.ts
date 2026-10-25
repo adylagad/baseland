@@ -51,6 +51,7 @@ export function testServer(run: CliRunner, store = memoryCredentialStore(), h = 
     market: fakeMarket,
     credentialsSecret: SECRET,
     runtime: h.runtime,
+    me: { plays: h.store, liveTradingEnabled: false },
   });
   return { app, store, h };
 }

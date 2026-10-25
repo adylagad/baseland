@@ -19,3 +19,11 @@ describe("health and market", () => {
     expect(bad.statusCode).toBe(400);
   });
 });
+
+describe("me", () => {
+  it("reports Ghost cash, connection and the live switch", async () => {
+    const res = await app.inject({ method: "GET", url: "/v1/me", headers: { authorization: "Bearer token-alice" } });
+    expect(res.json()).toEqual({ userId: "alice", ghostCashUsd: 100, coinbase: { connected: false }, liveTradingEnabled: false });
+    expect((await app.inject({ method: "GET", url: "/v1/me" })).statusCode).toBe(401);
+  });
+});

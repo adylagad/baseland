@@ -39,6 +39,11 @@ Tests never call Coinbase: the CLI is replaced by
 | GET | `/v1/plays/:id` | user | One Play plus its Tape |
 | POST | `/v1/plays/:id/{approve,skip,pause,resume,kill}` | user | Control a Play |
 | POST | `/v1/kill-all` | user | Stop every running Play of yours |
+| GET | `/v1/me` | user | Ghost cash, Coinbase connection, whether live trading is on |
+| GET | `/v1/deck` | user | Suggested Plays (`?refresh=1` to rewrite) |
+| POST | `/v1/deck/:id/{arm,skip}` | user | Arm a card (`{ mode?, cartridge? }`) or skip it |
+| POST | `/v1/plays/draft` | user | `{ text }` → `{ cartridge }` |
+| POST | `/v1/cartridges/preview` | user | Validate an edited cartridge and regenerate its sentence |
 
 "User" means `Authorization: Bearer <Supabase access token>`, verified with
 `getClaims`.

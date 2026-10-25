@@ -73,6 +73,7 @@ const app = buildServer(
           holdingsOf: async (userId) => `Ghost cash $${(await plays.ghostCashUsd(userId)).toFixed(2)}`,
         }
       : undefined,
+    me: { plays, liveTradingEnabled: config.LIVE_TRADING_ENABLED },
     credentialsSecret: config.CREDENTIALS_SECRET,
     version: process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? "dev",
   },
