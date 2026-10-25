@@ -197,6 +197,7 @@ struct RigView: View {
                 } else {
                     LabeledContent("Coinbase", value: "Not connected")
                 }
+                NavigationLink { HarnessView() } label: { Label("Claude Code", systemImage: "terminal") }
             } else {
                 ProgressView()
             }

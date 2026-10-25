@@ -53,6 +53,11 @@ TEST_RUNNER_SHOTS_DIR=/tmp/shots xcodebuild test -scheme Baseland \
   -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath build/dd
 ```
 
+`HarnessTests` (connect Claude Code, then a Play made through the Baseland MCP
+appears in the app and the Island) needs the MCP side running alongside, so
+it skips unless run through `scripts/harness-e2e.sh [shots dir]` from the
+repo root.
+
 Kit tests (Swift Testing, run on the simulator because ActivityKit is iOS-only):
 
 ```sh

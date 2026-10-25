@@ -113,6 +113,15 @@ struct Draft: Identifiable, Hashable, Sendable {
     var title: String { cartridge[path: "title"]?.string ?? "Play" }
 }
 
+/// Whether a harness (the Baseland MCP) can act for this user. `token` is
+/// present only in the response that minted it.
+struct HarnessLink: Codable, Sendable {
+    var connected: Bool
+    var createdAt: Date?
+    var lastUsedAt: Date?
+    var token: String?
+}
+
 enum JSONCoding {
     static func decoder(snakeCase: Bool = false) -> JSONDecoder {
         let d = JSONDecoder()

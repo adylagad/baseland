@@ -205,6 +205,77 @@ final class LockScreenApprovalTests: XCTestCase {
     }
 }
 
+/// Connect Claude Code: mint a harness token, copy the command, then wait for
+/// a Play created through the Baseland MCP to arrive. The run needs a driver
+/// outside the test: it reads the command with `xcrun simctl pbpaste` and has
+/// the MCP create a Ghost Play titled "From Claude Code". Run it with
+/// `scripts/harness-e2e.sh`, which sets TEST_RUNNER_HARNESS=1.
+final class HarnessTests: XCTestCase {
+    func testPlayFromClaudeCodeAppears() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["HARNESS"] == "1", "needs the MCP driver: scripts/harness-e2e.sh")
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-reset-session"]
+        app.launch()
+        app.buttons["Start in Ghost"].tap()
+
+        app.tabBars.buttons["Rig"].tap()
+        XCTAssertTrue(app.navigationBars["The Rig"].waitForExistence(timeout: 20))
+        let link = app.buttons["Claude Code"].firstMatch
+        for _ in 0..<10 where !(link.exists && link.isHittable) { app.swipeUp(velocity: .slow) }
+        link.tap()
+        app.buttons["Connect Claude Code"].tap()
+        let copy = app.buttons["Copy command"].firstMatch
+        XCTAssertTrue(copy.waitForExistence(timeout: 30), "no token was minted")
+        copy.tap()
+        shot("50-harness-connected")
+
+        // The driver now creates the Play through the MCP.
+        app.tabBars.buttons["Plays"].tap()
+        let row = app.staticTexts["From Claude Code"].firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 240), "the MCP's Play never appeared")
+        _ = app.staticTexts["Your call"].firstMatch.waitForExistence(timeout: 60)
+        shot("51-plays-with-mcp-play")
+
+        XCUIDevice.shared.press(.home)
+        sleep(3)
+        shot("52-island-mcp-play")
+
+        // Back in: open the Claude Code screen again (the Rig tab usually kept
+        // it; it reloads when it reappears). It now shows the token was used.
+        app.activate()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
+        // A tap right after activate() can be dropped: retry until selected.
+        let rigTab = app.tabBars.buttons["Rig"]
+        for _ in 0..<5 where !rigTab.isSelected {
+            rigTab.tap()
+            sleep(1)
+        }
+        if !app.navigationBars["Claude Code"].waitForExistence(timeout: 5) {
+            for _ in 0..<10 where !(link.exists && link.isHittable) { app.swipeUp(velocity: .slow) }
+            link.tap()
+        }
+        // A LabeledContent row reads as one element ("Status, Connected").
+        let contains = { (s: String) in app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", s)).firstMatch }
+        XCTAssertTrue(contains("Last used").waitForExistence(timeout: 20))
+        sleep(2)
+        shot("53-harness-last-used")
+        XCTAssertTrue(contains("Connected").exists)
+        XCTAssertFalse(contains("Not yet").exists, "the token's use wasn't recorded")
+    }
+
+    private func shot(_ name: String) {
+        let png = XCUIScreen.main.screenshot().pngRepresentation
+        let a = XCTAttachment(data: png, uniformTypeIdentifier: "public.png")
+        a.name = name
+        a.lifetime = .keepAlways
+        add(a)
+        if let dir = ProcessInfo.processInfo.environment["SHOTS_DIR"] {
+            try? png.write(to: URL(fileURLWithPath: dir).appendingPathComponent("\(name).png"))
+        }
+    }
+}
+
 /// The Rig: change the Brain and a Sense, replay a card against real prices.
 final class RigTests: XCTestCase {
     func testRigEditsAndReplay() throws {

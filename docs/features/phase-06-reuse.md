@@ -5,6 +5,32 @@ Append only.
 
 ---
 
+## Connect Claude Code from the app
+
+**What it does:** **Rig → Account → Claude Code** shows whether a harness is
+connected and when its token was last used. **Connect Claude Code** (later
+**Make a new token**) mints a token through `POST /v1/harness` and shows the
+command `pnpm connect-claude bl_…` once. **The token is masked on screen**
+(`bl_••••••••` plus its last 4), so it never lands in a screenshot or a
+recording. **Copy command** and **Send to your Mac** (share sheet) carry the
+real one. **Disconnect** revokes it. Minting again revokes the previous token.
+
+**Where:** `apps/ios/App/Views/HarnessView.swift`, `EngineAPI.harness*`,
+engine `routes/harness.ts` (app only: a harness token gets 403 there).
+
+**Verified (2026-10-25), on the iPhone 17 simulator against the deployed
+engine:** `scripts/harness-e2e.sh` runs `HarnessTests`. The app mints a
+token and copies the command. The script reads it from the simulator
+clipboard (`simctl pbpaste`; never printed) and has the MCP create a Ghost
+Play. The app then shows it in Plays as **From Claude Code · GHOST · Your
+call**, in the **Dynamic Island** (`ETH $2.00?`), and the Claude Code screen
+reads **Last used: 14 seconds ago**. Passed twice in a row after fixing the
+test (see code traps). The test skips unless `TEST_RUNNER_HARNESS=1`.
+`RigTests` still passes.
+
+**Not verified:** on a device; "Send to your Mac" (the share sheet) wasn't
+driven by a test.
+
 ## Baseland MCP server and Claude Code skill
 
 **What it does:** `packages/mcp` is a stdio MCP server that gives any harness

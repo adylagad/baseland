@@ -36,6 +36,7 @@ index below.
 
 | Feature | Latest record | Status |
 | --- | --- | --- |
+| Connect Claude Code from the app (masked token) | [phase-06](./features/phase-06-reuse.md#connect-claude-code-from-the-app) | Shipped (simulator e2e) |
 | Baseland MCP server + Claude Code skill (harness tokens) | [phase-06](./features/phase-06-reuse.md#baseland-mcp-server-and-claude-code-skill) | Shipped (Claude Code verified) |
 | The Rig (Brain, Senses, Instincts, Hands, Leash) | [phase-05](./features/phase-05-rig.md#the-rig-a-plug-and-play-agent) | Shipped |
 | Replay against real past prices | [phase-05](./features/phase-05-rig.md#replay-a-play-against-real-past-prices) | Shipped (crypto buys) |

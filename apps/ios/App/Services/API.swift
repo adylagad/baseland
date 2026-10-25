@@ -32,6 +32,15 @@ struct EngineAPI: Sendable {
         let _: JSONValue = try await send("DELETE", "/v1/credentials")
     }
 
+    // MARK: Harness (the Baseland MCP in Claude Code)
+
+    func harness() async throws -> HarnessLink { try await send("GET", "/v1/harness") }
+
+    /// Mints a token, returned only this once. Replaces any earlier one.
+    func mintHarnessToken() async throws -> HarnessLink { try await send("POST", "/v1/harness") }
+
+    func disconnectHarness() async throws -> HarnessLink { try await send("DELETE", "/v1/harness") }
+
     // MARK: Plays
 
     func plays() async throws -> [Play] {
