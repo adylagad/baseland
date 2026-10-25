@@ -8,6 +8,12 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-25 — [context](./context/2026-10-25.md)
 
+**Session 3: Figma track artifacts.** Editable product screens, a tested
+prototype, and an eight-slide workflow deck are shared from the team's Edu
+account. The live prototype is embedded in Slides with a direct link. The
+demo video is still open: a simulator attempt found an empty Deck despite a
+healthy engine and a successful authenticated Deck API check.
+
 **Session 2: SpacetimeDB core on `feature/spacetime-core`.** Transactional
 private Plays/Tape, a public Ghost Arena projection, authenticated iPhone
 event relay, and a guarded import script. The module is published on
