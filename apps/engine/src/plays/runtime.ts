@@ -122,7 +122,7 @@ export class PlayRuntime {
         return this.lock(id, async () => {
           this.tickQueued.delete(id);
           await this.tickOne(id);
-        }).catch((err) => this.log.error({ playId: id, err: String(err) }, "tick failed"));
+        }).catch((err) => this.onFailure(id, "tick failed", err));
       }),
     );
   }
@@ -576,9 +576,7 @@ export class PlayRuntime {
     const product = p.status.phase === "exit" ? p.spec.action.product : watchedProduct(p.spec);
     if (!product) return;
     const unsub = this.d.feed.subscribe(product, (tick) =>
-      void this.lock(p.id, () => this.onPrice(p.id, tick)).catch((err) =>
-        this.log.error({ playId: p.id, err: String(err) }, "price handling failed"),
-      ),
+      void this.lock(p.id, () => this.onPrice(p.id, tick)).catch((err) => this.onFailure(p.id, "price handling failed", err)),
     );
     this.watchers.set(p.id, unsub);
   }
@@ -601,6 +599,21 @@ export class PlayRuntime {
   private owned(userId: string, p: PlayRecord) {
     if (p.userId !== userId) throw new PlayError(404, "No such Play.");
     return p;
+  }
+
+  /**
+   * Logs a background failure, and forgets the Play if its row is gone
+   * (e.g. its user was deleted), so it doesn't fail again every second.
+   */
+  private async onFailure(id: string, what: string, err: unknown) {
+    const gone = await this.d.store.get(id).then((p) => p === null, () => false);
+    if (gone) {
+      this.active.delete(id);
+      this.unwatch(id);
+      this.log.warn({ playId: id }, "play no longer exists; forgotten");
+      return;
+    }
+    this.log.error({ playId: id, err: String(err) }, what);
   }
 
   private lock<T>(id: string, fn: () => Promise<T>): Promise<T> {

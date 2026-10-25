@@ -319,6 +319,27 @@ describe("live mode guards", () => {
   });
 });
 
+describe("robustness", () => {
+  it("forgets a Play whose row disappeared instead of failing every tick", async () => {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    const h = harness();
+    h.deps.log = { info() {}, warn: (_o, m) => void warnings.push(m), error: (_o, m) => void errors.push(m) };
+    const { PlayRuntime } = await import("../src/plays/runtime.js");
+    const rt = new PlayRuntime(h.deps);
+    await h.price("ETH-USDC", 2000);
+    const play = await rt.create(ALICE, examples.ethNow, "ghost");
+    h.store.plays.delete(play.id); // as if the user was deleted
+    h.clock.advance(31 * 60_000); // past the window: tick tries to expire it
+    await rt.tick();
+    await settle();
+    await rt.tick();
+    await settle();
+    expect(warnings).toEqual(["play no longer exists; forgotten"]);
+    expect(errors).toEqual([]);
+  });
+});
+
 describe("restarts", () => {
   it("re-arms watching Plays from the store", async () => {
     const h = harness();
