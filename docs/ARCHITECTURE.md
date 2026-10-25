@@ -3,11 +3,12 @@
 How Baseland is put together, why, and what it cannot do. This is also the
 basis of the "Architecture" section of the hackathon submission.
 
-Status: **Phases 0–3 and 5 built** (2026-10-24): engine (Play runtime, Claude
-Brain with simulated x402 evidence, drafting, Deck, Rig, Replay) deployed to
-Render by CI; iPhone app verified in the simulator, including approval from
-the Dynamic Island and the lock screen. Phase 4 (real money) and Phase 6
-(MCP, submission) remain. Where this file and the code disagree, the code
+Status: **Phases 0–3 and 5 built, Phase 6 under way** (2026-10-25): engine
+(Play runtime, Claude Brain with simulated x402 evidence, drafting, Deck,
+Rig, Replay) deployed to Render by CI; iPhone app verified in the simulator,
+including approval from the Dynamic Island and the lock screen; the Baseland
+MCP and Claude Code skill. Phase 4 (real money) and the rest of the
+submission remain. Where this file and the code disagree, the code
 wins and this file is wrong — report it.
 
 ---
@@ -43,8 +44,8 @@ wins and this file is wrong — report it.
    Realtime): plays, tape,       + x402 catalog (USDC on Base)
    rig, encrypted credentials
 
-Baseland MCP (stdio, packages/mcp) ──► Engine API
-  so Claude Code / other harnesses can create and replay Plays
+Baseland MCP (stdio, packages/mcp) ──► Engine API (harness token)
+  so Claude Code / other harnesses can create, replay and stop Ghost Plays
 ```
 
 ## Key decisions and why
@@ -150,6 +151,22 @@ It shares the trigger and exit math with the live runtime (`triggers.ts`)
 but never touches the store or a gateway, and every result is labelled
 simulated.
 
+### Harnesses get a narrow token, never the app's session
+The Baseland MCP must act as the phone's user, so that a Play created in
+Claude Code appears on that user's Island. It doesn't reuse the app's
+Supabase session: a refresh token rotates and would give a harness
+everything the app can do. Instead the app mints a **harness token**
+(`POST /v1/harness`, `bl_…`). It is shown once, masked on screen, and only
+its SHA-256 is stored (`harness_tokens`). There is one per user; minting
+again or Disconnect revokes it. In the engine it is **default deny**: a
+`bl_` token opens only routes marked `config: { harness: true }` (create,
+read, pause / resume / skip / kill, kill all, draft, preview, replay,
+`/v1/me`) and gets 403 everywhere else. It can create **Ghost Plays only**
+and can **never approve**, so a harness can author and stop Plays but cannot
+spend money: the person holding the phone approves. Without a token, the MCP
+signs in anonymously with the public key, which gives a private Ghost
+account for trying Baseland without the app.
+
 ## Data model (Supabase)
 
 | Table | Holds | Client access |
@@ -159,6 +176,7 @@ simulated.
 | `plays` | sentence chips, cartridge spec, mode, state, window, leash snapshot | owner read; writes via engine |
 | `tape` | per-Play events: observe, evidence (+cost), decision, approval, order, fill, error, state; `simulated` flag | owner read |
 | `deck_cards` | suggested Plays not yet armed | owner read |
+| `harness_tokens` | SHA-256 of the user's harness token, created / last used | **none** (engine only, service role) |
 
 Realtime is enabled on `plays` and `tape`, filtered by owner via RLS.
 
