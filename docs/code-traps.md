@@ -115,3 +115,33 @@ affected if this parser is removed.
 `...?ref=...` and Render answered 404. Append with `&` when the URL contains
 `?` (the workflow does this now). Never print the hook in logs or chat; it's
 a credential.
+
+### A vertical-axis `TextField` never calls `onSubmit`
+**Bit 2026-10-24.** The composer used `TextField(..., axis: .vertical)`;
+Return inserted a newline and `onSubmit` never fired, so typed Plays were
+never drafted (caught by the UI test). Use a single-line `TextField` when
+Return must submit.
+
+### `@Observable` classes can't have `lazy` properties
+**Bit 2026-10-24.** `private(set) lazy var api = ...` in `AppModel` broke
+the Observation macro ("init accessor cannot refer to property '_api'").
+Build it in `init` as a `let`.
+
+### In XCUITest on iOS 26, List rows aren't `cells`
+**Bit 2026-10-24.** `app.cells.firstMatch.tap()` found nothing to navigate
+in the Plays list; tap the row's text (`app.staticTexts["Buy ETH now"]`).
+
+### App Intents that must use the app's session: make them LiveActivityIntents
+**Pattern, 2026-10-24.** A widget or control button runs its intent in the
+extension by default, where the app's Supabase session isn't available
+(sharing it needs an App Group, which a free Apple ID may not allow).
+`LiveActivityIntent` intents always run in the app's process. All of
+Baseland's intents (Island buttons, Control Center, Siri) use this; the app
+sets `IntentBridge.handler` at launch. Verified by the Island-approval UI
+test.
+
+### Render's deploy hook can answer 500
+**Seen 2026-10-24**, right after a previous deploy: the CI deploy step failed,
+and `/v1/me` didn't go live until the job was re-run. The workflow now
+retries 4 times with growing waits. If `/health` doesn't show the pushed
+commit, check the run.

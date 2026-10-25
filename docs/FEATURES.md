@@ -36,6 +36,12 @@ index below.
 
 | Feature | Latest record | Status |
 | --- | --- | --- |
+| Approve from the Dynamic Island / lock screen | [phase-03](./features/phase-03-island.md#approve-from-the-dynamic-island-and-the-lock-screen) | Shipped (simulator) |
+| Kill switch: app, Control Center, Siri | [phase-03](./features/phase-03-island.md#kill-switch-in-the-app-control-center-siri) | Shipped (app verified; CC/Siri unverified) |
+| The Deck: swipe to arm, chips, composer | [phase-03](./features/phase-03-island.md#the-deck-swipe-to-arm) | Shipped (voice unverified) |
+| Plays and the Tape (app) | [phase-03](./features/phase-03-island.md#plays-and-the-tape) | Shipped |
+| Live Activity driven by the engine | [phase-03](./features/phase-03-island.md#live-activity-driven-by-the-engine) | Shipped (simulator) |
+| Onboarding and session | [phase-03](./features/phase-03-island.md#onboarding-and-session) | Shipped |
 | Claude decides at the trigger (+ rules fallback, wait cooldown) | [phase-02](./features/phase-02-the-agent.md#claude-decides-at-the-trigger-with-a-rules-fallback) | Shipped |
 | Evidence: Senses, budgets, receipts | [phase-02](./features/phase-02-the-agent.md#evidence-senses-budgets-receipts-simulated-for-now) | Shipped (simulated by choice) |
 | Drafting Plays from words; chip preview | [phase-02](./features/phase-02-the-agent.md#drafting-plays-from-words) | Shipped (crypto) |
@@ -55,6 +61,7 @@ index below.
 
 | Phase | Record |
 | --- | --- |
+| 03 Island (iPhone app) | [phase-03-island.md](./features/phase-03-island.md) |
 | 02 The agent | [phase-02-the-agent.md](./features/phase-02-the-agent.md) |
 | 01 Engine core | [phase-01-engine-core.md](./features/phase-01-engine-core.md) |
 | 00 Foundations | [phase-00-foundations.md](./features/phase-00-foundations.md) |

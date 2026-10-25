@@ -70,17 +70,17 @@ approval, fills, writes a full Tape. Tests green.
 
 ## Phase 3 — iOS Basic ("Island")
 
-- [ ] Design tokens (`Theme.swift`) and core components: Play card, chip,
+- [x] Design tokens (`Theme.swift`) and core components: Play card, chip,
       stage dot, GHOST treatment.
-- [ ] Onboarding: Ghost (no key) or Connect Coinbase (paste/scan key).
-- [ ] Supabase auth (anonymous or email OTP — no Sign in with Apple without a
+- [x] Onboarding: Ghost (no key) or Connect Coinbase (paste/scan key).
+- [x] Supabase auth (anonymous or email OTP — no Sign in with Apple without a
       paid account).
-- [ ] Play Deck with swipe to arm / skip.
+- [x] Play Deck with swipe to arm / skip.
 - [ ] Chip-sentence editor + voice input → parser.
-- [ ] Play detail with the Tape and receipts.
+- [x] Play detail with the Tape and receipts.
 - [ ] Live Activity: lock screen, compact, minimal, expanded; driven by
       Realtime; background keep-alive while a Play is live.
-- [ ] `LiveActivityIntent`s: Approve / Skip / Pause from the Island, with the
+- [x] `LiveActivityIntent`s: Approve / Skip / Pause from the Island, with the
       approval-threshold rule.
 - [ ] Kill switch: in-app, Control Center control, Siri App Shortcut.
 

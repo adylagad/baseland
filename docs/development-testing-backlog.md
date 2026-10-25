@@ -138,3 +138,36 @@ blocks on the decision; the Deck and drafting UI need visible progress.
 ### Stock Plays — Known gap
 No stock price source while the market is closed (Coinbase returns none).
 Drafting refuses stocks, and the Deck is crypto-only.
+
+## Phase 3 (the iPhone app)
+
+### Verified in the simulator 2026-10-24
+Both XCUITests pass against the deployed engine: the words → Deck → swipe →
+Island → approve-in-app → Tape flow, and **approving from the expanded
+Dynamic Island via SpringBoard**, which filled the Play with the app in the
+background.
+
+### On a real iPhone — Unknown (the Phase 3 exit check)
+Not run on a device yet: install with a free Apple ID, Island buttons with
+the app suspended or killed, the keep-alive holding Realtime on a locked
+phone for an hour, Live Activity update throttling, and Face ID above $25.
+
+### Control Center control and Siri phrase — Likely fine, unverified
+Built (`KillSwitchControl`, `BaselandShortcuts`); both run the same
+LiveActivityIntent as the Island buttons, which is verified. Needs a device
+or manual simulator check.
+
+### Voice input — Unknown
+Hold-to-talk uses SFSpeechRecognizer on device. The simulator has no useful
+microphone; needs a device.
+
+### A deleted user's JWT works until it expires — Known, acceptable
+The engine verifies Supabase JWTs locally (`getClaims`), so a token for a
+user deleted from `auth.users` keeps passing auth for up to an hour.
+Writes then fail on the foreign key. The app returns to onboarding on a 401.
+Matters only for test cleanup today.
+
+### Ghost cash in the header after a fill — Likely fine
+The app refetches `/v1/me` when a `fill` or `state` Tape row arrives over
+Realtime. The UI test screenshots were taken before a fill reached the
+header; not explicitly checked.
