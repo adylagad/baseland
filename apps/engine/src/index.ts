@@ -8,6 +8,7 @@ import { supabaseDeckStore } from "./brain/deck-store.js";
 import { Drafter } from "./brain/drafter.js";
 import { GhostEvidence } from "./brain/evidence.js";
 import { FallbackBrain, RuleBrain, type Brain } from "./plays/brain.js";
+import { supabaseRigStore } from "./rig/store.js";
 import { PlayRuntime } from "./plays/runtime.js";
 import { supabasePlayStore } from "./plays/store.js";
 import { CoinbaseGateway, GhostGateway } from "./trading/gateway.js";
@@ -31,12 +32,22 @@ const ghost = new GhostGateway(market);
 let log: import("./plays/runtime.js").Logger = console as never;
 
 // Claude decides when there's a key; the rules Brain covers any failure, so a
-// bad network degrades a decision instead of failing the Play.
-const brain: Brain = config.ANTHROPIC_API_KEY
-  ? new FallbackBrain(new ClaudeBrain({ model: config.BRAIN_MODEL, effort: config.BRAIN_EFFORT }), new RuleBrain(), (err) =>
-      log.warn({ err: String(err) }, "Claude brain failed; used rules"),
-    )
-  : new RuleBrain();
+// bad network degrades a decision instead of failing the Play. Each user's
+// Rig picks the model and effort; Brains are cached per combination.
+const rules = new RuleBrain();
+const brains = new Map<string, Brain>();
+const claudeBrain = (model: string, effort: "low" | "medium" | "high"): Brain => {
+  if (!config.ANTHROPIC_API_KEY || model === "rules") return rules;
+  const key = `${model}/${effort}`;
+  let b = brains.get(key);
+  if (!b) {
+    b = new FallbackBrain(new ClaudeBrain({ model, effort }), rules, (err) => log.warn({ err: String(err), model }, "Claude brain failed; used rules"));
+    brains.set(key, b);
+  }
+  return b;
+};
+const brain: Brain = claudeBrain(config.BRAIN_MODEL, config.BRAIN_EFFORT);
+const rigs = supabaseRigStore(db);
 // Evidence is simulated (the user's choice until the portfolio is funded).
 const evidence = new GhostEvidence();
 const plays = supabasePlayStore(db);
@@ -46,6 +57,8 @@ const runtime = new PlayRuntime({
   feed: new CoinbaseTickerFeed({ log: { warn: (o, m) => log.warn(o, m) } }),
   market,
   brain,
+  rigFor: (userId) => rigs.get(userId),
+  brainFor: (rig) => claudeBrain(rig.brain.model, rig.brain.effort),
   evidenceFor: async () => evidence,
   limits: { liveTradingEnabled: config.LIVE_TRADING_ENABLED, hardMaxOrderUsd: config.LIVE_MAX_ORDER_USD },
   hasLiveAccess: async (userId) => (await credentials.get(userId)) !== null,
@@ -71,9 +84,19 @@ const app = buildServer(
           drafter: new Drafter({ model: config.DRAFT_MODEL, market }),
           deck: supabaseDeckStore(db),
           holdingsOf: async (userId) => `Ghost cash $${(await plays.ghostCashUsd(userId)).toFixed(2)}`,
+          rigFor: (userId) => rigs.get(userId),
         }
       : undefined,
     me: { plays, liveTradingEnabled: config.LIVE_TRADING_ENABLED },
+    rig: {
+      rigs,
+      plays,
+      async keyFor(userId) {
+        const cred = await credentials.get(userId);
+        if (!cred) return null;
+        return { key: { keyId: cred.keyId, secret: decryptSecret(cred.secretCiphertext, config.CREDENTIALS_SECRET) }, portfolioUuid: cred.portfolioUuid };
+      },
+    },
     credentialsSecret: config.CREDENTIALS_SECRET,
     version: process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? "dev",
   },

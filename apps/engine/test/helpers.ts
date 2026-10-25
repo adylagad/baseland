@@ -5,6 +5,7 @@ import { memoryCredentialStore } from "../src/credentials/store.js";
 import type { MarketData } from "../src/market/public.js";
 import { buildServer } from "../src/server.js";
 import { harness } from "./harness.js";
+import { memoryRigStore } from "../src/rig/store.js";
 import type { CandleSource } from "../src/replay.js";
 
 /** 48 hourly candles: flat at 100, a climb to 106 at hour 20, then a slide to 97. */
@@ -62,6 +63,7 @@ export function testServer(run: CliRunner, store = memoryCredentialStore(), h = 
     credentialsSecret: SECRET,
     runtime: h.runtime,
     me: { plays: h.store, liveTradingEnabled: false },
+    rig: { rigs: memoryRigStore(), plays: h.store, candles: syntheticCandles },
   });
   return { app, store, h };
 }

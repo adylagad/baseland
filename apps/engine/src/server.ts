@@ -8,6 +8,7 @@ import { marketRoutes } from "./routes/market.js";
 import { playRoutes } from "./routes/plays.js";
 import { deckRoutes, type DeckRouteDeps } from "./routes/deck.js";
 import { meRoutes } from "./routes/me.js";
+import { rigRoutes, type RigRouteDeps } from "./routes/rig.js";
 import type { PlayStore } from "./plays/store.js";
 import type { PlayRuntime } from "./plays/runtime.js";
 
@@ -20,6 +21,7 @@ export interface EngineDeps {
   runtime: PlayRuntime;
   words?: Omit<DeckRouteDeps, "auth" | "runtime">;
   me?: { plays: Pick<PlayStore, "ghostCashUsd">; liveTradingEnabled: boolean };
+  rig?: Omit<RigRouteDeps, "auth" | "credentials" | "run" | "market">;
   version?: string;
 }
 
@@ -66,6 +68,7 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
   playRoutes(app, { auth, runtime: deps.runtime });
   if (deps.words) deckRoutes(app, { auth, runtime: deps.runtime, ...deps.words });
   if (deps.me) meRoutes(app, { auth, credentials: deps.credentials, ...deps.me });
+  if (deps.rig) rigRoutes(app, { auth, credentials: deps.credentials, run: deps.run, market: deps.market, ...deps.rig });
 
   return app;
 }
