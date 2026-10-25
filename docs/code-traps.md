@@ -162,3 +162,16 @@ switch's right edge, and assert its `value`.
 **Bit 2026-10-24.** Screenshots meant to be dark came out light. Set
 `XCUIDevice.shared.appearance = .dark` inside the test
 (`TEST_RUNNER_APPEARANCE=dark` for `RigTests`).
+
+### A LabeledContent row is one element to XCUITest
+**Bit 2026-10-25.** `app.staticTexts["Connected"]` never matched on the
+Claude Code screen. `LabeledContent("Status", value: "Connected")` is
+exposed as a combined `"Status, Connected"` label (plus a bare `"Status"`).
+Match values with `label CONTAINS`.
+
+### A tap right after `app.activate()` can be dropped
+**Bit 2026-10-25**, in `HarnessTests`. After going home and back,
+`tabBars.buttons["Rig"].tap()` sometimes did nothing. A screenshot caught it
+once (still on Plays), and it likely explains earlier failures at the same
+step. Wait for `.runningForeground`, then tap until `isSelected` (2 of 2
+passes after).
