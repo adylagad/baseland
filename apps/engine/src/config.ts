@@ -18,8 +18,11 @@ const Env = z.object({
     .transform((v) => v === "true"),
   // Ceiling on any single live order, whatever a cartridge says.
   LIVE_MAX_ORDER_USD: z.coerce.number().positive().max(100).default(10),
-  // Needed from Phase 2 (the Brain); optional so the engine boots without it.
+  // The Brain. Without a key the engine runs on the rules Brain alone.
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  BRAIN_MODEL: z.string().default("claude-opus-5-5"),
+  BRAIN_EFFORT: z.enum(["low", "medium", "high"]).default("medium"),
+  DRAFT_MODEL: z.string().default("claude-opus-5-5"),
 });
 
 export type Config = z.infer<typeof Env>;

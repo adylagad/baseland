@@ -9,7 +9,8 @@ import {
 import type { PriceFeed, Tick } from "../market/feed.js";
 import type { MarketData } from "../market/public.js";
 import type { OrderRequest, OrderStatus, TradingGateway } from "../trading/gateway.js";
-import type { Brain } from "./brain.js";
+import type { EvidenceProvider } from "../brain/evidence.js";
+import type { Brain, EvidenceHandle } from "./brain.js";
 import { checkOrder, type OrderIntent } from "./leash.js";
 import { ledgerOf, unrealizedPnlUsd, type FillPayload } from "./ledger.js";
 import { assertTransition } from "./machine.js";
@@ -51,6 +52,8 @@ export interface RuntimeDeps {
   market: MarketData;
   brain: Brain;
   gatewayFor(play: PlayRecord): Promise<TradingGateway>;
+  /** Where a Play's evidence purchases go; absent = Plays can't buy evidence. */
+  evidenceFor?(play: PlayRecord): Promise<EvidenceProvider>;
   hasLiveAccess(userId: string): Promise<boolean>;
   limits: RuntimeLimits;
   clock?: () => number;
@@ -309,12 +312,14 @@ export class PlayRuntime {
 
     let decision;
     try {
-      decision = await this.d.brain.decide({ play: cur, spec: cur.spec, price, triggerSummary: summary });
+      const evidence = await this.evidenceHandle(cur);
+      decision = await this.d.brain.decide({ play: cur, spec: cur.spec, price, triggerSummary: summary, evidence });
     } catch (err) {
       await this.tape(cur, "error", { where: "brain", message: String(err) });
       return this.transition(cur, "failed", { stateReason: "The agent couldn't decide." }, { headline: "The agent couldn't decide." });
     }
-    await this.tape(cur, "decision", { ...decision }, decision.evidenceCostUsdc);
+    // Evidence spend lives on the evidence rows; repeating it here would count it twice.
+    await this.tape(cur, "decision", { ...decision });
     cur = await this.fresh(cur.id);
     if (cur.state !== "deciding") return cur; // killed or expired while deciding
 
@@ -521,6 +526,32 @@ export class PlayRuntime {
     }
     this.unwatch(p.id);
     return this.transition(p, "killed", { pending: null, stateReason: reason }, { headline: reason, pendingAmountUsd: undefined });
+  }
+
+  /** The Play's evidence budget left, from the Tape, and a receipt writer. */
+  private async evidenceHandle(p: PlayRecord): Promise<EvidenceHandle | undefined> {
+    if (!this.d.evidenceFor || p.spec.evidence.senses.length === 0) return undefined;
+    const budget = Math.min(p.spec.evidence.budgetUsdc, p.spec.leash.maxEvidenceUsdc);
+    const spent = (await this.d.store.tape(p.id)).filter((t) => t.kind === "evidence").reduce((s, t) => s + (t.costUsdc ?? 0), 0);
+    const remainingUsdc = Math.max(0, Math.round((budget - spent) * 1e6) / 1e6);
+    if (remainingUsdc <= 0) return undefined;
+    const provider = await this.d.evidenceFor(p);
+    return {
+      provider,
+      senses: p.spec.evidence.senses,
+      remainingUsdc,
+      record: (r) =>
+        this.d.store.appendTape({
+          playId: p.id,
+          userId: p.userId,
+          kind: "evidence",
+          // A simulated purchase is labelled simulated even inside a live Play.
+          simulated: r.simulated || p.mode === "ghost",
+          costUsdc: r.costUsdc,
+          payload: { senseId: r.senseId, provider: r.provider, query: r.query, costUsdc: r.costUsdc, simulated: r.simulated, excerpt: r.content.slice(0, 400) },
+          idempotencyKey: `ev-${r.idempotencyKey}`,
+        }),
+    };
   }
 
   private async leash(p: PlayRecord, intent: OrderIntent) {

@@ -1,5 +1,6 @@
 import type { Cartridge } from "@baseland/play-schema";
 import { symbolOf } from "@baseland/play-schema";
+import type { EvidenceProvider, EvidenceReceipt } from "../brain/evidence.js";
 import type { PlayRecord } from "./store.js";
 
 // The Brain decides at exactly one moment: when a trigger fires. It returns a
@@ -15,6 +16,18 @@ export interface DecisionContext {
   price: number | null;
   /** What fired, in words, for the Tape and the headline. */
   triggerSummary: string;
+  /** Evidence the Brain may buy for this decision; absent = none. */
+  evidence?: EvidenceHandle;
+}
+
+export interface EvidenceHandle {
+  provider: EvidenceProvider;
+  /** Sense ids this Play may buy from. */
+  senses: string[];
+  /** What this Play may still spend on evidence, in USDC (enforced by the runtime). */
+  remainingUsdc: number;
+  /** Writes the receipt to the Tape. Called once per purchase. */
+  record(receipt: EvidenceReceipt): Promise<void>;
 }
 
 export interface Decision {
@@ -27,6 +40,8 @@ export interface Decision {
   evidenceCostUsdc: number;
   /** Which brain decided, for the Tape. */
   by: string;
+  /** Up to three short reasons, for the Tape. */
+  reasons?: string[];
 }
 
 export interface Brain {
@@ -50,5 +65,32 @@ export class RuleBrain implements Brain {
       evidenceCostUsdc: 0,
       by: this.name,
     };
+  }
+}
+
+/**
+ * Tries the primary Brain and falls back (e.g. to rules) if it fails, so a
+ * flaky network or a missing API key degrades a decision instead of failing
+ * the Play. The Tape records which one decided.
+ */
+export class FallbackBrain implements Brain {
+  readonly name: string;
+
+  constructor(
+    private readonly primary: Brain,
+    private readonly fallback: Brain,
+    private readonly onFallback: (err: unknown) => void = () => {},
+  ) {
+    this.name = `${primary.name}→${fallback.name}`;
+  }
+
+  async decide(ctx: DecisionContext): Promise<Decision> {
+    try {
+      return await this.primary.decide(ctx);
+    } catch (err) {
+      this.onFallback(err);
+      const d = await this.fallback.decide(ctx);
+      return { ...d, by: `${this.fallback.name} (${this.primary.name} unavailable)` };
+    }
   }
 }

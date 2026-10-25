@@ -3,7 +3,11 @@ import { supabaseVerifier } from "./auth.js";
 import { createCliRunner } from "./coinbase/cli.js";
 import { decryptSecret } from "./crypto.js";
 import { CoinbaseTickerFeed } from "./market/feed.js";
-import { RuleBrain } from "./plays/brain.js";
+import { ClaudeBrain } from "./brain/claude.js";
+import { supabaseDeckStore } from "./brain/deck-store.js";
+import { Drafter } from "./brain/drafter.js";
+import { GhostEvidence } from "./brain/evidence.js";
+import { FallbackBrain, RuleBrain, type Brain } from "./plays/brain.js";
 import { PlayRuntime } from "./plays/runtime.js";
 import { supabasePlayStore } from "./plays/store.js";
 import { CoinbaseGateway, GhostGateway } from "./trading/gateway.js";
@@ -26,11 +30,23 @@ const ghost = new GhostGateway(market);
 // Placeholder logger until Fastify's exists; replaced below.
 let log: import("./plays/runtime.js").Logger = console as never;
 
+// Claude decides when there's a key; the rules Brain covers any failure, so a
+// bad network degrades a decision instead of failing the Play.
+const brain: Brain = config.ANTHROPIC_API_KEY
+  ? new FallbackBrain(new ClaudeBrain({ model: config.BRAIN_MODEL, effort: config.BRAIN_EFFORT }), new RuleBrain(), (err) =>
+      log.warn({ err: String(err) }, "Claude brain failed; used rules"),
+    )
+  : new RuleBrain();
+// Evidence is simulated (the user's choice until the portfolio is funded).
+const evidence = new GhostEvidence();
+const plays = supabasePlayStore(db);
+
 const runtime = new PlayRuntime({
-  store: supabasePlayStore(db),
+  store: plays,
   feed: new CoinbaseTickerFeed({ log: { warn: (o, m) => log.warn(o, m) } }),
   market,
-  brain: new RuleBrain(),
+  brain,
+  evidenceFor: async () => evidence,
   limits: { liveTradingEnabled: config.LIVE_TRADING_ENABLED, hardMaxOrderUsd: config.LIVE_MAX_ORDER_USD },
   hasLiveAccess: async (userId) => (await credentials.get(userId)) !== null,
   async gatewayFor(play) {
@@ -50,6 +66,13 @@ const app = buildServer(
     credentials,
     market,
     runtime,
+    words: config.ANTHROPIC_API_KEY
+      ? {
+          drafter: new Drafter({ model: config.DRAFT_MODEL, market }),
+          deck: supabaseDeckStore(db),
+          holdingsOf: async (userId) => `Ghost cash $${(await plays.ghostCashUsd(userId)).toFixed(2)}`,
+        }
+      : undefined,
     credentialsSecret: config.CREDENTIALS_SECRET,
     version: process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? "dev",
   },
@@ -62,7 +85,10 @@ const app = buildServer(
 );
 
 log = app.log;
-app.log.info({ liveTradingEnabled: config.LIVE_TRADING_ENABLED, liveMaxOrderUsd: config.LIVE_MAX_ORDER_USD }, "engine config");
+app.log.info(
+  { liveTradingEnabled: config.LIVE_TRADING_ENABLED, liveMaxOrderUsd: config.LIVE_MAX_ORDER_USD, brain: brain.name, evidence: "ghost" },
+  "engine config",
+);
 
 runtime
   .start()
