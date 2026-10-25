@@ -3,11 +3,12 @@
 How Baseland is put together, why, and what it cannot do. This is also the
 basis of the "Architecture" section of the hackathon submission.
 
-Status: **Phases 0–1 built** (2026-10-24): schema, the engine's Play runtime
-(Ghost verified end to end on live prices, locally and on Render), CI
-deploys, and the Live Activity in the simulator. Where
-this file and the code disagree, the code wins and this file is wrong —
-report it.
+Status: **Phases 0–3 and 5 built** (2026-10-24): engine (Play runtime, Claude
+Brain with simulated x402 evidence, drafting, Deck, Rig, Replay) deployed to
+Render by CI; iPhone app verified in the simulator, including approval from
+the Dynamic Island and the lock screen. Phase 4 (real money) and Phase 6
+(MCP, submission) remain. Where this file and the code disagree, the code
+wins and this file is wrong — report it.
 
 ---
 
@@ -120,6 +121,34 @@ and `LIVE_MAX_ORDER_USD` (default $10) caps any single live order whatever a
 cartridge says. A live order is placed only after Coinbase previews it, with
 a deterministic `client_order_id` written to the Tape first, so a retry or a
 restart can never create a second order.
+
+### The Rig is applied at decision time, not at arming
+Each user's Rig (`profiles.rig`, schema in `@baseland/play-schema`) is read
+whenever a Play decides or orders, so an edit affects running Plays from
+their next step:
+- **Brain:** model and effort. The engine caches one Brain per combination,
+  always wrapped in the rules fallback.
+- **Senses:** a Play may only buy from Senses that are both in its
+  cartridge *and* enabled in the Rig.
+- **Instincts:** the user's own wording replaces the built-in text in the
+  Brain's prompt.
+- **Hands:** entries outside the Rig's assets are refused by the Leash
+  check (exits always pass).
+- **Leash:** the Rig's caps are a minimum taken over every Play's own Leash.
+
+Drafts and Deck cards are built inside the Rig too (assets, Senses, amounts
+clamped, approval policy). The Rig is advice-free configuration: it never
+loosens a cartridge's limits, only tightens them.
+
+### Replay is a separate, deterministic simulator
+`POST /v1/replay` runs a cartridge over Coinbase's public candles, armed at
+the start of the chosen range and watching the whole range. It assumes the
+agent acts on the first trigger (no model call, so it's free and
+repeatable), fills at the trigger level with the 0.9% fee, and exits at the
+take-profit or stop-loss level (stop first when both fall in one candle).
+It shares the trigger and exit math with the live runtime (`triggers.ts`)
+but never touches the store or a gateway, and every result is labelled
+simulated.
 
 ## Data model (Supabase)
 
