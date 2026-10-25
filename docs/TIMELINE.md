@@ -18,8 +18,10 @@ user's Island.
 - Verified: a real headless Claude Code session used the skill and tools
   unprompted. The simulator e2e (`scripts/harness-e2e.sh`) shows the Play in
   the app and the Dynamic Island.
-- Open: 12 anonymous test users not deleted (blocked by a permission check),
-  and the rest of Phase 6 (diagram, feedback write-up, video, checklist).
+- Then: harness tokens added to ARCHITECTURE.md, and the **architecture
+  diagram** drawn (`docs/diagrams/`, in the README). Test users deleted by the
+  user.
+- Open: the feedback write-up, the video and the submission checklist.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
