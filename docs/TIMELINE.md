@@ -8,6 +8,14 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
+**Session 8: Phase 5, the Rig, done.** Brain / Senses / Instincts / Hands /
+Leash change real behaviour at the next decision (even for running Plays);
+plus Replay on real past prices (simulated), Account, and cartridge
+share/import. All four UI tests pass (Rig also in dark mode).
+
+- Running it caught Replay contradicting its own chart (now watches the whole
+  range) and colliding chart labels.
+
 **Session 7: teammate secrets in Supabase Vault.** `baseland_engine_env`
 holds the engine `.env`, written by a service-role-only RPC from a script,
 with no secret in chat. **No Coinbase key is shared** (each participant uses
