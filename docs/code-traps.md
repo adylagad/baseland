@@ -53,3 +53,13 @@ user-specific lands in a shared config dir on the server.
 **Bit 2026-10-24.** `api-sandbox.coinbase.com` returned canned portfolios and
 balances for a random key. Never treat a sandbox success as key verification.
 It also has no product data and no x402.
+
+## Market data
+
+### The ticker WebSocket relabels USDC products as USD
+**Seen 2026-10-24.** Subscribing to `ETH-USDC` on
+`wss://advanced-trade-ws.coinbase.com` (`ticker` channel, no auth) yields
+ticks and a subscription ack for **`ETH-USD`**. Coinbase unified the USD and
+USDC books. A watcher that matches incoming ticks by the cartridge's product
+id never fires. Normalize both sides (`-USDC` → `-USD`) when matching ticks,
+but keep the cartridge's id for orders.
