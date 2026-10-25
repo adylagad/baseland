@@ -32,6 +32,8 @@ export interface EvidenceHandle {
   record(receipt: EvidenceReceipt): Promise<void>;
   /** The idempotency key for the next purchase from this Sense, re-derivable from the Tape. */
   keyFor?(senseId: string): Promise<string>;
+  /** Records a purchase that failed (nothing was bought), so the Tape shows it. */
+  failed?(senseId: string, error: string): Promise<void>;
 }
 
 export interface Decision {

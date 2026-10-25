@@ -65,7 +65,7 @@ const runtime = new PlayRuntime({
     if (play.mode !== "live" || !config.X402_EVIDENCE_ENABLED) return evidence;
     const cred = await credentials.get(play.userId);
     if (!cred) return evidence;
-    return new X402Evidence(run, { keyId: cred.keyId, secret: decryptSecret(cred.secretCiphertext, config.CREDENTIALS_SECRET) });
+    return new X402Evidence(run, { keyId: cred.keyId, secret: decryptSecret(cred.secretCiphertext, config.CREDENTIALS_SECRET) }, cred.portfolioUuid);
   },
   limits: { liveTradingEnabled: config.LIVE_TRADING_ENABLED, hardMaxOrderUsd: config.LIVE_MAX_ORDER_USD },
   hasLiveAccess: async (userId) => (await credentials.get(userId)) !== null,

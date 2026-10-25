@@ -65,6 +65,8 @@ export class X402Evidence implements EvidenceProvider {
   constructor(
     private readonly run: CliRunner,
     private readonly key: CoinbaseKey,
+    /** The key's own portfolio pays. Coinbase refuses an x402 fetch without one. */
+    private readonly portfolioId: string,
   ) {}
 
   async fetch(sense: Sense, query: string, opts: EvidenceOptions): Promise<EvidenceReceipt> {
@@ -83,6 +85,7 @@ export class X402Evidence implements EvidenceProvider {
         `input:=${JSON.stringify(input)}`,
         `max_amount=${maxAtomic}`,
         `idempotency_key=${idempotencyKey}`,
+        `portfolio_id=${this.portfolioId}`,
       ],
       this.key,
     );
