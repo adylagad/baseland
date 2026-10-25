@@ -16,6 +16,9 @@ settings:
 packages:
   BaselandKit:
     path: BaselandKit
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.30.0"
 targets:
   Baseland:
     type: application
@@ -25,6 +28,8 @@ targets:
     sources: [App, Shared]
     dependencies:
       - package: BaselandKit
+      - package: Supabase
+        product: Supabase
       - target: BaselandWidgets
     info:
       path: App/Info.plist
@@ -34,6 +39,19 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSSupportsLiveActivities: true
         NSSupportsLiveActivitiesFrequentUpdates: true
+        # Hackathon-only keep-alive so Realtime keeps feeding the Live
+        # Activity while the phone is locked (docs/production-checklist.md).
+        UIBackgroundModes: [audio]
+        NSMicrophoneUsageDescription: Baseland listens when you hold the mic to say a Play.
+        NSSpeechRecognitionUsageDescription: Baseland turns what you say into a Play, on this iPhone.
+        NSFaceIDUsageDescription: Baseland asks for Face ID before approving larger orders.
+        CFBundleURLTypes:
+          - CFBundleURLName: com.adylagad.baseland
+            CFBundleURLSchemes: [baseland]
+        # Public values only: the engine URL and Supabase's publishable key.
+        BaselandEngineURL: https://baseland-engine.onrender.com
+        BaselandSupabaseURL: https://vxapuqgqvecokhmfmnjl.supabase.co
+        BaselandSupabaseKey: sb_publishable_YEnf5ekIBSnOFjKjNT40Ag_-tRYMzkf
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adylagad.baseland
