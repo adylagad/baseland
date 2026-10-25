@@ -20,18 +20,18 @@ Goal: every moving part exists, talks to its neighbour, and is verified.
 
 - [ ] Monorepo skeleton: `apps/ios`, `apps/engine`, `packages/play-schema`,
       `packages/mcp`, `supabase/`. pnpm workspace for the TS side.
-- [ ] Git repo `adylagad/baseland`, first push.
-- [ ] Supabase project; migration for `profiles`, `credentials`, `plays`,
+- [x] Git repo `adylagad/baseland`, first push.
+- [x] Supabase project; migration for `profiles`, `credentials`, `plays`,
       `tape`, `deck_cards` with owner-only RLS; Realtime on `plays`, `tape`.
-- [ ] Engine: Fastify `/health`, Supabase JWT verification, Dockerfile.
-- [ ] Engine deployed to Render; keep-alive ping configured.
-- [ ] Coinbase gateway smoke test: `portfolios list`, `balance`,
+- [x] Engine: Fastify `/health`, Supabase JWT verification, Dockerfile.
+- [x] Engine deployed to Render; keep-alive ping configured.
+- [x] Coinbase gateway smoke test: `portfolios list`, `balance`,
       `products get ETH-USDC`, `x402 resources` — read-only, against the
       dedicated Baseland portfolio key.
 - [ ] iOS: XcodeGen project (`Baseland` app + `BaselandWidgets` extension +
       `BaselandKit` local package), builds for simulator and the user's iPhone
       with a free Apple ID.
-- [ ] A hard-coded Live Activity shows in the simulator's Dynamic Island.
+- [x] A hard-coded Live Activity shows in the simulator's Dynamic Island.
 
 **Exit check:** simulator shows a fake Play in the Dynamic Island; engine on
 Render returns live ETH price from the CLI.
