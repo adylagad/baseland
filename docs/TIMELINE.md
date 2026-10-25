@@ -8,6 +8,13 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-25 — [context](./context/2026-10-25.md)
 
+**Session 5: Spacetime secret sync and Figma audit.** Three cloud Spacetime
+engine keys were synced into the existing Supabase Vault entry and verified
+by key name, without exposing values. The Figma prototype now covers Ghost
+fill, Pause, and Stop; a navigation and text-bounds audit passed. Slides
+reflect the flow. Video, iOS Deck demo, and teammate Edu verification remain
+open.
+
 **Session 4: Figma flow corrected and retested.** The Design prototype now
 clicks through onboarding → Deck → Watching → approval → Ghost execution;
 Play stat clipping was fixed, the Slides stage log and links were updated,
