@@ -36,6 +36,8 @@ export interface PlayStatus {
   resumeTo?: PlayState;
   /** A kill requested mid-order, applied once the order resolves. */
   killRequested?: boolean;
+  /** After a "wait" verdict: no new decision before this time (ms epoch). */
+  cooldownUntil?: number;
 }
 
 export interface PlayRecord {

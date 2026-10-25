@@ -165,8 +165,31 @@ describe("the Leash, inside the runtime", () => {
     const p = await h2.runtime.create(ALICE, examples.ethBreakout, "ghost");
     await h2.price("ETH-USDC", 2401);
     expect((await h2.store.get(p.id))!.state).toBe("watching");
+    // Still above the level, but cooling down: no second ask yet.
     await h2.price("ETH-USDC", 2402);
+    expect(calls).toBe(1);
+    h2.clock.advance(5 * 60_000);
+    await h2.price("ETH-USDC", 2403);
     expect((await h2.store.get(p.id))!.state).toBe("awaiting");
+  });
+
+  it("a Brain that keeps waiting is asked at most four times, then the Play ends", async () => {
+    let asks = 0;
+    const ditherer: Brain = { name: "d", decide: async () => (asks++, { verdict: "wait", headline: "not yet", evidenceCostUsdc: 0, by: "d" }) };
+    const h = harness({ brain: ditherer });
+    await h.price("ETH-USDC", 2300);
+    const p = await h.runtime.create(ALICE, examples.ethBreakout, "ghost");
+    for (let i = 0; i < 10; i++) {
+      await h.price("ETH-USDC", 2401 + i);
+      h.clock.advance(60_000);
+    }
+    expect(asks).toBe(2); // 10 ticks over 10 minutes with a 5-minute cooldown
+    for (let i = 0; i < 20; i++) {
+      h.clock.advance(5 * 60_000);
+      await h.price("ETH-USDC", 2420 + i);
+    }
+    expect(asks).toBe(4);
+    expect((await h.store.get(p.id))!).toMatchObject({ state: "done", stateReason: "The agent waited 4 times without a good entry; ending the Play." });
   });
 });
 

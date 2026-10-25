@@ -64,6 +64,10 @@ export interface RuntimeDeps {
   pollMs?: number;
   pollTimeoutMs?: number;
   sleep?: (ms: number) => Promise<void>;
+  /** After a "wait" verdict, how long before the Brain may be asked again. */
+  waitCooldownMs?: number;
+  /** Most times the Brain is asked per Play; a Play that keeps waiting ends. */
+  maxDecisions?: number;
 }
 
 export class PlayError extends Error {
@@ -253,7 +257,7 @@ export class PlayRuntime {
     }
     if (p.state === "watching" && p.status.phase === "entry" && p.spec.trigger.kind === "time") {
       const r = evaluateTrigger(p.spec.trigger, { anchorPrice: null, price: null, now, windowStart: Date.parse(p.windowStart) });
-      if (r.fired) await this.fire(p, null, "Scheduled time reached");
+      if (r.fired && !this.coolingDown(p)) await this.fire(p, null, "Scheduled time reached");
       else await this.writeStatus(p, { progress: r.progress });
     }
   }
@@ -290,7 +294,7 @@ export class PlayRuntime {
         now: tick.at,
         windowStart: Date.parse(p.windowStart),
       });
-      if (r.fired) return void (await this.fire(p, tick.price, this.describeTrigger(p, tick.price)));
+      if (r.fired && !this.coolingDown(p)) return void (await this.fire(p, tick.price, this.describeTrigger(p, tick.price)));
       await this.writeStatus(p, { price: tick.price, progress: r.progress });
       return;
     }
@@ -327,7 +331,16 @@ export class PlayRuntime {
       return this.transition(cur, "done", { stateReason: decision.headline }, { headline: decision.headline });
     }
     if (decision.verdict === "wait") {
-      const next = await this.transition(cur, "watching", {}, { headline: decision.headline });
+      // Without a cooldown the next tick re-fires the same trigger and asks
+      // again (seen live: 14 Claude calls in 150 s). Cap the asks, too.
+      const asked = (await this.d.store.tape(cur.id)).filter((t) => t.kind === "decision").length;
+      const max = this.d.maxDecisions ?? 4;
+      if (asked >= max) {
+        const reason = `The agent waited ${asked} times without a good entry; ending the Play.`;
+        return this.transition(cur, "done", { stateReason: reason }, { headline: reason });
+      }
+      const cooldownUntil = this.now() + (this.d.waitCooldownMs ?? 5 * 60_000);
+      const next = await this.transition(cur, "watching", {}, { headline: decision.headline, cooldownUntil });
       this.watch(next);
       return next;
     }
@@ -526,6 +539,10 @@ export class PlayRuntime {
     }
     this.unwatch(p.id);
     return this.transition(p, "killed", { pending: null, stateReason: reason }, { headline: reason, pendingAmountUsd: undefined });
+  }
+
+  private coolingDown(p: PlayRecord) {
+    return p.status.cooldownUntil !== undefined && this.now() < p.status.cooldownUntil;
   }
 
   /** The Play's evidence budget left, from the Tape, and a receipt writer. */
