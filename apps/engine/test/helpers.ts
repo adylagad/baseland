@@ -5,6 +5,16 @@ import { memoryCredentialStore } from "../src/credentials/store.js";
 import type { MarketData } from "../src/market/public.js";
 import { buildServer } from "../src/server.js";
 import { harness } from "./harness.js";
+import type { CandleSource } from "../src/replay.js";
+
+/** 48 hourly candles: flat at 100, a climb to 106 at hour 20, then a slide to 97. */
+export const syntheticCandles: CandleSource = async (_product, startSec) => {
+  const t0 = startSec * 1000;
+  return Array.from({ length: 48 }, (_, i) => {
+    const close = i < 20 ? 100 : i < 26 ? 100 + (i - 19) : Math.max(97, 106 - (i - 25));
+    return { t: t0 + i * 3_600_000, open: close, high: close + 0.5, low: close - 0.5, close };
+  });
+};
 
 export const SECRET = randomBytes(32).toString("base64");
 
