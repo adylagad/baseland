@@ -5,6 +5,8 @@ import type { CredentialStore } from "./credentials/store.js";
 import type { MarketData } from "./market/public.js";
 import { credentialRoutes } from "./routes/credentials.js";
 import { marketRoutes } from "./routes/market.js";
+import { playRoutes } from "./routes/plays.js";
+import type { PlayRuntime } from "./plays/runtime.js";
 
 export interface EngineDeps {
   verifyToken: VerifyToken;
@@ -12,6 +14,7 @@ export interface EngineDeps {
   credentials: CredentialStore;
   market: MarketData;
   credentialsSecret: string;
+  runtime: PlayRuntime;
   version?: string;
 }
 
@@ -24,6 +27,7 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
     logger: opts.logger ?? false,
   });
   const auth = requireUser(deps.verifyToken);
+
 
   // Pinged every 5 minutes by a Supabase cron job to keep the Render free
   // instance awake (migration keep_engine_awake).
@@ -40,6 +44,7 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
     store: deps.credentials,
     secret: deps.credentialsSecret,
   });
+  playRoutes(app, { auth, runtime: deps.runtime });
 
   return app;
 }

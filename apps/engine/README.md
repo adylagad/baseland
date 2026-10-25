@@ -34,6 +34,11 @@ Tests never call Coinbase: the CLI is replaced by
 | GET | `/v1/credentials` | user | Connected portfolio, never the secret |
 | POST | `/v1/credentials` | user | Connect a CDP key (`{ id, privateKey }` as downloaded) |
 | DELETE | `/v1/credentials` | user | Forget the key |
+| POST | `/v1/plays` | user | Create a Play: `{ cartridge, mode }` (mode defaults to `ghost`) |
+| GET | `/v1/plays` | user | Your Plays, newest first |
+| GET | `/v1/plays/:id` | user | One Play plus its Tape |
+| POST | `/v1/plays/:id/{approve,skip,pause,resume,kill}` | user | Control a Play |
+| POST | `/v1/kill-all` | user | Stop every running Play of yours |
 
 "User" means `Authorization: Bearer <Supabase access token>`, verified with
 `getClaims`.
@@ -46,3 +51,18 @@ Tests never call Coinbase: the CLI is replaced by
   portfolio is not Default.
 - Secrets are AES-256-GCM encrypted (`CREDENTIALS_SECRET`) before they reach
   the database.
+- **Live trading is off** unless `LIVE_TRADING_ENABLED=true`, and no live
+  order may exceed `LIVE_MAX_ORDER_USD` (default $10), whatever a cartridge
+  says.
+- The Brain only ever returns a verdict; the runtime builds the order, the
+  Leash checks it, and the gateway previews it before placing it.
+
+## How a Play runs
+
+`src/plays/runtime.ts` drives each Play through the state machine in
+`src/plays/machine.ts`: armed → watching (deterministic triggers on the live
+ticker, `src/market/feed.ts`) → deciding (the Brain) → Leash
+(`src/plays/leash.ts`) → awaiting approval → executing (a gateway in
+`src/trading/gateway.ts`: Ghost or Coinbase) → watching exits (Ghost) or
+done. Every step lands in the Tape. Money is derived from the Tape's fills
+(`src/plays/ledger.ts`), never stored.

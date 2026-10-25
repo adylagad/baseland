@@ -75,3 +75,23 @@ back to the default portfolio, which the key can't see. `portfolios get
 **Workaround:** read balances from `portfolios get`.
 **Ask:** default `balance` to the key's scoped portfolio, and make the error
 say *why* access failed (empty? wrong type? scope?).
+
+## 2026-10-24: building the order path (Phase 1)
+
+### `orders get` doesn't document its status values
+The CLI help lists `status` in the response but not its possible values.
+We map FILLED / CANCELLED / EXPIRED / FAILED and treat everything else
+(OPEN, PENDING, QUEUED, ...) as still open. **Ask:** enumerate statuses in
+the CLI help and the MCP tool schema; agents poll on them.
+
+### `--dry-run` output isn't JSON
+`--dry-run` prints `would execute orders_create` and then the JSON body, so
+it can't be piped to a JSON parser like every other command. **Ask:** emit
+`{ "dry_run": true, "operation": ..., "body": ... }`.
+
+### Attached exits on a market BUY are great, and nearly invisible
+`attached_take_profit_price` / `attached_stop_loss_price` on `orders create`
+let an agent hand its exits to the exchange, which is exactly right for an
+agent that might be asleep. It's mentioned in passing in the CLI help;
+Baseland relies on it for live Plays. **Ask:** document it prominently as the
+recommended pattern for agents.

@@ -10,6 +10,14 @@ const Env = z.object({
   CREDENTIALS_SECRET: z
     .string()
     .refine((s) => Buffer.from(s, "base64").length === 32, "must be 32 bytes, base64-encoded"),
+  // Real-money master switch. Off unless set to "true" (AGENTS.md hard rule 1:
+  // the user turns it on for Phase 4, nobody else).
+  LIVE_TRADING_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
+  // Ceiling on any single live order, whatever a cartridge says.
+  LIVE_MAX_ORDER_USD: z.coerce.number().positive().max(100).default(10),
   // Needed from Phase 2 (the Brain); optional so the engine boots without it.
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
 });

@@ -93,3 +93,25 @@ env vars. It writes only to the per-call temp config dir, which is deleted.
 ### Render free tier sleeping — Answered: handled by the Supabase cron ping
 See `production-checklist.md`. (The ticker WebSocket from Render is still
 untested; it arrives with the watchers in Phase 1.)
+
+## Phase 1 (engine core)
+
+### Live orders through `CoinbaseGateway` — Known gap until Phase 4
+Only unit-tested against a fake CLI, plus a `--dry-run` of the request
+body. Unverified against Coinbase: the real `orders create` response shape
+(`success_response.order_id` vs top-level `order_id`; both are handled), the
+`orders get` status strings, whether `attached_*_price` is accepted on a
+market BUY with `quote_size` in a CONSUMER portfolio, and how long a market
+order takes to report FILLED.
+
+### Ticker feed over hours — Unknown
+Reconnect and resubscribe are unit-tested with a fake socket. Not yet
+observed: a real disconnect, or the feed staying healthy on Render for hours.
+
+### Throttled status writes vs the Live Activity — Unknown
+Price ticks write `plays.status` at most every 10 s. Whether that feels live
+enough on the Island is a Phase 3 question.
+
+### `ReplayFeed` — Built, not wired
+There is no switch yet to run the engine on recorded prices (for the
+demo-on-bad-Wi-Fi plan).

@@ -4,6 +4,7 @@ import { CoinbaseCliError } from "../src/coinbase/cli.js";
 import { memoryCredentialStore } from "../src/credentials/store.js";
 import type { MarketData } from "../src/market/public.js";
 import { buildServer } from "../src/server.js";
+import { harness } from "./harness.js";
 
 export const SECRET = randomBytes(32).toString("base64");
 
@@ -42,13 +43,14 @@ export const fakeMarket: MarketData = {
   },
 };
 
-export function testServer(run: CliRunner, store = memoryCredentialStore()) {
+export function testServer(run: CliRunner, store = memoryCredentialStore(), h = harness()) {
   const app = buildServer({
     verifyToken,
     run,
     credentials: store,
     market: fakeMarket,
     credentialsSecret: SECRET,
+    runtime: h.runtime,
   });
-  return { app, store };
+  return { app, store, h };
 }
