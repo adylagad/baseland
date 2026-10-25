@@ -135,3 +135,32 @@ from memory, stops watching it, and logs one warning ("play no longer
 exists; forgotten") instead of an error every second. **Verified
 (2026-10-24):** a runtime test deletes a row under a running Play; Render's
 logs showed no errors after the test users were deleted.
+
+## SpacetimeDB Play core and live Arena (branch)
+
+**What it does:** on `feature/spacetime-core`, private Play and Tape rows live
+in a SpacetimeDB 2.13 TypeScript module. The engine is their sole writer and
+subscribes to their changes. Reducers check the engine's publishing identity,
+compare expected Play state before updates, bind Tape rows to their Play,
+and reject duplicate idempotency keys. A public activity projection is
+updated in the same transaction for Ghost Plays only. It exposes a symbol
+and generic stage text without a user ID, title, amount, cartridge or key.
+The Live Arena subscribes to that projection directly; the iPhone receives
+user-filtered Play and Tape events from the engine's authenticated stream.
+Supabase remains the sign-in, Rig/Deck and encrypted-credential service.
+
+**Where:** `spacetimedb/`, `apps/engine/src/spacetime/`,
+`apps/engine/src/server.ts`, `apps/ios/App/Services/Session.swift`, and
+`apps/arena/`. A dry-run-first, count-guarded migration script imports old
+Supabase rows with restartable reducers.
+
+**Verified (2026-10-25):** module built and published to local SpacetimeDB;
+integration test exercised insert, state transition, stale update rejection,
+Tape idempotency, and repeatable historical imports; Arena visibly changed
+stage from a synthetic Ghost Play through a direct Spacetime subscription;
+engine tests, typecheck and build passed; iOS simulator build passed. A signed
+iPhone 17 simulator test drove a Ghost Play against the local Spacetime-backed
+engine from words through the Island, approval and Tape. The module was also
+published to `baseland-calhacks13` on Maincloud and the same integration test
+passed there. A production engine cutover remains unverified. No real orders
+or payments were attempted.

@@ -9,9 +9,11 @@ name: engine
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/spacetime-core]
     paths:
       - apps/engine/**
+      - apps/arena/**
+      - spacetimedb/**
       - packages/**
       - package.json
       - pnpm-lock.yaml
@@ -21,6 +23,8 @@ on:
   pull_request:
     paths:
       - apps/engine/**
+      - apps/arena/**
+      - spacetimedb/**
       - packages/**
       - pnpm-lock.yaml
 

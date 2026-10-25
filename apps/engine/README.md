@@ -2,24 +2,45 @@
 
 The hosted half of Baseland: a Fastify service that runs Plays, watches
 markets, asks the Brain at decision points, and talks to Coinbase through the
-official `coinbase` CLI. The iOS app talks only to this service and to
-Supabase Realtime.
+official `coinbase` CLI. SpacetimeDB is the authoritative real-time Play and
+Tape backend on this branch. Supabase still handles sign-in, Rig/Deck and
+encrypted Coinbase credentials.
 
 ## Run locally
 
 ```sh
 cp .env.example .env     # fill in the values; see docs/personal-guide/
 pnpm install             # from the repo root
+spacetime start           # in a separate terminal
+spacetime publish --server local --module-path spacetimedb baseland-local
+spacetime generate --lang typescript --include-private \
+  --out-dir apps/engine/src/spacetime/bindings --module-path spacetimedb
 pnpm --filter @baseland/engine dev      # tsx watch, reads .env
 ```
 
 Built: `pnpm --filter @baseland/engine build && node --env-file=.env dist/index.js`.
+Set `SPACETIMEDB_HOST`, `SPACETIMEDB_DB_NAME` and the publishing identity's
+`SPACETIMEDB_TOKEN` in the gitignored `.env`. The engine alone receives that
+token. A local token can be read with `spacetime login show --token`; never
+post it in chat or logs.
+
+Before switching a deployed engine, pause the old engine. Run
+`pnpm --filter @baseland/engine migrate:spacetime` to count its Supabase
+source, then repeat with `--apply --expect-plays=N --expect-tape=M` using
+those counts. The import is restartable and rejects a changed source.
+It reads every Tape page for each Play, including histories longer than
+Supabase's default result limit. If the old source is empty, the apply step
+also requires `--allow-empty-source` after checking that this is expected.
+The cloud module is published as `baseland-calhacks13`. Configure the hosted
+engine environment and coordinate the data cutover before merging this branch;
+the existing Render deployment still runs `main`.
 
 ## Test
 
 ```sh
 pnpm --filter @baseland/engine test        # vitest, no network
 pnpm --filter @baseland/engine typecheck
+node --env-file=.env ./node_modules/vitest/vitest.mjs run test/spacetime.integration.test.ts # from apps/engine, with local or cloud env
 ```
 
 Tests never call Coinbase: the CLI is replaced by
@@ -37,6 +58,7 @@ Tests never call Coinbase: the CLI is replaced by
 | POST | `/v1/plays` | user | Create a Play: `{ cartridge, mode }` (mode defaults to `ghost`) |
 | GET | `/v1/plays` | user | Your Plays, newest first |
 | GET | `/v1/plays/:id` | user | One Play plus its Tape |
+| GET | `/v1/events` | user | Live Play and Tape events relayed from SpacetimeDB, filtered to this user |
 | POST | `/v1/plays/:id/{approve,skip,pause,resume,kill}` | user | Control a Play |
 | POST | `/v1/kill-all` | user | Stop every running Play of yours |
 | GET | `/v1/me` | user | Ghost cash, Coinbase connection, whether live trading is on |

@@ -8,6 +8,7 @@ import { buildServer } from "../src/server.js";
 import { harness } from "./harness.js";
 import { memoryRigStore } from "../src/rig/store.js";
 import type { CandleSource } from "../src/replay.js";
+import type { LivePlayStore } from "../src/spacetime/store.js";
 
 /** 48 hourly candles: flat at 100, a climb to 106 at hour 20, then a slide to 97. */
 export const syntheticCandles: CandleSource = async (_product, startSec) => {
@@ -55,7 +56,7 @@ export const fakeMarket: MarketData = {
   },
 };
 
-export function testServer(run: CliRunner, store = memoryCredentialStore(), h = harness(), harnessTokens = memoryHarnessTokenStore()) {
+export function testServer(run: CliRunner, store = memoryCredentialStore(), h = harness(), harnessTokens = memoryHarnessTokenStore(), events?: Pick<LivePlayStore, "subscribe">) {
   const app = buildServer({
     verifyToken,
     run,
@@ -66,6 +67,7 @@ export function testServer(run: CliRunner, store = memoryCredentialStore(), h = 
     me: { plays: h.store, liveTradingEnabled: false },
     rig: { rigs: memoryRigStore(), plays: h.store, candles: syntheticCandles },
     harnessTokens,
+    events,
   });
   return { app, store, h, harnessTokens };
 }

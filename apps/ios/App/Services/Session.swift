@@ -2,7 +2,7 @@ import Foundation
 import Supabase
 
 /// Supabase sign-in (anonymous; Sign in with Apple needs a paid developer
-/// account) and the Realtime stream of this user's Plays and Tape.
+/// account). Play and Tape updates stream from SpacetimeDB through the engine.
 @MainActor
 final class Session {
     let client = SupabaseClient(
@@ -10,8 +10,7 @@ final class Session {
         supabaseKey: Config.supabaseKey,
         options: .init(auth: .init(emitLocalSessionAsInitialSession: true))
     )
-    private var channel: RealtimeChannelV2?
-    private var subscriptions: [RealtimeSubscription] = []
+    private var eventTask: Task<Void, Never>?
 
     var userId: String? { client.auth.currentUser?.id.uuidString.lowercased() }
 
@@ -24,31 +23,42 @@ final class Session {
         try await client.auth.session.accessToken
     }
 
-    /// Streams row changes for this user's Plays and new Tape rows.
+    private struct LiveEvent: Decodable {
+        let type: String
+        let play: Play?
+        let tape: TapeRow?
+    }
+
+    /// Streams SpacetimeDB transactions through the authenticated engine.
     func listen(userId: String, onPlay: @escaping @Sendable (Play) -> Void, onTape: @escaping @Sendable (TapeRow) -> Void) async {
         await stopListening()
-        let channel = client.channel("baseland-\(userId)")
-        let decoder = JSONCoding.decoder(snakeCase: true)
-        subscriptions = [
-            channel.onPostgresChange(AnyAction.self, schema: "public", table: "plays", filter: .eq("user_id", value: userId)) { action in
-                switch action {
-                case .insert(let a): if let p = try? a.decodeRecord(as: Play.self, decoder: decoder) { onPlay(p) }
-                case .update(let a): if let p = try? a.decodeRecord(as: Play.self, decoder: decoder) { onPlay(p) }
-                default: break
+        eventTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do {
+                    guard let self else { return }
+                    var req = URLRequest(url: URL(string: "/v1/events", relativeTo: Config.engineURL)!)
+                    req.setValue("Bearer \(try await accessToken())", forHTTPHeaderField: "Authorization")
+                    req.timeoutInterval = 60 * 60
+                    let (bytes, response) = try await URLSession.shared.bytes(for: req)
+                    guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
+                    for try await line in bytes.lines {
+                        if Task.isCancelled { return }
+                        guard line.hasPrefix("data: "), let data = String(line.dropFirst(6)).data(using: .utf8),
+                              let event = try? JSONCoding.decoder().decode(LiveEvent.self, from: data) else { continue }
+                        if event.type == "play", let play = event.play, play.userId == userId { onPlay(play) }
+                        if event.type == "tape", let tape = event.tape { onTape(tape) }
+                    }
+                } catch {
+                    if Task.isCancelled { return }
                 }
-            },
-            channel.onPostgresChange(InsertAction.self, schema: "public", table: "tape", filter: .eq("user_id", value: userId)) { insert in
-                if let t = try? insert.decodeRecord(as: TapeRow.self, decoder: decoder) { onTape(t) }
-            },
-        ]
-        self.channel = channel
-        try? await channel.subscribeWithError()
+                try? await Task.sleep(for: .seconds(2))
+            }
+        }
     }
 
     func stopListening() async {
-        subscriptions.removeAll()
-        if let channel { await client.removeChannel(channel) }
-        channel = nil
+        eventTask?.cancel()
+        eventTask = nil
     }
 
     func signOut() async {

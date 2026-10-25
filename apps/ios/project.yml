@@ -39,6 +39,8 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSSupportsLiveActivities: true
         NSSupportsLiveActivitiesFrequentUpdates: true
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         # Hackathon-only keep-alive so Realtime keeps feeding the Live
         # Activity while the phone is locked (docs/production-checklist.md).
         UIBackgroundModes: [audio]

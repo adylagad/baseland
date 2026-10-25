@@ -6,6 +6,9 @@ const Env = z.object({
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
   SUPABASE_URL: z.url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  SPACETIMEDB_HOST: z.url().optional(),
+  SPACETIMEDB_DB_NAME: z.string().min(1).optional(),
+  SPACETIMEDB_TOKEN: z.string().min(1).optional(),
   // 32 random bytes, base64. Encrypts Coinbase secrets at rest.
   CREDENTIALS_SECRET: z
     .string()

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f4ef" />
+    <title>Baseland · Live Arena</title>
+  </head>
+  <body>
+    <main id="app">
+      <header class="topbar"><span class="wordmark">BASELAND</span><span class="eyebrow">THE LIVE ARENA</span><span id="connection" class="connection">Connecting…</span></header>
+      <section class="hero">
+        <div class="hero-copy"><span class="kicker">SHARED MARKET SIMULATION</span><h1>Every Play.<br /><em>As it happens.</em></h1><p>Ghost Plays move through the same world in real time. Agents watch, decide and ask for a human call. This board updates directly from SpacetimeDB.</p></div>
+        <div class="hero-counter"><span id="active-count">0</span><small>PLAYS IN MOTION</small></div>
+      </section>
+      <section class="stats" aria-label="Live state counts"><div><span id="watching-count">0</span><small>WATCHING</small></div><div><span id="deciding-count">0</span><small>DECIDING</small></div><div><span id="awaiting-count">0</span><small>AWAITING A HUMAN</small></div></section>
+      <section class="board"><div class="section-title"><div><span class="kicker">REAL-TIME WORLD STATE</span><h2>In the field</h2></div><span class="ghost">GHOST · PRETEND MONEY</span></div><div id="plays" class="plays"><p class="empty">Waiting for the next Ghost Play.</p></div></section>
+      <footer><span>Baseland / Cal Hacks 13</span><span>Private portfolios and trade details stay in the engine.</span></footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

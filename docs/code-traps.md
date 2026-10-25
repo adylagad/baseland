@@ -175,3 +175,25 @@ Match values with `label CONTAINS`.
 once (still on Plays), and it likely explains earlier failures at the same
 step. Wait for `.runningForeground`, then tap until `isSelected` (2 of 2
 passes after).
+
+## SpacetimeDB
+
+### Generated TypeScript bindings need bundler module resolution
+**Bit 2026-10-25.** The 2.13 CLI generated extensionless imports and SDK
+types that failed under the engine's `NodeNext` TypeScript resolution with
+dozens of missing exports. The engine uses `moduleResolution: bundler` and
+`module: ESNext`; `tsup` still emits the Node ESM bundle. Regenerate
+bindings with the same CLI/SDK version.
+
+### Local login output includes a bearer token
+**Bit 2026-10-25.** `spacetime login show --token` printed a local development
+token in a tool output after a parsing mistake. Treat its whole output as
+secret: redirect to a mode-600 file and parse without printing values. The
+affected temporary local server and identity must be discarded after tests.
+
+### Unsigned iOS simulator builds cannot persist Supabase auth in Keychain
+**Bit 2026-10-25.** A `CODE_SIGNING_ALLOWED=NO` UI test completed anonymous
+sign-in but `auth.currentSession` was nil, so every engine call failed with
+`AuthError.sessionMissing`. Run the simulator UI test with signing enabled and
+derived data outside the synced workspace (for example under `/tmp`), where
+`codesign` also avoids file-provider xattrs. The signed Ghost flow passed.

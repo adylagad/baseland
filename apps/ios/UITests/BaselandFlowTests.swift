@@ -10,7 +10,17 @@ final class BaselandFlowTests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["-reset-session"]
+        if let localEngine = ProcessInfo.processInfo.environment["ENGINE_URL"]
+            ?? ProcessInfo.processInfo.environment["TEST_RUNNER_ENGINE_URL"] {
+            app.launchArguments += ["-BaselandEngineURL", localEngine]
+            NSLog("UI test engine override: %@", localEngine)
+        }
         app.launch()
+    }
+
+    override func tearDown() {
+        app?.terminate()
+        super.tearDown()
     }
 
     func testGhostPlayFromWordsToIslandToTape() throws {
@@ -73,6 +83,14 @@ final class BaselandFlowTests: XCTestCase {
         shot("10-detail-after")
         app.swipeUp()
         shot("11-tape")
+    }
+
+    func testLocalEngineSmoke() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["ENGINE_URL"] != nil
+            || ProcessInfo.processInfo.environment["TEST_RUNNER_ENGINE_URL"] != nil,
+            "Set TEST_RUNNER_ENGINE_URL for the local engine smoke test")
+        app.buttons["Start in Ghost"].tap()
+        XCTAssertTrue(app.otherElements["deckCard"].firstMatch.waitForExistence(timeout: 45), "local engine did not deal a Deck")
     }
 
     private func shot(_ name: String) {

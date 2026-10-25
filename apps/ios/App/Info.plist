@@ -39,6 +39,11 @@
 	<string>1</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Baseland asks for Face ID before approving larger orders.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Baseland listens when you hold the mic to say a Play.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

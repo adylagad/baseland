@@ -13,6 +13,7 @@ import { harnessRoutes } from "./routes/harness.js";
 import { harnessVerifier, type HarnessTokenStore } from "./harness/tokens.js";
 import type { PlayStore } from "./plays/store.js";
 import type { PlayRuntime } from "./plays/runtime.js";
+import type { LivePlayStore } from "./spacetime/store.js";
 
 export interface EngineDeps {
   verifyToken: VerifyToken;
@@ -27,6 +28,7 @@ export interface EngineDeps {
   /** Harness tokens (the Baseland MCP); without a store none are accepted. */
   harnessTokens?: HarnessTokenStore;
   version?: string;
+  events?: Pick<LivePlayStore, "subscribe">;
 }
 
 const startedAt = Date.now();
@@ -70,6 +72,24 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
     secret: deps.credentialsSecret,
   });
   playRoutes(app, { auth, runtime: deps.runtime });
+  if (deps.events) {
+    app.get("/v1/events", { preHandler: auth }, (req, reply) => {
+      reply.hijack();
+      reply.raw.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",
+      });
+      reply.raw.write(": connected\n\n");
+      const unsubscribe = deps.events!.subscribe((change) => {
+        const owner = change.type === "play" ? change.play.userId : change.tape.userId;
+        if (owner === req.userId && !reply.raw.destroyed) reply.raw.write(`data: ${JSON.stringify(change)}\n\n`);
+      });
+      const heartbeat = setInterval(() => { if (!reply.raw.destroyed) reply.raw.write(": keepalive\n\n"); }, 20_000);
+      req.raw.on("close", () => { clearInterval(heartbeat); unsubscribe(); });
+    });
+  }
   if (deps.words) deckRoutes(app, { auth, runtime: deps.runtime, ...deps.words });
   if (deps.me) meRoutes(app, { auth, credentials: deps.credentials, ...deps.me });
   if (deps.harnessTokens) harnessRoutes(app, { auth, tokens: deps.harnessTokens });

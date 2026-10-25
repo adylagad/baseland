@@ -1,0 +1,17 @@
+{
+  "name": "@baseland/spacetimedb",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit",
+    "build:module": "spacetime build --module-path ."
+  },
+  "dependencies": {
+    "spacetimedb": "2.13.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2"
+  }
+}

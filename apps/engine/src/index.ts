@@ -10,7 +10,7 @@ import { GhostEvidence } from "./brain/evidence.js";
 import { FallbackBrain, RuleBrain, type Brain } from "./plays/brain.js";
 import { supabaseRigStore } from "./rig/store.js";
 import { PlayRuntime } from "./plays/runtime.js";
-import { supabasePlayStore } from "./plays/store.js";
+import { spacetimePlayStore } from "./spacetime/store.js";
 import { CoinbaseGateway, GhostGateway } from "./trading/gateway.js";
 import { loadConfig } from "./config.js";
 import { supabaseCredentialStore } from "./credentials/store.js";
@@ -19,6 +19,9 @@ import { createPublicMarket } from "./market/public.js";
 import { buildServer } from "./server.js";
 
 const config = loadConfig();
+if (!config.SPACETIMEDB_HOST || !config.SPACETIMEDB_DB_NAME || !config.SPACETIMEDB_TOKEN) {
+  throw new Error("Set SPACETIMEDB_HOST, SPACETIMEDB_DB_NAME, and SPACETIMEDB_TOKEN before starting the engine");
+}
 
 const db = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -51,7 +54,11 @@ const brain: Brain = claudeBrain(config.BRAIN_MODEL, config.BRAIN_EFFORT);
 const rigs = supabaseRigStore(db);
 // Evidence is simulated (the user's choice until the portfolio is funded).
 const evidence = new GhostEvidence();
-const plays = supabasePlayStore(db);
+const plays = await spacetimePlayStore({
+  host: config.SPACETIMEDB_HOST,
+  database: config.SPACETIMEDB_DB_NAME,
+  token: config.SPACETIMEDB_TOKEN,
+}, db);
 
 const runtime = new PlayRuntime({
   store: plays,
@@ -65,6 +72,7 @@ const runtime = new PlayRuntime({
   hasLiveAccess: async (userId) => (await credentials.get(userId)) !== null,
   async gatewayFor(play) {
     if (play.mode === "ghost") return ghost;
+    if (!config.LIVE_TRADING_ENABLED) throw new Error("live trading is disabled");
     const cred = await credentials.get(play.userId);
     if (!cred) throw new Error("live Play without a connected key");
     const key = { keyId: cred.keyId, secret: decryptSecret(cred.secretCiphertext, config.CREDENTIALS_SECRET) };
@@ -101,6 +109,7 @@ const app = buildServer(
     credentialsSecret: config.CREDENTIALS_SECRET,
     harnessTokens: supabaseHarnessTokenStore(db),
     version: process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? "dev",
+    events: plays,
   },
   {
     logger: {
@@ -127,6 +136,7 @@ runtime
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   process.on(signal, () => {
     runtime.stop();
+    plays.close();
     app.close().finally(() => process.exit(0));
   });
 }

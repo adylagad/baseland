@@ -221,7 +221,7 @@ export class PlayRuntime {
 
   /** The kill switch: every non-terminal Play this user has. */
   async killAll(userId: string): Promise<number> {
-    const mine = [...this.active.values()].filter((p) => p.userId === userId);
+    const mine = (await this.d.store.listActive()).filter((p) => p.userId === userId);
     let n = 0;
     for (const p of mine) {
       await this.lock(p.id, async () => {
@@ -403,6 +403,9 @@ export class PlayRuntime {
 
   /** Preview → Leash re-check → order (idempotent) → poll → fill. */
   private async execute(p: PlayRecord, intent: OrderIntent, exitLabel?: string): Promise<PlayRecord> {
+    if (p.mode === "live" && !this.d.limits.liveTradingEnabled) {
+      throw new PlayError(403, "Live trading is switched off on this engine.");
+    }
     let cur = await this.transition(p, "executing", { pending: null }, { pendingAmountUsd: undefined, headline: "Placing the order…" });
     const gateway = await this.d.gatewayFor(cur);
     const clientOrderId = `bl-${cur.id}-${intent.purpose}`;
@@ -506,6 +509,10 @@ export class PlayRuntime {
   // ------------------------------------------------------------ rehydrate
 
   private async rehydrate(p: PlayRecord) {
+    if (p.mode === "live" && !this.d.limits.liveTradingEnabled) {
+      this.log.warn({ playId: p.id }, "live Play left dormant while live trading is disabled");
+      return;
+    }
     this.active.set(p.id, p);
     switch (p.state) {
       case "watching":

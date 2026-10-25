@@ -201,3 +201,12 @@ move the command.
 ### The MCP in harnesses other than Claude Code — Unknown
 Plain stdio MCP with standard tools and resources; only Claude Code (and the
 SDK client in tests) has run it.
+
+## SpacetimeDB branch (2026-10-25)
+
+### Render cutover and Supabase data import — Unverified
+The module is published to `baseland-calhacks13` on Maincloud and its private
+engine subscription passed the integration test. Render environment variables
+and the migration from Supabase still need a coordinated rollout. The
+count-guarded migration script found changing source counts during local
+testing and intentionally copied nothing from Supabase.
