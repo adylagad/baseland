@@ -1,0 +1,65 @@
+name: Baseland
+options:
+  bundleIdPrefix: com.adylagad.baseland
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Free Apple ID (Personal Team): pick your team in Xcode, or set it here.
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+packages:
+  BaselandKit:
+    path: BaselandKit
+targets:
+  Baseland:
+    type: application
+    platform: iOS
+    sources: [App]
+    dependencies:
+      - package: BaselandKit
+      - target: BaselandWidgets
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Baseland
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSSupportsLiveActivities: true
+        NSSupportsLiveActivitiesFrequentUpdates: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adylagad.baseland
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+  BaselandWidgets:
+    type: app-extension
+    platform: iOS
+    sources: [Widgets]
+    dependencies:
+      - package: BaselandKit
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    info:
+      path: Widgets/Info.plist
+      properties:
+        CFBundleDisplayName: Baseland
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adylagad.baseland.widgets
+schemes:
+  Baseland:
+    build:
+      targets:
+        Baseland: all
+        BaselandWidgets: all
+    run:
+      config: Debug
+    test:
+      config: Debug
