@@ -61,3 +61,22 @@ xcodebuild -scheme BaselandKit -destination 'platform=iOS Simulator,name=iPhone 
 ```
 
 On a real iPhone with a free Apple ID: see `docs/personal-guide/iphone.md`.
+
+### Recording the demo
+
+`DemoRecordingTests` walks through every feature (skipped unless
+`TEST_RUNNER_DEMO=1`). Record the simulator while it runs, then cut it down
+with ffmpeg:
+
+```sh
+xcrun simctl io <udid> recordVideo --codec=h264 --force media/raw-walkthrough.mp4 &
+TEST_RUNNER_DEMO=1 xcodebuild test-without-building -scheme Baseland \
+  -destination 'platform=iOS Simulator,id=<udid>' -derivedDataPath build/dd \
+  -only-testing:BaselandUITests/DemoRecordingTests
+kill -INT %1
+```
+
+`media/` is ignored through `.git/info/exclude` (local only), so videos are
+never committed. Simulator recordings have a variable frame rate: when
+cutting segments, `fps=30,tpad=stop_mode=clone` before `trim=duration` keeps
+static stretches from shrinking or stretching.
