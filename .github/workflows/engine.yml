@@ -54,5 +54,11 @@ jobs:
           fi
           # The hook URL already carries ?key=..., so the commit is appended with &.
           case "$RENDER_DEPLOY_HOOK" in *\?*) sep="&" ;; *) sep="?" ;; esac
-          curl -fsS -X POST "${RENDER_DEPLOY_HOOK}${sep}ref=${GITHUB_SHA}" > /dev/null
+          # Render's hook has answered 500 while a previous deploy was still
+          # running; retry a few times before failing the job.
+          for attempt in 1 2 3 4; do
+            if curl -fsS -X POST "${RENDER_DEPLOY_HOOK}${sep}ref=${GITHUB_SHA}" > /dev/null; then break; fi
+            if [ "$attempt" = 4 ]; then exit 1; fi
+            sleep $((attempt * 20))
+          done
           echo "Deploy of $GITHUB_SHA requested; /health reports the commit as 'version'."
