@@ -3,8 +3,9 @@
 How Baseland is put together, why, and what it cannot do. This is also the
 basis of the "Architecture" section of the hackathon submission.
 
-Status: **Phase 0 built** (2026-10-24): schema, engine (health, quotes, key
-connection) deployed to Render, and the Live Activity in the simulator. Where
+Status: **Phases 0–1 built** (2026-10-24): schema, the engine's Play runtime
+(Ghost verified end to end on live prices, locally and on Render), CI
+deploys, and the Live Activity in the simulator. Where
 this file and the code disagree, the code wins and this file is wrong —
 report it.
 
@@ -102,6 +103,23 @@ The Play runtime talks to a `TradingGateway` interface. `CoinbaseGateway`
 places real orders; `GhostGateway` fills simulated orders at the current
 price. A Play's mode picks the gateway once. Every Tape event written through
 `GhostGateway` carries `simulated: true`, and every client renders that.
+
+### Exits: Coinbase holds live ones, the engine watches Ghost ones
+A live entry BUY with a take-profit or stop-loss sends them **on the order
+itself** (`attached_take_profit_price` / `attached_stop_loss_price` on
+`orders create`, priced from the preview). Coinbase then enforces the exits
+even if the engine is asleep or redeploying, and the Play ends `done` with
+"Exits held by Coinbase". A Ghost Play has no exchange to hold its exits, so
+the engine keeps it `watching` in an exit phase and sells the whole position
+itself when a level is hit. Exits are pre-approved when a Play is armed; the
+Leash still checks that an exit only sells what the Play bought.
+
+### Live trading is off until the user switches it on
+`LIVE_TRADING_ENABLED` (default `false`) gates every live Play at creation,
+and `LIVE_MAX_ORDER_USD` (default $10) caps any single live order whatever a
+cartridge says. A live order is placed only after Coinbase previews it, with
+a deterministic `client_order_id` written to the Tape first, so a retry or a
+restart can never create a second order.
 
 ## Data model (Supabase)
 
