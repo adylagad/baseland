@@ -8,6 +8,19 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
+**Session 5: Phase 3, the iPhone app, built and verified in the simulator.**
+Onboarding → Deck (swipe to arm, chip editors, say a Play) → Plays → a
+Play's page with the Tape. Live Activities are driven by the engine over
+Supabase Realtime.
+
+- **Approving from the Dynamic Island works** (XCUITest via SpringBoard:
+  expand, Approve, filled). All intents are `LiveActivityIntent`s so they run
+  in the app with its session, with no App Group needed.
+- Two UI tests run end to end against the deployed engine and save
+  screenshots.
+- Still open: the **device** exit check (free-Apple-ID install, keep-alive,
+  Control Center, Siri, voice, Face ID).
+
 **Session 4: Phase 2, the agent, done.** Claude decides at each trigger
 (rules fallback), drafts Plays from a sentence, and deals a Deck from live
 prices. Evidence purchases are **simulated** (option b) at real catalog prices.
