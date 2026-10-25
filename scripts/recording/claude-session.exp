@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+# Drives one interactive Claude Code session for the recording: accepts the
+# folder-trust prompt, lets Claude work, waits until its turn is over (the
+# terminal goes quiet), notes that time, and exits.
+set prompt [lindex $argv 0]
+set armedflag [lindex $argv 1]
+set endfile [lindex $argv 2]
+set timeout -1
+log_user 1
+# A clean session: nothing inherited from the Claude Code running this script.
+foreach v {CLAUDE_CODE_CHILD_SESSION CLAUDE_CODE_ENTRYPOINT CLAUDE_CODE_EXECPATH CLAUDE_CODE_MESSAGING_SOCKET CLAUDE_CODE_MESSAGING_TOKEN CLAUDE_CODE_SESSION_ATTENDED CLAUDE_CODE_SESSION_ID CLAUDE_EFFORT CLAUDE_PID CLAUDECODE} { catch {unset ::env($v)} }
+spawn claude --model sonnet --permission-mode default --strict-mcp-config --mcp-config ./mcp.json --allowedTools mcp__baseland__* Skill -- $prompt
+# The terminal draws without literal spaces, and the cursor starts on "No, exit".
+expect -timeout 30 -re "(?i)trust" { sleep 2; send "\033\[B"; sleep 0.5; send "\r" } timeout {}
+while {![file exists $armedflag]} { expect -timeout 1 eof { exit } timeout {} }
+# Claude still writes its answer: wait until nothing has been drawn for 6 s.
+set quiet 0
+while {!$quiet} { expect -timeout 6 -re ".+" {} eof { exit } timeout { set quiet 1 } }
+set f [open $endfile w]; puts $f [expr {[clock milliseconds] / 1000.0 - 6}]; close $f
+# Dismiss whatever is open (never confirm a prompt), then Ctrl-C twice to quit.
+send "\033"; sleep 0.5; send "\003"; sleep 0.5; send "\003"
+expect -timeout 15 eof

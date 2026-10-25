@@ -37,6 +37,15 @@ struct BaselandApp: App {
         if args.contains("-reset-session") { await model.session.signOut() }
         await model.bootstrap()
         if args.contains("-tab-plays") { model.selectedTab = .plays }
+        #if DEBUG
+        // UI tests connect a Coinbase key from a file on the Mac, so the key
+        // never passes through the clipboard (synced with the Mac's), the
+        // screen, or a test log (XCUITest records typed text).
+        if let i = args.firstIndex(of: "-connect-key-file"), args.indices.contains(i + 1),
+           let json = try? String(contentsOfFile: args[i + 1], encoding: .utf8) {
+            _ = await model.connectCoinbase(json: json)
+        }
+        #endif
         if let i = args.firstIndex(of: "-open-play"), args.indices.contains(i + 1) { model.openPlayId = args[i + 1] }
     }
 }
