@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1580" height="920" viewBox="0 0 1580 920" role="img" aria-label="Baseland architecture: the iPhone app or Claude Code arms a Play on the engine; plain-code watchers on Coinbase ticks fire the trigger; Claude returns a decision only; the user approves from the Dynamic Island; the Leash previews and places the order through the Ghost or Coinbase gateway; Supabase Realtime updates the phone."><title>Baseland: how one Play runs</title><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A4F59"/></marker></defs><rect width="1580" height="920" fill="#F5F3EE"/>
+<text x="60" y="54" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" fill="#14161A" text-anchor="start">Baseland: how one Play runs</text>
+<text x="60" y="84" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#4A4F59" text-anchor="start">Plain code watches the market. Claude is asked once, when the trigger fires, and returns a decision, never an order. The engine checks the Leash and the person holding the phone approves.</text>
+<rect x="60" y="130" width="320" height="340" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="78" y="152" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">IPHONE · SWIFTUI</text>
+<text x="78" y="174" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">Baseland app</text>
+<text x="78" y="196" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="400" fill="#4A4F59" text-anchor="start">Deck · Plays · Rig · Replay</text>
+<text x="78" y="226" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#8A8F99" text-anchor="start">Live Activity</text>
+<rect x="78" y="236" width="284" height="40" rx="20" fill="#0E0F12"/>
+<circle cx="102" cy="256" r="9" fill="none" stroke="#B49CFF" stroke-width="1.5" stroke-dasharray="2.5 2"/>
+<circle cx="102" cy="256" r="5" fill="#FF6A3D"/>
+<text x="120" y="261" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="start">ETH</text>
+<text x="344" y="261" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="14" font-weight="700" fill="#FF6A3D" text-anchor="end">$2.00?</text>
+<text x="78" y="296" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="start">Dynamic Island · lock screen</text>
+<text x="78" y="330" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">App Intents</text>
+<text x="78" y="350" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">Approve · Skip · Pause, from the Island</text>
+<rect x="78" y="380" width="54.199999999999996" height="17" rx="4" fill="#FFFFFF" stroke="#C8283A" stroke-width="1.3"/>
+<text x="105.1" y="393" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#C8283A" text-anchor="middle">CONTROL</text>
+<text x="140.2" y="393" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4A4F59" text-anchor="start">kill switch: app · Control Center · Siri</text>
+<rect x="78" y="420" width="41.0" height="17" rx="8.5" fill="none" stroke="#B49CFF" stroke-width="1.3" stroke-dasharray="3 2"/>
+<text x="98.5" y="433" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#6A4FD0" text-anchor="middle">GHOST</text>
+<text x="127.0" y="433" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4A4F59" text-anchor="start">on every simulated Play, row and Island</text>
+<rect x="60" y="500" width="320" height="150" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="78" y="522" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">ANY MCP HARNESS</text>
+<text x="78" y="544" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">Claude Code + Baseland MCP</text>
+<text x="78" y="566" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="400" fill="#4A4F59" text-anchor="start">draft · replay · arm · pause · kill</text>
+<rect x="78" y="590" width="54.199999999999996" height="17" rx="4" fill="#FFFFFF" stroke="#C8283A" stroke-width="1.3"/>
+<text x="105.1" y="603" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#C8283A" text-anchor="middle">CONTROL</text>
+<text x="140.2" y="603" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4A4F59" text-anchor="start">harness token: Ghost only,</text>
+<text x="140.2" y="619" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4A4F59" text-anchor="start">can never approve</text>
+<text x="78" y="640" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="400" fill="#8A8F99" text-anchor="start">No token: a private anonymous Ghost account</text>
+<rect x="60" y="680" width="320" height="156" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="78" y="702" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">SUPABASE</text>
+<text x="78" y="724" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">Postgres · Realtime · Auth</text>
+<text x="78" y="746" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="400" fill="#4A4F59" text-anchor="start">plays · tape · rig · deck · harness tokens</text>
+<text x="78" y="766" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="400" fill="#4A4F59" text-anchor="start">credentials: encrypted, engine only</text>
+<text x="78" y="786" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="400" fill="#4A4F59" text-anchor="start">Auth: anonymous users, getClaims</text>
+<text x="78" y="806" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="400" fill="#4A4F59" text-anchor="start">pg_cron pings /health every 5 min</text>
+<rect x="530" y="130" width="560" height="690" rx="18" fill="#EFECE5" stroke="#C9C4B8" stroke-width="1"/>
+<text x="550" y="152" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">ENGINE · RENDER</text>
+<text x="550" y="174" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">Node 22 + Fastify</text>
+<text x="1070" y="174" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="end">all state in Supabase; rehydrates on boot</text>
+<rect x="550" y="190" width="520" height="66" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="568" y="214" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">API</text>
+<text x="568" y="236" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">Supabase JWT (getClaims), or a bl_ harness token: default deny</text>
+<rect x="550" y="276" width="520" height="80" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="568" y="298" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">Play runtime</text>
+<text x="1052" y="298" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="end">every step written to the Tape</text>
+<rect x="568.0" y="314" width="74" height="26" rx="13" fill="#FFFFFF" stroke="#8E96A3" stroke-width="1.5"/>
+<circle cx="579.0" cy="327" r="3.5" fill="#8E96A3"/>
+<text x="587.0" y="331" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="400" fill="#14161A" text-anchor="start">armed</text>
+<text x="646.0" y="331" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#8A8F99" text-anchor="middle">›</text>
+<rect x="650.0" y="314" width="74" height="26" rx="13" fill="#FFFFFF" stroke="#3D7BFF" stroke-width="1.5"/>
+<circle cx="661.0" cy="327" r="3.5" fill="#3D7BFF"/>
+<text x="669.0" y="331" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="400" fill="#14161A" text-anchor="start">watching</text>
+<text x="728.0" y="331" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#8A8F99" text-anchor="middle">›</text>
+<rect x="732.0" y="314" width="74" height="26" rx="13" fill="#FFFFFF" stroke="#FFB224" stroke-width="1.5"/>
+<circle cx="743.0" cy="327" r="3.5" fill="#FFB224"/>
+<text x="751.0" y="331" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="400" fill="#14161A" text-anchor="start">deciding</text>
+<text x="810.0" y="331" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#8A8F99" text-anchor="middle">›</text>
+<rect x="814.0" y="314" width="74" height="26" rx="13" fill="#FFFFFF" stroke="#FF6A3D" stroke-width="1.5"/>
+<circle cx="825.0" cy="327" r="3.5" fill="#FF6A3D"/>
+<text x="833.0" y="331" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="400" fill="#14161A" text-anchor="start">awaiting</text>
+<text x="892.0" y="331" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#8A8F99" text-anchor="middle">›</text>
+<rect x="896.0" y="314" width="74" height="26" rx="13" fill="#FFFFFF" stroke="#14161A" stroke-width="1.5"/>
+<circle cx="907.0" cy="327" r="3.5" fill="#14161A"/>
+<text x="915.0" y="331" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="400" fill="#14161A" text-anchor="start">executing</text>
+<text x="974.0" y="331" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#8A8F99" text-anchor="middle">›</text>
+<rect x="978.0" y="314" width="74" height="26" rx="13" fill="#FFFFFF" stroke="#2BD07F" stroke-width="1.5"/>
+<circle cx="989.0" cy="327" r="3.5" fill="#2BD07F"/>
+<text x="997.0" y="331" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="400" fill="#14161A" text-anchor="start">done</text>
+<rect x="550" y="376" width="520" height="60" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="568" y="400" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">Watchers</text>
+<text x="568" y="421" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">price triggers in plain code; no AI in the loop</text>
+<rect x="550" y="466" width="520" height="100" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="568" y="490" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">Brain · Claude Sonnet 5.5 (swappable in the Rig)</text>
+<text x="568" y="512" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">decides once, when the trigger fires; rules fallback</text>
+<text x="568" y="532" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">returns act · skip · wait as JSON</text>
+<rect x="568" y="542" width="54.199999999999996" height="17" rx="4" fill="#FFFFFF" stroke="#C8283A" stroke-width="1.3"/>
+<text x="595.1" y="555" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#C8283A" text-anchor="middle">CONTROL</text>
+<text x="630.2" y="555" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4A4F59" text-anchor="start">holds no order-placing tools</text>
+<rect x="550" y="596" width="520" height="60" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="568" y="620" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">Leash</text>
+<text x="568" y="641" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">limits → orders preview → orders create (client_order_id)</text>
+<rect x="980" y="608" width="54.199999999999996" height="17" rx="4" fill="#FFFFFF" stroke="#C8283A" stroke-width="1.3"/>
+<text x="1007.1" y="621" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#C8283A" text-anchor="middle">CONTROL</text>
+<rect x="550" y="686" width="250" height="74" rx="14" fill="#FFFFFF" stroke="#B49CFF" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="568" y="710" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">Ghost gateway</text>
+<rect x="700" y="697" width="41.0" height="17" rx="8.5" fill="none" stroke="#B49CFF" stroke-width="1.3" stroke-dasharray="3 2"/>
+<text x="720.5" y="710" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#6A4FD0" text-anchor="middle">GHOST</text>
+<text x="568" y="732" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">simulated fills at the live price</text>
+<text x="568" y="750" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="start">default for every Play</text>
+<rect x="820" y="686" width="250" height="74" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="838" y="710" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="650" fill="#14161A" text-anchor="start">Coinbase gateway</text>
+<text x="838" y="732" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">coinbase CLI · the user's own key</text>
+<rect x="838" y="739" width="54.199999999999996" height="17" rx="4" fill="#FFFFFF" stroke="#C8283A" stroke-width="1.3"/>
+<text x="865.1" y="752" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#C8283A" text-anchor="middle">CONTROL</text>
+<text x="900.2" y="752" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4A4F59" text-anchor="start">live trading off</text>
+<text x="550" y="798" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="start">Also: Drafter + Deck (Haiku 5.5) · Replay on public candles (always simulated)</text>
+<polyline points="810,256 810,274" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<polyline points="810,356 810,374" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<polyline points="810,436 810,464" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="831" cy="446" r="9" fill="#3D7BFF"/>
+<text x="831" y="450" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+<text x="846" y="454" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">trigger fires</text>
+<polyline points="810,566 810,594" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="822" y="584" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">decision only</text>
+<polyline points="810,656 810,671 675,671 675,684" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<polyline points="810,671 945,671 945,684" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="1190" y="370" width="350" height="70" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="1208" y="392" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">COINBASE · PUBLIC</text>
+<text x="1208" y="414" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">Ticker WebSocket + candles</text>
+<rect x="1190" y="460" width="350" height="70" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="1208" y="482" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">ANTHROPIC</text>
+<text x="1208" y="504" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">Claude API</text>
+<text x="1522" y="504" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="end">Sonnet 5.5 · Haiku 5.5</text>
+<rect x="1190" y="550" width="350" height="92" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="1208" y="572" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">COINBASE · x402</text>
+<text x="1208" y="594" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">Evidence catalog (USDC on Base)</text>
+<rect x="1208" y="612" width="67.4" height="17" rx="8.5" fill="none" stroke="#B49CFF" stroke-width="1.3" stroke-dasharray="3 2"/>
+<text x="1241.7" y="625" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#6A4FD0" text-anchor="middle">SIMULATED</text>
+<text x="1283.4" y="625" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#4A4F59" text-anchor="start">at real prices until funded</text>
+<rect x="1190" y="676" width="350" height="94" rx="14" fill="#FFFFFF" stroke="#D9D5CC" stroke-width="1"/>
+<text x="1208" y="698" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="600" fill="#8A8F99" text-anchor="start" letter-spacing="1.2">COINBASE · ADVANCED TRADE</text>
+<text x="1208" y="720" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="650" fill="#14161A" text-anchor="start">orders preview / create</text>
+<text x="1208" y="740" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">one dedicated portfolio per key</text>
+<text x="1208" y="758" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="start">exits ride on the order</text>
+<polyline points="1190,406 1072,406" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="1105" cy="394" r="9" fill="#3D7BFF"/>
+<text x="1105" y="398" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+<text x="1120" y="402" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">ticks</text>
+<polyline points="1070,494 1188,494" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="1092" y="490" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">decide</text>
+<polyline points="1070,552 1080,552 1080,596 1188,596" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="1086" y="592" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">buy evidence</text>
+<polyline points="1070,723 1188,723" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="1105" cy="711" r="9" fill="#3D7BFF"/>
+<text x="1105" y="715" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">6</text>
+<text x="1120" y="719" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">order</text>
+<polyline points="380,206 548,206" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="401" cy="194" r="9" fill="#3D7BFF"/>
+<text x="401" y="198" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="416" y="202" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">arm a Play</text>
+<polyline points="380,566 500,566 500,226 548,226" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="397" cy="554" r="9" fill="#3D7BFF"/>
+<text x="397" y="558" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="412" y="562" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">arm</text>
+<polyline points="380,342 470,342 470,246 548,246" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="395" cy="330" r="9" fill="#3D7BFF"/>
+<text x="395" y="334" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+<text x="410" y="338" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">Approve</text>
+<polyline points="530,760 382,760" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="392" y="756" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="start">writes Plays + Tape</text>
+<polyline points="60,724 32,724 32,256 76,256" fill="none" stroke="#4A4F59" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="24" y="490" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="500" fill="#14161A" text-anchor="middle" transform="rotate(-90 24 490)">Realtime → Live Activity:  4 asks “Your call?”   7 shows the fill</text>
+<circle cx="539" cy="860" r="9" fill="#3D7BFF"/>
+<text x="539" y="864" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="556" y="864" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">to 7: one Play, from arming to the fill</text>
+<rect x="820" y="852" width="41.0" height="17" rx="8.5" fill="none" stroke="#B49CFF" stroke-width="1.3" stroke-dasharray="3 2"/>
+<text x="840.5" y="865" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#6A4FD0" text-anchor="middle">GHOST</text>
+<text x="869.0" y="865" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">simulated, no real money</text>
+<rect x="1060" y="852" width="54.199999999999996" height="17" rx="4" fill="#FFFFFF" stroke="#C8283A" stroke-width="1.3"/>
+<text x="1087.1" y="865" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#C8283A" text-anchor="middle">CONTROL</text>
+<text x="1122.2" y="865" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#4A4F59" text-anchor="start">enforced in code, not by the model</text>
+<text x="530" y="894" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8A8F99" text-anchor="start">Status 2026-10-25: LIVE_TRADING_ENABLED=false, so every Play is Ghost; x402 evidence is simulated at real catalog prices.</text></svg>

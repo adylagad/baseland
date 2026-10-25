@@ -17,6 +17,14 @@ Built for the CalHacks 2026 Coinbase prompt, **Trading Agents** track.
 > screen. Real-money trading (Phase 4) is switched off; everything runs in
 > GHOST.
 
+## How one Play runs
+
+![Baseland architecture: the app or Claude Code arms a Play; plain-code watchers fire the trigger; Claude returns a decision only; you approve from the Island; the Leash previews and places the order](docs/diagrams/architecture.png)
+
+Source: [`docs/diagrams/architecture.svg`](docs/diagrams/architecture.svg),
+drawn by `python3 -I docs/diagrams/architecture.py`. Decisions and limits:
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
 ## Layout
 
 | Path | What |
