@@ -52,5 +52,7 @@ jobs:
             echo "::error::RENDER_DEPLOY_HOOK secret is not set; see docs/personal-guide/render.md"
             exit 1
           fi
-          curl -fsS -X POST "$RENDER_DEPLOY_HOOK?ref=$GITHUB_SHA" > /dev/null
+          # The hook URL already carries ?key=..., so the commit is appended with &.
+          case "$RENDER_DEPLOY_HOOK" in *\?*) sep="&" ;; *) sep="?" ;; esac
+          curl -fsS -X POST "${RENDER_DEPLOY_HOOK}${sep}ref=${GITHUB_SHA}" > /dev/null
           echo "Deploy of $GITHUB_SHA requested; /health reports the commit as 'version'."
