@@ -6,6 +6,7 @@ import type { MarketData } from "./market/public.js";
 import { credentialRoutes } from "./routes/credentials.js";
 import { marketRoutes } from "./routes/market.js";
 import { playRoutes } from "./routes/plays.js";
+import { deckRoutes, type DeckRouteDeps } from "./routes/deck.js";
 import type { PlayRuntime } from "./plays/runtime.js";
 
 export interface EngineDeps {
@@ -15,6 +16,7 @@ export interface EngineDeps {
   market: MarketData;
   credentialsSecret: string;
   runtime: PlayRuntime;
+  words?: Omit<DeckRouteDeps, "auth" | "runtime">;
   version?: string;
 }
 
@@ -59,6 +61,7 @@ export function buildServer(deps: EngineDeps, opts: FastifyServerOptions = {}) {
     secret: deps.credentialsSecret,
   });
   playRoutes(app, { auth, runtime: deps.runtime });
+  if (deps.words) deckRoutes(app, { auth, runtime: deps.runtime, ...deps.words });
 
   return app;
 }
