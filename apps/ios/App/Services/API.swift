@@ -88,6 +88,26 @@ struct EngineAPI: Sendable {
         return (r.valid, r.cartridge, r.issues ?? [])
     }
 
+    // MARK: The Rig
+
+    func rig() async throws -> (RigDTO, RigCatalog) {
+        struct R: Decodable { let rig: RigDTO; let catalog: RigCatalog }
+        let r: R = try await send("GET", "/v1/rig")
+        return (r.rig, r.catalog)
+    }
+
+    func saveRig(_ rig: RigDTO) async throws -> RigDTO {
+        struct R: Decodable { let rig: RigDTO }
+        let data = try JSONCoding.encoder.encode(["rig": rig])
+        return try await (send("PUT", "/v1/rig", raw: data) as R).rig
+    }
+
+    func account() async throws -> Account { try await send("GET", "/v1/account") }
+
+    func replay(cartridge: JSONValue, days: Double) async throws -> ReplayResult {
+        try await send("POST", "/v1/replay", body: ["cartridge": cartridge, "days": .number(days)])
+    }
+
     // MARK: Transport
 
     private func send<T: Decodable>(_ method: String, _ path: String, body: [String: JSONValue]? = nil, raw: Data? = nil) async throws -> T {

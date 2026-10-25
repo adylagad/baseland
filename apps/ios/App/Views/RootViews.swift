@@ -17,6 +17,7 @@ struct RootView: View {
                     Tab("Deck", systemImage: "rectangle.stack.fill", value: AppModel.Tab.deck) { DeckView() }
                     Tab("Plays", systemImage: "dot.radiowaves.left.and.right", value: AppModel.Tab.plays) { PlaysView() }
                         .badge(model.plays.filter { $0.state == .awaiting }.count)
+                    Tab("Rig", systemImage: "slider.vertical.3", value: AppModel.Tab.rig) { RigView() }
                 }
                 .tint(Theme.ink)
             }

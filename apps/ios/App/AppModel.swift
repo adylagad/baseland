@@ -24,8 +24,11 @@ final class AppModel {
     var toast: Toast?
     var openPlayId: String?
     var selectedTab: Tab = .deck
+    private(set) var rig: RigDTO?
+    private(set) var catalog: RigCatalog?
+    private(set) var account: Account?
 
-    enum Tab: Hashable { case deck, plays }
+    enum Tab: Hashable { case deck, plays, rig }
 
     struct Toast: Identifiable, Equatable {
         let id = UUID()
@@ -87,6 +90,7 @@ final class AppModel {
             onTape: { row in Task { @MainActor in AppModel.shared.merge(row) } }
         )
         await refresh()
+        await loadRig()
         if drafts.isEmpty { await loadDeck(refresh: false) }
     }
 
@@ -207,6 +211,77 @@ final class AppModel {
         if let (play, tape) = try? await api.play(playId) {
             tapes[playId] = tape
             merge(play)
+        }
+    }
+
+    // MARK: The Rig
+
+    func loadRig() async {
+        do {
+            let (r, c) = try await api.rig()
+            rig = r
+            catalog = c
+        } catch {
+            show(message(for: error), error: true)
+        }
+    }
+
+    /// Applies an edit at once and saves it; on failure, puts the old Rig back.
+    func editRig(_ change: (inout RigDTO) -> Void) async {
+        guard var next = rig else { return }
+        let before = next
+        change(&next)
+        guard next != before else { return }
+        rig = next
+        do {
+            rig = try await api.saveRig(next)
+        } catch {
+            rig = before
+            show(message(for: error), error: true)
+        }
+    }
+
+    func loadAccount() async {
+        account = try? await api.account()
+    }
+
+    func replay(_ cartridge: JSONValue, days: Double) async -> ReplayResult? {
+        do {
+            return try await api.replay(cartridge: cartridge, days: days)
+        } catch {
+            show(message(for: error), error: true)
+            return nil
+        }
+    }
+
+    // MARK: Cartridges (share and import)
+
+    /// A cartridge as pretty JSON, for sharing. Mode is never part of it.
+    static func shareText(_ cartridge: JSONValue) -> String {
+        let e = JSONEncoder()
+        e.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return (try? e.encode(cartridge)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+    }
+
+    /// Pasted JSON → validated by the engine → a card on top of the Deck.
+    func importCartridge(_ text: String) async -> Bool {
+        guard let data = text.data(using: .utf8), let json = try? JSONDecoder().decode(JSONValue.self, from: data) else {
+            show("That isn't a cartridge (it should be JSON).", error: true)
+            return false
+        }
+        do {
+            let r = try await api.preview(cartridge: json)
+            guard r.valid, let cartridge = r.cartridge else {
+                show(r.issues.first.map(Self.humanize) ?? "That cartridge doesn't validate.", error: true)
+                return false
+            }
+            drafts.insert(Draft(id: UUID().uuidString, cardId: nil, cartridge: cartridge, sentence: Self.sentence(of: cartridge), rationale: "Imported cartridge"), at: 0)
+            selectedTab = .deck
+            show("Imported. It's on top of your Deck.")
+            return true
+        } catch {
+            show(message(for: error), error: true)
+            return false
         }
     }
 
