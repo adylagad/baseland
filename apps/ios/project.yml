@@ -73,6 +73,17 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adylagad.baseland.widgets
+  BaselandUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: Baseland
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adylagad.baseland.uitests
+        TEST_TARGET_NAME: Baseland
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   Baseland:
     build:
@@ -83,3 +94,4 @@ schemes:
       config: Debug
     test:
       config: Debug
+      targets: [BaselandUITests]
