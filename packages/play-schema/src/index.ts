@@ -184,3 +184,4 @@ export type Mode = z.infer<typeof Mode>;
 
 export { examples } from "./examples.js";
 export { Draft, INSTINCTS, cartridgeFromDraft, sentenceFor, durationLabel, usdLabel } from "./draft.js";
+export { Rig, BRAIN_MODELS, RIG_ASSETS, defaultRig } from "./rig.js";
