@@ -29,6 +29,7 @@ export const SentencePart = z.discriminatedUnion("kind", [
     label: z.string().min(1),
   }),
 ]);
+export type SentencePart = z.infer<typeof SentencePart>;
 export const Sentence = z.array(SentencePart).min(1);
 
 // ------------------------------------------------------------------- trigger
@@ -182,3 +183,4 @@ export const Mode = z.enum(["ghost", "live"]);
 export type Mode = z.infer<typeof Mode>;
 
 export { examples } from "./examples.js";
+export { Draft, INSTINCTS, cartridgeFromDraft, sentenceFor, durationLabel, usdLabel } from "./draft.js";
