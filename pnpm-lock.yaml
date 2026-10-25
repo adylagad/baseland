@@ -10,6 +10,9 @@ importers:
 
   apps/engine:
     dependencies:
+      '@baseland/play-schema':
+        specifier: workspace:*
+        version: link:../../packages/play-schema
       '@coinbase/coinbase-cli':
         specifier: 0.0.10
         version: 0.0.10
@@ -29,6 +32,25 @@ importers:
       tsup:
         specifier: ^9.0.0
         version: 9.0.0(postcss@8.5.31)(tsx@4.23.15)(typescript@7.0.2)
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(tsx@4.23.15))
+
+  packages/play-schema:
+    dependencies:
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.5
+        version: 22.20.5
       tsx:
         specifier: ^4.23.15
         version: 4.23.15

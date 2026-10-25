@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number",
+      "const": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "sentence": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "text"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "text"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "chip"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "field": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "kind",
+              "id",
+              "field",
+              "label"
+            ]
+          }
+        ]
+      }
+    },
+    "window": {
+      "type": "object",
+      "properties": {
+        "startsInMin": {
+          "default": 0,
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10080
+        },
+        "lastsMin": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10080
+        }
+      },
+      "required": [
+        "lastsMin"
+      ]
+    },
+    "trigger": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "price_cross"
+            },
+            "product": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]{1,12}-[A-Z0-9]{2,6}$"
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "above",
+                "below"
+              ]
+            },
+            "price": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "product",
+            "direction",
+            "price"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "pct_move"
+            },
+            "product": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]{1,12}-[A-Z0-9]{2,6}$"
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down",
+                "either"
+              ]
+            },
+            "pct": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "kind",
+            "product",
+            "direction",
+            "pct"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "time"
+            },
+            "afterMin": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "kind",
+            "afterMin"
+          ]
+        }
+      ]
+    },
+    "evidence": {
+      "default": {
+        "senses": [],
+        "budgetUsdc": 0
+      },
+      "type": "object",
+      "properties": {
+        "senses": {
+          "default": [],
+          "maxItems": 5,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "budgetUsdc": {
+          "default": 0,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        }
+      }
+    },
+    "decision": {
+      "default": {
+        "instinct": "steady",
+        "ask": "always"
+      },
+      "type": "object",
+      "properties": {
+        "instinct": {
+          "default": "steady",
+          "type": "string",
+          "minLength": 1
+        },
+        "ask": {
+          "default": "always",
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "always"
+            },
+            {
+              "type": "string",
+              "const": "never"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "aboveUsd": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "required": [
+                "aboveUsd"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "action": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "side": {
+              "type": "string",
+              "const": "BUY"
+            },
+            "product": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]{1,12}-[A-Z0-9]{2,6}$"
+            },
+            "quoteUsd": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "side",
+            "product",
+            "quoteUsd"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "side": {
+              "type": "string",
+              "const": "SELL"
+            },
+            "product": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]{1,12}-[A-Z0-9]{2,6}$"
+            },
+            "baseSize": {
+              "type": "string",
+              "pattern": "^\\d+(\\.\\d+)?$"
+            }
+          },
+          "required": [
+            "side",
+            "product",
+            "baseSize"
+          ]
+        }
+      ]
+    },
+    "exit": {
+      "type": "object",
+      "properties": {
+        "takeProfitPct": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100
+        },
+        "stopLossPct": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 50
+        }
+      }
+    },
+    "leash": {
+      "type": "object",
+      "properties": {
+        "maxOrderUsd": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maxPlayUsd": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maxEvidenceUsdc": {
+          "default": 0.1,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "allowedProducts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]{1,12}-[A-Z0-9]{2,6}$"
+          }
+        }
+      },
+      "required": [
+        "maxOrderUsd",
+        "maxPlayUsd"
+      ]
+    }
+  },
+  "required": [
+    "version",
+    "title",
+    "sentence",
+    "window",
+    "trigger",
+    "action",
+    "leash"
+  ]
+}

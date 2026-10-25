@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@baseland/play-schema": "workspace:*",
     "@coinbase/coinbase-cli": "0.0.10",
     "@supabase/supabase-js": "^2.118.0",
     "fastify": "^5.12.7",
