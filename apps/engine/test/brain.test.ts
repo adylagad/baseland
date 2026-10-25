@@ -66,7 +66,7 @@ describe("evidence inside the runtime", () => {
     await h.price("ETH-USDC", 2300);
     const c = structuredClone(examples.ethBreakout) as CartridgeInput;
     c.evidence = { senses: ["exa.news", "nansen.flows", "you.news"], budgetUsdc: 0.1 };
-    const play = await h.runtime.create(ALICE, c, "ghost");
+    const play = await h.create(ALICE, c, "ghost");
     await h.price("ETH-USDC", 2401);
 
     const tape = await h.store.tape(play.id);
@@ -85,7 +85,7 @@ describe("evidence inside the runtime", () => {
     const h = harness({ brain: spy });
     h.deps.evidenceFor = async () => new GhostEvidence();
     await h.price("ETH-USDC", 2000);
-    await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    await h.create(ALICE, examples.ethNow, "ghost");
     expect(saw).toBeUndefined();
   });
 });
@@ -96,7 +96,7 @@ describe("FallbackBrain", () => {
     const errors: unknown[] = [];
     const h = harness({ brain: new FallbackBrain(broken, new RuleBrain(), (e) => errors.push(e)) });
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    const play = await h.create(ALICE, examples.ethNow, "ghost");
     expect(play.state).toBe("awaiting");
     const decision = (await h.store.tape(play.id)).find((t) => t.kind === "decision")!;
     expect(decision.payload.by).toBe("rules (claude-opus-5-5 unavailable)");

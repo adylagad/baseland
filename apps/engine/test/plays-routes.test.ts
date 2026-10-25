@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { examples } from "@baseland/play-schema";
+import { settle } from "./harness.js";
 import { fakeCoinbase, testServer } from "./helpers.js";
 
 const alice = { authorization: "Bearer token-alice" };
@@ -23,7 +24,9 @@ describe("Play routes", () => {
     const created = await app.inject({ method: "POST", url: "/v1/plays", headers: alice, payload: { cartridge: examples.ethNow } });
     expect(created.statusCode).toBe(201);
     const play = created.json();
-    expect(play).toMatchObject({ mode: "ghost", state: "awaiting", title: "Buy ETH now" });
+    // Creation returns at once; the decision follows in the background.
+    expect(play).toMatchObject({ mode: "ghost", state: "watching", title: "Buy ETH now" });
+    await settle();
 
     const approved = await app.inject({ method: "POST", url: `/v1/plays/${play.id}/approve`, headers: alice });
     expect(approved.json()).toMatchObject({ state: "done" });
@@ -52,6 +55,7 @@ describe("Play routes", () => {
   it("accepts action POSTs with a JSON content type and an empty body (found end to end)", async () => {
     const { app } = await setup();
     const play = (await app.inject({ method: "POST", url: "/v1/plays", headers: alice, payload: { cartridge: examples.ethNow } })).json();
+    await settle();
     const res = await app.inject({
       method: "POST",
       url: `/v1/plays/${play.id}/approve`,

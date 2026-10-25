@@ -62,10 +62,17 @@ export function harness(opts: {
   const states = async (playId: string) =>
     (await store.tape(playId)).filter((t) => t.kind === "state").map((t) => t.payload.to);
 
-  return { runtime, store, feed, clock, price, tick, kinds, states, ghost, deps };
+  /** Creates a Play and waits for its first look (which runs in the background). */
+  const create = async (...args: Parameters<PlayRuntime["create"]>) => {
+    const p = await runtime.create(...args);
+    await settle();
+    return (await store.get(p.id))!;
+  };
+
+  return { runtime, store, feed, clock, price, tick, kinds, states, ghost, deps, create };
 }
 
 /** Lets queued per-Play work (price ticks run through a lock) finish. */
 export async function settle() {
-  for (let i = 0; i < 20; i++) await new Promise((r) => setImmediate(r));
+  for (let i = 0; i < 100; i++) await new Promise((r) => setImmediate(r));
 }

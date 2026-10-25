@@ -15,7 +15,7 @@ describe("a Ghost price_cross Play, end to end", () => {
     const h = harness();
     await h.price("ETH-USDC", 2300);
 
-    let play = await h.runtime.create(ALICE, examples.ethBreakout, "ghost");
+    let play = await h.create(ALICE, examples.ethBreakout, "ghost");
     expect(play.state).toBe("watching");
     expect(play.status).toMatchObject({ phase: "entry", symbol: "ETH", anchorPrice: 2300, headline: "Watching for ETH ≥ $2,400.00." });
 
@@ -72,7 +72,7 @@ describe("a Ghost price_cross Play, end to end", () => {
     await h.price("ETH-USDC", 2400);
     const c = clone(examples.ethBreakout) as CartridgeInput;
     c.decision = { instinct: "momentum", ask: "never" };
-    const play = await h.runtime.create(ALICE, c, "ghost"); // fires immediately: already at 2400
+    const play = await h.create(ALICE, c, "ghost"); // fires immediately: already at 2400
     await settle();
     expect((await h.store.get(play.id))!.status.phase).toBe("exit");
     await h.price("ETH-USDC", 2350);
@@ -89,7 +89,7 @@ describe("approval policy", () => {
     await h.price("ETH-USDC", 2000);
     const c = clone(examples.ethNow) as CartridgeInput;
     c.decision = { instinct: "steady", ask: "never" };
-    const play = await h.runtime.create(ALICE, c, "ghost");
+    const play = await h.create(ALICE, c, "ghost");
     expect(play.state).toBe("done");
     expect(await h.states(play.id)).toEqual(["armed", "watching", "deciding", "executing", "done"]);
     const approvals = (await h.store.tape(play.id)).filter((t) => t.kind === "approval");
@@ -100,20 +100,20 @@ describe("approval policy", () => {
     const h = harness();
     await h.price("ETH-USDC", 2000);
     const small = { ...clone(examples.ethNow), decision: { instinct: "steady", ask: { aboveUsd: 5 } } } as CartridgeInput;
-    expect((await h.runtime.create(ALICE, small, "ghost")).state).toBe("done");
+    expect((await h.create(ALICE, small, "ghost")).state).toBe("done");
     const big = {
       ...clone(examples.ethNow),
       action: { side: "BUY", product: "ETH-USDC", quoteUsd: 6 },
       leash: { maxOrderUsd: 10, maxPlayUsd: 10 },
       decision: { instinct: "steady", ask: { aboveUsd: 5 } },
     } as CartridgeInput;
-    expect((await h.runtime.create(ALICE, big, "ghost")).state).toBe("awaiting");
+    expect((await h.create(ALICE, big, "ghost")).state).toBe("awaiting");
   });
 
   it("skip ends the Play without an order", async () => {
     const h = harness();
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    const play = await h.create(ALICE, examples.ethNow, "ghost");
     expect(play.state).toBe("awaiting");
     const done = await h.runtime.skip(ALICE, play.id);
     expect(done).toMatchObject({ state: "done", stateReason: "Skipped by you.", pending: null });
@@ -123,7 +123,7 @@ describe("approval policy", () => {
   it("approving twice places one order", async () => {
     const h = harness();
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    const play = await h.create(ALICE, examples.ethNow, "ghost");
     const [a, b] = await Promise.allSettled([h.runtime.approve(ALICE, play.id), h.runtime.approve(ALICE, play.id)]);
     expect(a.status).toBe("fulfilled");
     expect(b.status).toBe("rejected");
@@ -136,7 +136,7 @@ describe("the Leash, inside the runtime", () => {
   it("rejects when Ghost cash runs out, and records why", async () => {
     const h = harness({ ghostStartingUsd: 1 });
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    const play = await h.create(ALICE, examples.ethNow, "ghost");
     expect(play.state).toBe("failed");
     expect(play.stateReason).toBe("Leash: only $1.00 available.");
     const reject = (await h.store.tape(play.id)).find((t) => t.kind === "leash_reject");
@@ -148,7 +148,7 @@ describe("the Leash, inside the runtime", () => {
     const greedy: Brain = { name: "greedy", decide: async () => ({ verdict: "act", headline: "all in", quoteUsd: 1000, evidenceCostUsdc: 0, by: "greedy" }) };
     const h = harness({ brain: greedy });
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    const play = await h.create(ALICE, examples.ethNow, "ghost");
     expect(play.pending?.quoteUsd).toBe(2);
   });
 
@@ -156,13 +156,13 @@ describe("the Leash, inside the runtime", () => {
     const skipper: Brain = { name: "s", decide: async () => ({ verdict: "skip", headline: "Volume too thin.", evidenceCostUsdc: 0, by: "s" }) };
     const h = harness({ brain: skipper });
     await h.price("ETH-USDC", 2000);
-    expect(await h.runtime.create(ALICE, examples.ethNow, "ghost")).toMatchObject({ state: "done", stateReason: "Volume too thin." });
+    expect(await h.create(ALICE, examples.ethNow, "ghost")).toMatchObject({ state: "done", stateReason: "Volume too thin." });
 
     let calls = 0;
     const waiter: Brain = { name: "w", decide: async () => ({ verdict: calls++ === 0 ? "wait" : "act", headline: "hm", quoteUsd: 3, evidenceCostUsdc: 0, by: "w" }) };
     const h2 = harness({ brain: waiter });
     await h2.price("ETH-USDC", 2300);
-    const p = await h2.runtime.create(ALICE, examples.ethBreakout, "ghost");
+    const p = await h2.create(ALICE, examples.ethBreakout, "ghost");
     await h2.price("ETH-USDC", 2401);
     expect((await h2.store.get(p.id))!.state).toBe("watching");
     // Still above the level, but cooling down: no second ask yet.
@@ -178,7 +178,7 @@ describe("the Leash, inside the runtime", () => {
     const ditherer: Brain = { name: "d", decide: async () => (asks++, { verdict: "wait", headline: "not yet", evidenceCostUsdc: 0, by: "d" }) };
     const h = harness({ brain: ditherer });
     await h.price("ETH-USDC", 2300);
-    const p = await h.runtime.create(ALICE, examples.ethBreakout, "ghost");
+    const p = await h.create(ALICE, examples.ethBreakout, "ghost");
     for (let i = 0; i < 10; i++) {
       await h.price("ETH-USDC", 2401 + i);
       h.clock.advance(60_000);
@@ -198,7 +198,7 @@ describe("windows, pause, kill", () => {
     const h = harness();
     await h.price("BTC-USDC", 100);
     const c = { ...clone(examples.btcDip), window: { startsInMin: 10, lastsMin: 60 } } as CartridgeInput;
-    const play = await h.runtime.create(ALICE, c, "ghost");
+    const play = await h.create(ALICE, c, "ghost");
     expect(play.state).toBe("armed");
     await h.tick(9 * 60_000);
     expect((await h.store.get(play.id))!.state).toBe("armed");
@@ -211,7 +211,7 @@ describe("windows, pause, kill", () => {
   it("pct_move measures from the price when the window opened", async () => {
     const h = harness();
     await h.price("BTC-USDC", 100);
-    const play = await h.runtime.create(ALICE, examples.btcDip, "ghost");
+    const play = await h.create(ALICE, examples.btcDip, "ghost");
     await h.price("BTC-USDC", 98);
     expect((await h.store.get(play.id))!.state).toBe("watching");
     await h.price("BTC-USDC", 96.9);
@@ -222,7 +222,7 @@ describe("windows, pause, kill", () => {
     const h = harness();
     await h.price("ETH-USDC", 2000);
     const c = { ...clone(examples.ethNow), trigger: { kind: "time", afterMin: 5 } } as CartridgeInput;
-    const play = await h.runtime.create(ALICE, c, "ghost");
+    const play = await h.create(ALICE, c, "ghost");
     expect(play.state).toBe("watching");
     await h.tick(4 * 60_000);
     expect((await h.store.get(play.id))!.state).toBe("watching");
@@ -233,7 +233,7 @@ describe("windows, pause, kill", () => {
   it("pause stops watching; resume picks up; kill ends it", async () => {
     const h = harness();
     await h.price("ETH-USDC", 2300);
-    const play = await h.runtime.create(ALICE, examples.ethBreakout, "ghost");
+    const play = await h.create(ALICE, examples.ethBreakout, "ghost");
     await h.runtime.pause(ALICE, play.id);
     await h.price("ETH-USDC", 2500);
     expect((await h.store.get(play.id))!.state).toBe("paused");
@@ -249,9 +249,9 @@ describe("windows, pause, kill", () => {
     const h = harness();
     await h.price("ETH-USDC", 2300);
     await h.price("BTC-USDC", 100);
-    const a = await h.runtime.create(ALICE, examples.ethBreakout, "ghost");
-    const b = await h.runtime.create(ALICE, examples.btcDip, "ghost");
-    const bob = await h.runtime.create("bob", examples.ethBreakout, "ghost");
+    const a = await h.create(ALICE, examples.ethBreakout, "ghost");
+    const b = await h.create(ALICE, examples.btcDip, "ghost");
+    const bob = await h.create("bob", examples.ethBreakout, "ghost");
     expect(await h.runtime.killAll(ALICE)).toBe(2);
     expect((await h.store.get(a.id))!.state).toBe("killed");
     expect((await h.store.get(b.id))!.stateReason).toBe("Stopped by the kill switch.");
@@ -263,7 +263,7 @@ describe("ownership and validation", () => {
   it("another user can't see or touch a Play", async () => {
     const h = harness();
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    const play = await h.create(ALICE, examples.ethNow, "ghost");
     for (const call of [() => h.runtime.approve("mallory", play.id), () => h.runtime.get("mallory", play.id), () => h.runtime.kill("mallory", play.id)]) {
       await expect(call()).rejects.toMatchObject({ status: 404 });
     }
@@ -273,7 +273,7 @@ describe("ownership and validation", () => {
   it("rejects invalid cartridges with the reasons", async () => {
     const h = harness();
     const bad = { ...clone(examples.ethNow), action: { side: "BUY", product: "ETH-USDC", quoteUsd: 99 } };
-    const err = (await h.runtime.create(ALICE, bad, "ghost").catch((e) => e)) as PlayError;
+    const err = (await h.create(ALICE, bad, "ghost").catch((e) => e)) as PlayError;
     expect(err.status).toBe(400);
     expect(err.details).toContain("action.quoteUsd: order is larger than the Leash's maxOrderUsd");
   });
@@ -282,12 +282,12 @@ describe("ownership and validation", () => {
 describe("live mode guards", () => {
   it("is refused while live trading is switched off", async () => {
     const h = harness({ liveTradingEnabled: false, hasLiveAccess: true });
-    await expect(h.runtime.create(ALICE, examples.ethNow, "live")).rejects.toMatchObject({ status: 403, message: "Live trading is switched off on this engine." });
+    await expect(h.create(ALICE, examples.ethNow, "live")).rejects.toMatchObject({ status: 403, message: "Live trading is switched off on this engine." });
   });
 
   it("needs a connected key", async () => {
     const h = harness({ liveTradingEnabled: true, hasLiveAccess: false });
-    await expect(h.runtime.create(ALICE, examples.ethNow, "live")).rejects.toMatchObject({ status: 403 });
+    await expect(h.create(ALICE, examples.ethNow, "live")).rejects.toMatchObject({ status: 403 });
   });
 
   function fakeLive(opts: { preview: boolean }) {
@@ -308,7 +308,7 @@ describe("live mode guards", () => {
     const live = fakeLive({ preview: false });
     const h = harness({ liveTradingEnabled: true, hasLiveAccess: true, live: live.gw });
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "live");
+    const play = await h.create(ALICE, examples.ethNow, "live");
     const failed = await h.runtime.approve(ALICE, play.id);
     expect(failed).toMatchObject({ state: "failed", stateReason: "Coinbase couldn't preview this order, so it wasn't placed." });
     expect(live.placed).toEqual([]);
@@ -319,7 +319,7 @@ describe("live mode guards", () => {
     const h = harness({ liveTradingEnabled: true, hasLiveAccess: true, live: live.gw });
     await h.price("ETH-USDC", 2400);
     const c = { ...clone(examples.ethBreakout), action: { side: "BUY", product: "ETH-USDC", quoteUsd: 2 } } as CartridgeInput;
-    const play = await h.runtime.create(ALICE, c, "live");
+    const play = await h.create(ALICE, c, "live");
     const done = await h.runtime.approve(ALICE, play.id);
     expect(done.state).toBe("done");
     expect(done.stateReason).toMatch(/Exits held by Coinbase \(TP \$2,080\.00, SL \$1,960\.00\)\.$/);
@@ -336,7 +336,7 @@ describe("live mode guards", () => {
     const h = harness({ liveTradingEnabled: true, hasLiveAccess: true, live: live.gw });
     await h.price("ETH-USDC", 2000);
     const c = { ...clone(examples.ethNow), action: { side: "BUY", product: "ETH-USDC", quoteUsd: 20 }, leash: { maxOrderUsd: 20, maxPlayUsd: 20 } } as CartridgeInput;
-    const play = await h.runtime.create(ALICE, c, "live");
+    const play = await h.create(ALICE, c, "live");
     expect(play).toMatchObject({ state: "failed", stateReason: "Leash: $20.00 is over the engine's $10.00 live-order ceiling." });
     expect(live.placed).toEqual([]);
   });
@@ -356,9 +356,16 @@ describe("robustness", () => {
     h.clock.advance(31 * 60_000); // past the window: tick tries to expire it
     await rt.tick();
     await settle();
+    const after = warnings.length;
+    expect(after).toBeGreaterThan(0);
+    expect(new Set(warnings)).toEqual(new Set(["play no longer exists; forgotten"]));
+    // Once forgotten, further ticks don't touch it again.
+    h.clock.advance(60_000);
     await rt.tick();
     await settle();
-    expect(warnings).toEqual(["play no longer exists; forgotten"]);
+    await rt.tick();
+    await settle();
+    expect(warnings.length).toBe(after);
     expect(errors).toEqual([]);
   });
 });
@@ -367,7 +374,7 @@ describe("restarts", () => {
   it("re-arms watching Plays from the store", async () => {
     const h = harness();
     await h.price("ETH-USDC", 2300);
-    const play = await h.runtime.create(ALICE, examples.ethBreakout, "ghost");
+    const play = await h.create(ALICE, examples.ethBreakout, "ghost");
     h.runtime.stop();
 
     const { PlayRuntime } = await import("../src/plays/runtime.js");
@@ -381,7 +388,7 @@ describe("restarts", () => {
   it("never re-places an order that was mid-submission; resolves one that was accepted", async () => {
     const h = harness();
     await h.price("ETH-USDC", 2000);
-    const play = await h.runtime.create(ALICE, examples.ethNow, "ghost");
+    const play = await h.create(ALICE, examples.ethNow, "ghost");
 
     // Simulate a crash after submitting, before an order id came back.
     await h.store.update(play.id, { state: "executing", pending: null });

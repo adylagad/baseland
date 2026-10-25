@@ -274,12 +274,19 @@ export class PlayRuntime {
     let next = await this.transition(p, "watching", {}, { anchorPrice, price: anchorPrice, headline: "", progress: 0 });
     next = await this.writeStatus(next, { headline: this.describeWatch(next) }, true);
     this.watch(next);
-    // Evaluate straight away against the opening price, so a condition that
-    // already holds fires now rather than on the next tick (approval still
-    // applies unless the cartridge says "never").
-    if (p.spec.trigger.kind === "time") await this.tickOne(id);
-    else if (product && anchorPrice !== undefined) await this.onPrice(id, { productId: product, price: anchorPrice, at: this.now() });
-    return await this.fresh(id);
+    // Evaluate against the opening price straight away, so a condition that
+    // already holds fires now rather than on the next tick. It runs as the
+    // Play's next queued job, not inside this call: a Brain can take seconds,
+    // and creating a Play over HTTP must return at once (the app follows the
+    // rest over Realtime).
+    const firstLook =
+      p.spec.trigger.kind === "time"
+        ? () => this.tickOne(id)
+        : product && anchorPrice !== undefined
+          ? () => this.onPrice(id, { productId: product, price: anchorPrice, at: this.now() })
+          : null;
+    if (firstLook) void this.lock(id, firstLook).catch((err) => this.onFailure(id, "first look failed", err));
+    return next;
   }
 
   private async onPrice(id: string, tick: Tick) {
