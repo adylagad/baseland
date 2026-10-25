@@ -33,7 +33,7 @@ A Play's trigger just fired. Decide whether to act on it now.
 
 How you work:
 - Call market_context first. It is free and real.
-- buy_evidence costs money (USDC, per call) and comes out of a small budget. The sources on a Play were chosen for it: before acting, buy the one most relevant to the decision; buy a second only if it could change it. If a purchase is marked GHOST, no data came back: decide from market context and say so.
+- buy_evidence costs money (USDC, per call) and comes out of a small budget. The sources on a Play were chosen for it by the person: when it lists sources and the budget covers one, buy the most relevant one before you decide, and cite what it said; buy a second only if it could change the call. If a purchase is marked GHOST, no data came back: decide from market context and say so.
 - Finish by calling submit_decision exactly once. Do not reply with prose instead.
 
 Rules you cannot change:
@@ -94,7 +94,9 @@ export class ClaudeBrain implements Brain {
       a.side === "BUY" ? `Proposed action: buy $${a.quoteUsd} of ${symbolOf(a.product)} (${a.product}).` : `Proposed action: sell ${a.baseSize} ${symbolOf(a.product)} (${a.product}).`,
       spec.exit ? `Exits if bought: ${spec.exit.takeProfitPct ? `take profit +${spec.exit.takeProfitPct}%` : ""}${spec.exit.takeProfitPct && spec.exit.stopLossPct ? ", " : ""}${spec.exit.stopLossPct ? `stop loss -${spec.exit.stopLossPct}%` : ""}.` : "No exits set.",
       `Instinct: ${ctx.instinctText ?? INSTINCT_TEXT[(spec.decision.instinct as Instinct) in INSTINCT_TEXT ? (spec.decision.instinct as Instinct) : "steady"]}`,
-      ctx.evidence?.senses.length ? `Evidence budget left: $${ctx.evidence.remainingUsdc.toFixed(3)} USDC.` : "No evidence budget: decide from market context.",
+      ctx.evidence?.senses.length
+        ? `Evidence sources on this Play: ${ctx.evidence.senses.map((id) => { const s = senseById(id); return s ? `${s.id} (${s.label}, $${s.priceUsdc})` : id; }).join("; ")}. Budget left: $${ctx.evidence.remainingUsdc.toFixed(3)} USDC.`
+        : "No evidence budget: decide from market context.",
     ].join("\n");
 
     const final = await this.client.beta.messages.toolRunner({
