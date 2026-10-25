@@ -79,3 +79,20 @@ update or end in a `nonisolated static` helper that looks the activity up in
 `.frame(maxWidth: 52)` rendered as `5:59:…` in the real Dynamic Island. 12pt
 mono at a fixed 58pt width fits `5:59:58`. Check any trailing-compact change
 on the simulator; the Island Lab preview does not enforce the system's width.
+
+## Repo and deploys
+
+### `xcodebuild` in a Swift package dir writes `.build/` into the repo
+**Bit 2026-10-24.** Running the BaselandKit tests from
+`apps/ios/BaselandKit` created a SwiftPM index store at
+`BaselandKit/.build/`, and `git add apps/ios` staged 2,277 files from it. It
+was caught before the push completed. `.build/` and `.swiftpm/` are now
+gitignored; check `git show --stat` before pushing any iOS commit.
+
+### Pushing does not deploy the engine (yet)
+**Seen 2026-10-24.** The Render service was created through the API from the
+public repo URL, and a push to `main` started no deploy, presumably because
+Render's GitHub app isn't connected to `adylagad/baseland`. Until it is,
+deploy with the Render MCP's `trigger_deploy` (service
+`srv-dbem50nb9u1s73a6ofq0`) and confirm `/health` reports the new commit in
+`version`. Requests during the instance swap can return a Render 502 page.

@@ -81,3 +81,15 @@ much sooner. This is what the keep-alive in Phase 3 is for.
 ### Expanded and lock-screen presentations on the device — Unknown
 Only verified as rendered in the in-app Island Lab (same views), not
 long-pressed on the real Island or seen on a real lock screen.
+
+## Resolved 2026-10-24
+
+### `coinbase` CLI on Render (Linux, no libsecret) — Answered: works
+Connecting the scoped key through the **deployed** engine
+(`POST https://baseland-engine.onrender.com/v1/credentials`) found the
+`baseland` portfolio, so the CLI runs in the container and reads keys from
+env vars. It writes only to the per-call temp config dir, which is deleted.
+
+### Render free tier sleeping — Answered: handled by the Supabase cron ping
+See `production-checklist.md`. (The ticker WebSocket from Render is still
+untested; it arrives with the watchers in Phase 1.)
