@@ -6,6 +6,7 @@ struct PlayDetailView: View {
     @Environment(AppModel.self) private var model
     let playId: String
     @State private var confirmStop = false
+    @State private var replaying = false
 
     private var play: Play? { model.plays.first { $0.id == playId } }
     private var tape: [TapeRow] { model.tapes[playId] ?? [] }
@@ -30,6 +31,20 @@ struct PlayDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task(id: playId) { await model.loadTape(playId) }
         .refreshable { await model.loadTape(playId) }
+        .toolbar {
+            if let play {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button { replaying = true } label: { Label("Replay against real prices", systemImage: "clock.arrow.circlepath") }
+                        ShareLink(item: AppModel.shareText(play.spec), subject: Text(play.title)) { Label("Share cartridge", systemImage: "square.and.arrow.up") }
+                    } label: { Image(systemName: "ellipsis.circle") }
+                    .accessibilityIdentifier("playMenu")
+                }
+            }
+        }
+        .sheet(isPresented: $replaying) {
+            if let play { ReplayView(title: play.title, cartridge: play.spec).presentationDetents([.large]) }
+        }
         .confirmationDialog("Stop this Play?", isPresented: $confirmStop, titleVisibility: .visible) {
             Button("Stop Play", role: .destructive) { Task { await model.act(playId, "kill") } }
         }

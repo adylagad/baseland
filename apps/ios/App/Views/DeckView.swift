@@ -122,6 +122,7 @@ private struct SwipeCard: View {
     let depth: Int
     let onChip: (SentencePart) -> Void
     @State private var drag: CGSize = .zero
+    @State private var replaying = false
 
     private let threshold: CGFloat = 110
 
@@ -137,6 +138,11 @@ private struct SwipeCard: View {
             .animation(.spring(response: 0.35, dampingFraction: 0.8), value: drag)
             .animation(.spring(response: 0.4, dampingFraction: 0.85), value: depth)
             .sensoryFeedback(.selection, trigger: abs(drag.width) > threshold)
+            .contextMenu {
+                Button { replaying = true } label: { Label("Replay against real prices", systemImage: "clock.arrow.circlepath") }
+                ShareLink(item: AppModel.shareText(draft.cartridge), subject: Text(draft.title)) { Label("Share cartridge", systemImage: "square.and.arrow.up") }
+            }
+            .sheet(isPresented: $replaying) { ReplayView(title: draft.title, cartridge: draft.cartridge).presentationDetents([.large]) }
     }
 
     private var dragGesture: some Gesture {
