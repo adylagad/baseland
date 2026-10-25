@@ -3,6 +3,7 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { Cartridge, cartridgeFromDraft, Draft } from "@baseland/play-schema";
 import { MarketError, type MarketData } from "../market/public.js";
+import { DEFAULT_DRAFT_MODEL, fallbackOptions } from "./models.js";
 
 // Turns words into Plays: a sentence the user typed or said, or a Deck of
 // suggestions written from live prices. The model only ever writes Drafts;
@@ -41,7 +42,7 @@ export class Drafter {
 
   constructor(opts: DrafterOptions) {
     this.client = opts.client ?? new Anthropic({ timeout: 45_000, maxRetries: 1 });
-    this.model = opts.model ?? "claude-opus-5-5";
+    this.model = opts.model ?? DEFAULT_DRAFT_MODEL;
     this.market = opts.market;
   }
 
@@ -52,8 +53,7 @@ export class Drafter {
       model: this.model,
       max_tokens: 8000,
       output_config: { effort: "low", format: betaZodOutputFormat(Draft) },
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
+      ...fallbackOptions(this.model),
       system: DRAFT_SYSTEM,
       messages: [{ role: "user", content: `Live prices:\n${snapshot}\n\nThe person said: ${JSON.stringify(text)}` }],
     });
@@ -68,8 +68,7 @@ export class Drafter {
       model: this.model,
       max_tokens: 12000,
       output_config: { effort: "low", format: betaZodOutputFormat(DeckOutput) },
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
+      ...fallbackOptions(this.model),
       system: DECK_SYSTEM,
       messages: [
         {

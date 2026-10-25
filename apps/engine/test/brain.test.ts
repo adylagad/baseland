@@ -103,3 +103,14 @@ describe("FallbackBrain", () => {
     expect(errors).toHaveLength(1);
   });
 });
+
+describe("model options", () => {
+  it("sends refusal fallbacks only to models that support them", async () => {
+    const { fallbackOptions, DEFAULT_BRAIN_MODEL, DEFAULT_DRAFT_MODEL } = await import("../src/brain/models.js");
+    expect(DEFAULT_BRAIN_MODEL).toBe("claude-sonnet-5-5");
+    expect(DEFAULT_DRAFT_MODEL).toBe("claude-haiku-5-5");
+    expect(fallbackOptions("claude-sonnet-5-5")).toEqual({ betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" });
+    expect(fallbackOptions("claude-opus-5-5").fallbacks).toBe("default");
+    expect(fallbackOptions("claude-haiku-5-5")).toEqual({});
+  });
+});

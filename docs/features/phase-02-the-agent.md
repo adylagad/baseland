@@ -43,6 +43,8 @@ ETH?". It chose not to buy evidence when the market data already decided it.
 Unit tests cover the fallback, the cooldown/cap, and evidence budgets via
 fake Brains.
 
+→ extended in phase-03 (models: Sonnet 5.5 decides, Haiku 5.5 drafts)
+
 ## Evidence: Senses, budgets, receipts (simulated for now)
 
 **What it does:** nine Senses picked from Coinbase's real x402 catalog with
@@ -81,6 +83,8 @@ after a chip edit.
 hours, take profit at 4%" → "If [ETH] breaks above [$2,383.49] in the next
 [3h], buy [$5] of [ETH]. Take profit at [+4%]." in 6.7 s.
 
+→ extended in phase-03 (models: Sonnet 5.5 decides, Haiku 5.5 drafts)
+
 ## The Play Deck
 
 **What it does:** `GET /v1/deck` returns up to five suggested Plays written
@@ -94,6 +98,8 @@ resolve or validate are dropped, never shown broken.
 **Verified live:** five varied cards in 17 s (XRP breakout, BTC dip buy, LINK
 oversold bounce, ETH reclaim, SOL starter), each citing real prices.
 Route tests with a fake drafter.
+
+→ extended in phase-03 (models: Sonnet 5.5 decides, Haiku 5.5 drafts)
 
 ## Cartridges from drafts (shared)
 

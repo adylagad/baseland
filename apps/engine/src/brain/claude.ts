@@ -5,9 +5,10 @@ import { symbolOf } from "@baseland/play-schema";
 import type { Brain, Decision, DecisionContext } from "../plays/brain.js";
 import { INSTINCT_TEXT, type Instinct } from "./instincts.js";
 import { marketContext } from "./market-context.js";
+import { DEFAULT_BRAIN_MODEL, fallbackOptions } from "./models.js";
 import { senseById } from "./senses.js";
 
-// The Claude Brain: asked once, when a trigger fires. It may read free market
+// The Claude Brain (Sonnet 5.5 by default): asked once, when a trigger fires. It may read free market
 // context and buy evidence (within a budget the code enforces), then must call
 // submit_decision. It never sees order tools; the runtime builds and checks
 // the order (AGENTS.md hard rule 2).
@@ -49,7 +50,7 @@ export class ClaudeBrain implements Brain {
 
   constructor(opts: ClaudeBrainOptions = {}) {
     this.client = opts.client ?? new Anthropic({ timeout: 60_000, maxRetries: 1 });
-    this.model = opts.model ?? "claude-opus-5-5";
+    this.model = opts.model ?? DEFAULT_BRAIN_MODEL;
     this.effort = opts.effort ?? "medium";
     this.context = opts.context ?? marketContext;
     this.name = this.model;
@@ -99,8 +100,7 @@ export class ClaudeBrain implements Brain {
       model: this.model,
       max_tokens: 16000,
       output_config: { effort: this.effort },
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
+      ...fallbackOptions(this.model),
       system: SYSTEM,
       messages: [{ role: "user", content: situation }],
       tools,

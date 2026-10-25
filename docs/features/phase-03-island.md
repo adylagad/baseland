@@ -91,3 +91,31 @@ pretend money. Every simulated action is labeled." Coinbase is connected
 later in Settings (paste the CDP key file). A stored session the engine
 rejects (401) sends the app back to onboarding. **Verified:** the onboarding
 screenshot, and Ghost start in both UI tests.
+
+## Claude decides at the trigger (Sonnet 5.5) and drafts (Haiku 5.5)
+
+Extends phase-02 "Claude decides at the trigger" and "Drafting Plays from
+words" / "The Play Deck". Restated in full:
+
+When a Play's trigger fires, `ClaudeBrain` is asked **once**, now on
+**`claude-sonnet-5-5`** (effort `medium`, server-side refusal fallbacks
+`"default"`). Its tools are `market_context` (free live Coinbase stats),
+`buy_evidence` (one purchase from the Play's Senses, refused in code beyond
+the remaining budget; simulated for now) and `submit_decision` (verdict act /
+skip / wait, a headline of at most 90 characters, quoteUsd, reasons). It
+never sees order tools. The runtime caps the amount, then the Leash and
+approval policy apply. After a "wait", there is no new decision for 5
+minutes, and 4 waits end the Play. Any failure falls back to the rules Brain.
+
+Drafting from a sentence and dealing the Deck now run on
+**`claude-haiku-5-5`** (effort `low`, structured outputs, **no** fallbacks
+parameter: Haiku 5.5 has no server-side refusal fallback, so
+`fallbackOptions()` omits it). The models write Drafts only; code resolves
+products and builds cartridges and chips.
+
+Both are overridable with `BRAIN_MODEL` / `DRAFT_MODEL`
+(`src/brain/models.ts`). The user chose Sonnet/Haiku over the Opus 5.5
+default on 2026-10-24.
+
+**Verified (2026-10-24), live:** draft in 3.0 s (6.7 s on Opus), Deck in
+12.3 s (17 s), Sonnet decision in 14 s (skip, with reasons). 97 engine tests.

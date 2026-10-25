@@ -42,10 +42,10 @@ index below.
 | Plays and the Tape (app) | [phase-03](./features/phase-03-island.md#plays-and-the-tape) | Shipped |
 | Live Activity driven by the engine | [phase-03](./features/phase-03-island.md#live-activity-driven-by-the-engine) | Shipped (simulator) |
 | Onboarding and session | [phase-03](./features/phase-03-island.md#onboarding-and-session) | Shipped |
-| Claude decides at the trigger (+ rules fallback, wait cooldown) | [phase-02](./features/phase-02-the-agent.md#claude-decides-at-the-trigger-with-a-rules-fallback) | Shipped |
+| Claude decides at the trigger (+ rules fallback, wait cooldown) | [phase-03](./features/phase-03-island.md#claude-decides-at-the-trigger-sonnet-55-and-drafts-haiku-55) | Shipped (Sonnet 5.5) |
 | Evidence: Senses, budgets, receipts | [phase-02](./features/phase-02-the-agent.md#evidence-senses-budgets-receipts-simulated-for-now) | Shipped (simulated by choice) |
-| Drafting Plays from words; chip preview | [phase-02](./features/phase-02-the-agent.md#drafting-plays-from-words) | Shipped (crypto) |
-| The Play Deck | [phase-02](./features/phase-02-the-agent.md#the-play-deck) | Shipped |
+| Drafting Plays from words; chip preview | [phase-03](./features/phase-03-island.md#claude-decides-at-the-trigger-sonnet-55-and-drafts-haiku-55) | Shipped (crypto, Haiku 5.5) |
+| The Play Deck | [phase-03](./features/phase-03-island.md#claude-decides-at-the-trigger-sonnet-55-and-drafts-haiku-55) | Shipped (Haiku 5.5) |
 | Play runtime (lifecycle, controls, restarts) | [phase-01](./features/phase-01-engine-core.md#play-runtime-the-lifecycle-of-a-play) | Shipped (Ghost e2e; live unit-tested) |
 | The Leash | [phase-01](./features/phase-01-engine-core.md#the-leash-hard-limits-before-every-order) | Shipped |
 | Ghost and Coinbase trading gateways | [phase-01](./features/phase-01-engine-core.md#ghost-and-coinbase-trading-gateways) | Shipped (no real order yet) |

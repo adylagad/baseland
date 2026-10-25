@@ -20,9 +20,9 @@ const Env = z.object({
   LIVE_MAX_ORDER_USD: z.coerce.number().positive().max(100).default(10),
   // The Brain. Without a key the engine runs on the rules Brain alone.
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
-  BRAIN_MODEL: z.string().default("claude-opus-5-5"),
+  BRAIN_MODEL: z.string().default("claude-sonnet-5-5"),
   BRAIN_EFFORT: z.enum(["low", "medium", "high"]).default("medium"),
-  DRAFT_MODEL: z.string().default("claude-opus-5-5"),
+  DRAFT_MODEL: z.string().default("claude-haiku-5-5"),
 });
 
 export type Config = z.infer<typeof Env>;
