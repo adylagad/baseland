@@ -6,6 +6,21 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ---
 
+## 2026-10-25 — [context](./context/2026-10-25.md)
+
+**Session 1: Phase 6, the Baseland MCP and the Claude Code skill.** Claude
+Code can draft, replay, arm and stop **Ghost** Plays that appear on the
+user's Island.
+
+- **Harness tokens:** minted in the app (masked on screen), hashed at rest,
+  default deny in the engine. Ghost only, **never approve**. Without a token
+  the MCP uses an anonymous Ghost account, so judges need no app.
+- Verified: a real headless Claude Code session used the skill and tools
+  unprompted. The simulator e2e (`scripts/harness-e2e.sh`) shows the Play in
+  the app and the Dynamic Island.
+- Open: 12 anonymous test users not deleted (blocked by a permission check),
+  and the rest of Phase 6 (diagram, feedback write-up, video, checklist).
+
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
 **Session 8: Phase 5, the Rig, done.** Brain / Senses / Instincts / Hands /
