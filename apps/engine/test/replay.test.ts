@@ -20,6 +20,16 @@ describe("Replay (synthetic candles: flat 100, climb to 106 at hour 25, slide to
     expect(r.notes[0]).toMatch(/^Simulated/);
   });
 
+  it("watches the whole range, even past the Play's own window (a crossing on the chart is never 'never triggered')", async () => {
+    // Window of 6h from the range start; the climb through 103 happens at hour 22.
+    const r = await replay(
+      cart({ window: { lastsMin: 360 }, trigger: { kind: "price_cross", product: "ETH-USDC", direction: "above", price: 103 }, action: { side: "BUY", product: "ETH-USDC", quoteUsd: 5 }, exit: { takeProfitPct: 2, stopLossPct: 2 } }),
+      { days: 2, candles: syntheticCandles, now },
+    );
+    expect(r.fired).toBe(true);
+    expect(r.notes.some((n) => n.includes("stays open for 6 hours"))).toBe(true);
+  });
+
   it("reports a Play that never fires", async () => {
     const r = await replay(cart({ window: { lastsMin: 2880 }, trigger: { kind: "price_cross", product: "ETH-USDC", direction: "above", price: 110 } }), { days: 2, candles: syntheticCandles, now });
     expect(r).toMatchObject({ fired: false, pnlUsd: 0, holding: false });

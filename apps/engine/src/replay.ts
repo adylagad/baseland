@@ -57,10 +57,16 @@ export async function replay(spec: Cartridge, opts: { days: number; candles: Can
   if (candles.length < 2) throw new ReplayError(`Not enough price history for ${symbolOf(product)}.`);
 
   const notes = ["Simulated: assumes the agent acted on the first trigger (no Claude call) and fills at the trigger price, with the 0.9% fee."];
+  // Replay watches the whole range shown on the chart, not just the Play's
+  // own window from the range start: otherwise a crossing visible on the
+  // chart could read as "never triggered" (seen in the first UI test run).
   const windowStart = candles[0]!.t + spec.window.startsInMin * 60_000;
-  const windowEnd = windowStart + spec.window.lastsMin * 60_000;
+  const windowEnd = candles[candles.length - 1]!.t + SECONDS[g] * 1000;
   const inWindow = candles.filter((c) => c.t >= windowStart && c.t < windowEnd);
-  if (spec.window.lastsMin * 60 > end - start) notes.push(`The Play's window is longer than the replay range; it ran for the ${opts.days}-day range only.`);
+  const rangeMin = Math.round((end - start) / 60);
+  if (spec.window.lastsMin !== rangeMin) {
+    notes.push(`Watched the whole ${opts.days === 1 ? "24 hours" : `${opts.days} days`}; when armed for real, this Play stays open for ${durationText(spec.window.lastsMin)}.`);
+  }
   const anchor = inWindow[0]?.close ?? candles[0]!.close;
   const base: Omit<ReplayResult, "fired" | "pnlUsd" | "holding"> = {
     simulated: true,
@@ -104,14 +110,7 @@ export async function replay(spec: Cartridge, opts: { days: number; candles: Can
       return closeOut(base, trigger, entry, { at: new Date(c.t).toISOString(), price, reason: stopHit ? "stop_loss" : "take_profit" });
     }
   }
-  if (spec.exit) {
-    const last = inWindow[inWindow.length - 1]!;
-    if (windowEnd <= candles[candles.length - 1]!.t) {
-      notes.push("No exit level was reached before the window closed; the position is marked at the last price.");
-    }
-    const value = qty * last.close;
-    return { ...base, fired: true, trigger, entry, pnlUsd: round(value - spend), holding: true };
-  }
+  if (spec.exit) notes.push("No exit level was reached in the range; the position is marked at the last price.");
   const last = candles[candles.length - 1]!;
   return { ...base, fired: true, trigger, entry, pnlUsd: round(qty * last.close - spend), holding: true };
 }
@@ -151,6 +150,12 @@ function triggerHit(spec: Cartridge, c: Candle, anchor: number, windowStart: num
   if ((t.direction === "up" || t.direction === "either") && c.high >= up) return Math.max(up, c.open);
   if ((t.direction === "down" || t.direction === "either") && c.low <= down) return Math.min(down, c.open);
   return null;
+}
+
+function durationText(min: number): string {
+  if (min < 60) return `${min} min`;
+  if (min % 1440 === 0) return `${min / 1440} day${min === 1440 ? "" : "s"}`;
+  return `${Math.round((min / 60) * 10) / 10} hours`;
 }
 
 function downsample<T>(xs: T[], max: number): T[] {
