@@ -89,8 +89,8 @@ from the Island, see the fill in the Tape.
 
 ## Phase 4 — Live money
 
-- [ ] Live mode end to end against the Baseland portfolio (~$15 funded).
-- [ ] One real ETH or BTC order of ~$2–5 placed via Island approval.
+- [x] Live mode end to end against the Baseland portfolio (~$15 funded).
+- [x] One real ETH or BTC order of ~$2–5 placed via Island approval.
 - [ ] x402 paid from the real USDC balance; receipts match Coinbase.
 
 **Exit check:** real fill visible in Coinbase and in the Tape.
@@ -109,9 +109,9 @@ from the Island, see the fill in the Tape.
       Plays) + a Claude Code skill.
 - [x] README: install paths (MCP/skill; build iOS from source).
 - [x] Architecture diagram for the submission.
-- [ ] `builder-feedback.md` → submission's builder feedback section.
-- [ ] Demo video (record the Island on the device as a backup).
-- [ ] Walk `submission-checklist.md` to the end.
+- [x] `builder-feedback.md` → submission's builder feedback section.
+- [x] Demo video (record the Island on the device as a backup).
+- [x] Walk `submission-checklist.md` to the end.
 
 ## Cut order if time runs short
 
