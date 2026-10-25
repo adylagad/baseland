@@ -8,6 +8,14 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-25 — [context](./context/2026-10-25.md)
 
+**Session 4: Figma flow corrected and retested.** The Design prototype now
+clicks through onboarding → Deck → Watching → approval → Ghost execution;
+Play stat clipping was fixed, the Slides stage log and links were updated,
+and genuine named Figma versions were saved. The branch includes current
+`main`. A fresh iOS build passed, but the Deck still did not appear in a
+targeted simulator UI test; the engine's authenticated endpoints worked in a
+separate check. The demo video and live simulator walkthrough remain open.
+
 **Session 3: Figma track artifacts.** Editable product screens, a tested
 prototype, and an eight-slide workflow deck are shared from the team's Edu
 account. The live prototype is embedded in Slides with a direct link. The

@@ -204,6 +204,16 @@ SDK client in tests) has run it.
 
 ## SpacetimeDB branch (2026-10-25)
 
+### Current-branch iOS Deck walkthrough — Blocked in simulator
+The iPhone 17 project builds, but a fresh Ghost-flow UI test on 2026-10-25
+showed no Deck card after 90 seconds. A separate anonymous client reached
+the deployed engine's `/v1/me`, `/v1/plays`, `/v1/rig`, and `/v1/deck` routes,
+received five cards, and decoded the Deck response in Swift. The app-side
+failure has not been localized; a follow-up diagnostic UI test stalled and
+Xcode's iPhone 18 Pro device display stayed blank during a run. Reproduce
+with a functioning simulator display, capture the app-side request error, and
+rerun the Ghost flow before recording the required Figma-track demo video.
+
 ### Render cutover and Supabase data import — Unverified
 The module is published to `baseland-calhacks13` on Maincloud and its private
 engine subscription passed the integration test. Render environment variables
