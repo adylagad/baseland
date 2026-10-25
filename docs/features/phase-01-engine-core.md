@@ -126,3 +126,12 @@ end-to-end run above.
 See `packages/play-schema/README.md`: one zod schema, cross-field rules in
 the schema, mode deliberately excluded, four reference cartridges, JSON
 Schema export. **Verified:** 12 tests.
+
+## Runtime forgets Plays whose rows are gone
+
+If a Play's row disappears (its user was deleted, so the cascade removed
+it), the first background failure for that Play checks the store, drops it
+from memory, stops watching it, and logs one warning ("play no longer
+exists; forgotten") instead of an error every second. **Verified
+(2026-10-24):** a runtime test deletes a row under a running Play; Render's
+logs showed no errors after the test users were deleted.

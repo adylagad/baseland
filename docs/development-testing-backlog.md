@@ -115,3 +115,8 @@ enough on the Island is a Phase 3 question.
 ### `ReplayFeed` — Built, not wired
 There is no switch yet to run the engine on recorded prices (for the
 demo-on-bad-Wi-Fi plan).
+
+### Ticker feed from Render — Answered 2026-10-24: works
+The end-to-end Ghost Play ran on the deployed engine
+(`baseland-engine.onrender.com`, commit 0a69896): it triggered on live ETH
+ticks and sold on its stop-loss. Hours-long stability is still unobserved.

@@ -8,6 +8,21 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
+**Session 3: Phase 1, the engine core, done.** A Ghost Play now runs end to
+end on live Coinbase prices, locally and on Render.
+
+- `packages/play-schema` (cartridge, no mode inside). Engine: state machine,
+  triggers, Leash (+ `LIVE_MAX_ORDER_USD` ceiling), ledger from fills, Play
+  store, ticker feed, Ghost/Coinbase gateways, RuleBrain, runtime, routes.
+  **Live trading is off by default** (`LIVE_TRADING_ENABLED`).
+- **Live exits ride on the Coinbase order** (attached TP/SL); Ghost exits
+  are engine-watched.
+- Running it found two bugs the tests missed: empty JSON bodies → 400, and
+  deleted Plays still in memory. Both fixed.
+- iOS target is now **26**. CI tests the engine and deploys via a Render
+  deploy hook that **the user must add as a secret**. Until then, deploy with
+  `trigger_deploy`.
+
 **Session 2: Phase 0 built and deployed.** Repo public at
 `adylagad/baseland`. Engine live at `baseland-engine.onrender.com`. The demo
 Play shows in the simulator's real Dynamic Island.

@@ -38,19 +38,19 @@ Render returns live ETH price from the CLI.
 
 ## Phase 1 — Engine core (no AI yet)
 
-- [ ] `packages/play-schema`: zod schema + TS types for cartridges; JSON
+- [x] `packages/play-schema`: zod schema + TS types for cartridges; JSON
       Schema export for Swift/MCP.
-- [ ] Play state machine (Armed → Watching → Deciding → Awaiting → Executed →
+- [x] Play state machine (Armed → Watching → Deciding → Awaiting → Executed →
       Done; Paused / Killed / Expired) with unit tests for every transition.
-- [ ] Scheduler + rehydrate-on-boot from Supabase.
-- [ ] Price watcher on Coinbase's public ticker WebSocket; triggers:
+- [x] Scheduler + rehydrate-on-boot from Supabase.
+- [x] Price watcher on Coinbase's public ticker WebSocket; triggers:
       `price_cross`, `pct_move`, `time`.
-- [ ] `TradingGateway` interface; `GhostGateway` (simulated fills) and
+- [x] `TradingGateway` interface; `GhostGateway` (simulated fills) and
       `CoinbaseGateway` (CLI: preview → create → poll status).
-- [ ] Leash enforcer with unit tests (max order, max per Play, allowed assets,
+- [x] Leash enforcer with unit tests (max order, max per Play, allowed assets,
       evidence budget, approval threshold). Rejections go to the Tape.
-- [ ] Tape writer; every Ghost event `simulated: true`.
-- [ ] API: create / arm / pause / kill / approve / skip / kill-all.
+- [x] Tape writer; every Ghost event `simulated: true`.
+- [x] API: create / arm / pause / kill / approve / skip / kill-all.
 
 **Exit check:** a Ghost Play created via curl fires on a price cross, waits for
 approval, fills, writes a full Tape. Tests green.
