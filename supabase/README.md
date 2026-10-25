@@ -15,3 +15,8 @@ Realtime publication, which drives the Live Activity.
 `keep-engine-awake` (pg_cron + pg_net) pings the engine's `/health` every 5
 minutes so Render's free tier never sleeps. Hackathon-only; see
 `docs/production-checklist.md`.
+
+**Team secrets:** `put_team_secret` (service role only) writes
+`baseland_*` secrets into Supabase Vault; `scripts/share-secrets.py` uses it
+to share `apps/engine/.env` as `baseland_engine_env`. The vault schema is not
+exposed over the REST API; teammates read it in the SQL editor.
