@@ -68,6 +68,18 @@ final class AppModel {
     }
 
     private func enter(userId: String) async {
+        // A stored session can outlive its user (deleted, or expired beyond
+        // refresh). If the engine rejects it, start over instead of failing
+        // every request.
+        do {
+            me = try await api.me()
+        } catch let e as APIError where e.status == 401 {
+            await session.signOut()
+            phase = .onboarding
+            return
+        } catch {
+            // Offline or engine waking up: carry on; refresh retries.
+        }
         phase = .ready
         await session.listen(
             userId: userId,
