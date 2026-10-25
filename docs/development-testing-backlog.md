@@ -190,3 +190,14 @@ Built on `ShareLink` and the tested preview route; no UI test drives them.
 ### Replay of stocks and selling Plays — Known gap
 Refused with the reason. Stocks need a price history source (Massive over
 x402, simulated for now).
+
+## Phase 6 (reuse)
+
+### Claude Code on a real iPhone's Plays — Likely fine
+Verified end to end in the simulator (`scripts/harness-e2e.sh`). Not tried
+with the app on a device, or with "Send to your Mac" (the share sheet) to
+move the command.
+
+### The MCP in harnesses other than Claude Code — Unknown
+Plain stdio MCP with standard tools and resources; only Claude Code (and the
+SDK client in tests) has run it.

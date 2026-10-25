@@ -105,9 +105,9 @@ from the Island, see the fill in the Tape.
 
 ## Phase 6 — Reuse and submission
 
-- [ ] `packages/mcp`: Baseland MCP server (create / list / replay / kill
+- [x] `packages/mcp`: Baseland MCP server (create / list / replay / kill
       Plays) + a Claude Code skill.
-- [ ] README: install paths (MCP/skill; build iOS from source).
+- [x] README: install paths (MCP/skill; build iOS from source).
 - [ ] Architecture diagram for the submission.
 - [ ] `builder-feedback.md` → submission's builder feedback section.
 - [ ] Demo video (record the Island on the device as a backup).
