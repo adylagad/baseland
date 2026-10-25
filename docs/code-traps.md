@@ -108,3 +108,10 @@ without a payload. Fixed in `buildServer` with a JSON parser that treats an
 empty body as none, plus a route test that sends exactly that request. Any
 client (including iOS URLSession code that always sets the header) is
 affected if this parser is removed.
+
+### Render's deploy hook URL already has a query string
+**Bit 2026-10-24**, on the first real CI deploy: the workflow appended
+`?ref=<sha>` to a hook that already ends `?key=...`, so the key became
+`...?ref=...` and Render answered 404. Append with `&` when the URL contains
+`?` (the workflow does this now). Never print the hook in logs or chat; it's
+a credential.
