@@ -11,9 +11,11 @@ Built for the CalHacks 2026 Coinbase prompt, **Trading Agents** track.
 - How it works: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Build plan: [`docs/PLAN.md`](docs/PLAN.md)
 
-> **Status:** Phases 0–3 built: engine live at
+> **Status:** Phases 0–3 and 5 built, plus the MCP: engine live at
 > `https://baseland-engine.onrender.com` (CI-deployed), iPhone app verified in
-> the simulator, including approving from the Dynamic Island and the lock screen.
+> the simulator, including approving from the Dynamic Island and the lock
+> screen. Real-money trading (Phase 4) is switched off; everything runs in
+> GHOST.
 
 ## Layout
 
@@ -31,6 +33,38 @@ Simulated (GHOST) actions are labeled everywhere. Each user connects their own
 Coinbase API key scoped to a dedicated portfolio; keys stay in the engine.
 The AI model never holds order-placing tools; the engine enforces hard limits
 and previews every order.
+
+## Try it
+
+Both paths use the hosted engine and need no keys. Everything runs in
+GHOST (simulated).
+
+**From Claude Code (no iPhone needed).** Node 22+ and pnpm:
+
+```sh
+git clone https://github.com/adylagad/baseland && cd baseland
+pnpm install
+pnpm connect-claude   # registers the Baseland MCP + skill for your user
+```
+
+Restart Claude Code and ask: *"Draft a Baseland Play: if ETH drops 2% in the
+next 6 hours, buy $5, take profit at 3%. Replay it over 3 days, then arm it."*
+Without the app, Plays run on a private anonymous Ghost account. Tools and
+limits: [`packages/mcp/README.md`](packages/mcp/README.md).
+
+**The iPhone app, from source.** Xcode 26 and
+[XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`):
+
+```sh
+cd apps/ios && xcodegen && open Baseland.xcodeproj
+```
+
+Run on an iOS 26 simulator (verified), or on your iPhone: pick your
+**Personal Team** under Signing for the Baseland and BaselandWidgets targets.
+A free Apple ID is the intended path but hasn't been tried on a device yet;
+free-account installs expire after 7 days. To see Claude Code's
+Plays on your phone, go to **Rig → Account → Claude Code → Connect**, then run
+the copied `pnpm connect-claude bl_…` in the repo.
 
 ## Getting started (teammates)
 
