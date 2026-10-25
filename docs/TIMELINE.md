@@ -15,6 +15,8 @@ share/import. All four UI tests pass (Rig also in dark mode).
 
 - Running it caught Replay contradicting its own chart (now watches the whole
   range) and colliding chart labels.
+- **Next: Phase 6** (MCP + skill, submission) in a fresh session; see the
+  context log's handoff note.
 
 **Session 7: teammate secrets in Supabase Vault.** `baseland_engine_env`
 holds the engine `.env`, written by a service-role-only RPC from a script,
