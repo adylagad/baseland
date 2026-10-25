@@ -17,7 +17,15 @@ import sys
 import urllib.error
 import urllib.request
 
-KEYS = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "CREDENTIALS_SECRET", "ANTHROPIC_API_KEY"]
+KEYS = [
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "CREDENTIALS_SECRET",
+    "ANTHROPIC_API_KEY",
+    "SPACETIMEDB_HOST",
+    "SPACETIMEDB_DB_NAME",
+    "SPACETIMEDB_TOKEN",
+]
 
 path = pathlib.Path("apps/engine/.env")
 if not path.exists():
@@ -39,7 +47,7 @@ req = urllib.request.Request(
     data=json.dumps({
         "p_name": "baseland_engine_env",
         "p_secret": body,
-        "p_description": "Complete apps/engine/.env for running the engine locally (Anthropic, Supabase service role, credentials secret).",
+        "p_description": "Complete apps/engine/.env for the Spacetime branch engine (Anthropic, Supabase service role, credentials secret, Spacetime connection).",
     }).encode(),
     headers={"apikey": service, "Authorization": f"Bearer {service}", "Content-Type": "application/json"},
 )

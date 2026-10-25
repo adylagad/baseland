@@ -94,13 +94,16 @@ the copied `pnpm connect-claude bl_…` in the repo.
    ```
 
    Save the result as `apps/engine/.env` (gitignored; never commit it). It
-   holds the Anthropic key, the Supabase service-role key and the
-   credentials secret. The credentials secret must match the deployed
+   holds the Anthropic key, the Supabase service-role key, the
+   credentials secret, and the SpacetimeDB host, database name, and engine
+   identity token. The credentials secret must match the deployed
    engine's, so every engine can decrypt stored Coinbase keys.
-3. **SpacetimeDB and engine.** Install the [SpacetimeDB CLI](https://spacetimedb.com/docs/),
-   run `spacetime start` and publish `spacetimedb/` to a local database. Put
-   its host, database name and publishing identity token in the engine's
-   gitignored `.env` (see `apps/engine/.env.example` and `apps/engine/README.md`).
+3. **SpacetimeDB and engine.** The Vault secret contains the team's cloud
+   SpacetimeDB connection. To test locally instead, install the
+   [SpacetimeDB CLI](https://spacetimedb.com/docs/), run `spacetime start`,
+   publish `spacetimedb/` to a local database, and override its host, database
+   name, and identity token in the gitignored `.env` (see
+   `apps/engine/.env.example` and `apps/engine/README.md`).
    Run `pnpm install`, `pnpm -r test`, then `pnpm --filter @baseland/engine dev`
    (http://localhost:8787). Keep live trading disabled for local testing.
 4. **iPhone app.** `cd apps/ios && xcodegen`, open `Baseland.xcodeproj`, run
