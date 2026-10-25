@@ -65,9 +65,11 @@ Baseland is three pieces: a native iPhone app, a hosted engine that runs the age
 
 ## Architecture and known limitations
 
-One Play, start to fill: plain code watches the market, Claude is asked once when the trigger fires and returns a decision, the person holding the phone approves, and the engine checks the Leash and places the order. Upload `docs/diagrams/architecture.png` from the repo as the Devpost image.
+One Play, start to fill: plain code watches the market, Claude is asked once when the trigger fires and returns a decision, the person holding the phone approves, and the engine checks the Leash and places the order.
 
-![How one Play runs: arm, watch, Claude decides, approve from the Island, Leash, order](../diagrams/architecture.png)
+![How one Play runs: arm, watch, Claude decides, approve from the Island, Leash, order](https://raw.githubusercontent.com/adylagad/baseland/main/docs/diagrams/architecture.png)
+
+Full size: [architecture diagram on GitHub](https://github.com/adylagad/baseland/blob/main/docs/diagrams/architecture.png)
 
 **Known limitations**
 
