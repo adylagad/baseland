@@ -11,3 +11,7 @@ writes.** Every table has owner-only `select` RLS for the iOS app; all writes
 go through the engine with the service role. `credentials` has RLS enabled
 and **no policies**, so no client can read it. `plays` and `tape` are in the
 Realtime publication, which drives the Live Activity.
+
+`keep-engine-awake` (pg_cron + pg_net) pings the engine's `/health` every 5
+minutes so Render's free tier never sleeps. Hackathon-only; see
+`docs/production-checklist.md`.

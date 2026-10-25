@@ -44,3 +44,12 @@ allowlisted harnesses today (see `builder-feedback.md`).
 external pinger keeps it awake. A cold start pauses every watcher.
 **Change:** a paid always-on instance, with watchers in a separate worker and
 a queue.
+
+### Keep-alive is a Supabase cron job (added 2026-10-24)
+**Now:** instead of cron-job.org, `pg_cron` + `pg_net` in the Supabase
+project call `https://baseland-engine.onrender.com/health` every 5 minutes
+(job `keep-engine-awake`, migration `20261025025834`). Verified: the first
+tick woke a sleeping instance (it timed out at 10 s during the cold start),
+and the next returned 200 from the same instance.
+**Change:** drop the job (`select cron.unschedule('keep-engine-awake')`) once
+the engine runs on an always-on instance.
