@@ -8,8 +8,23 @@ project has been through. Keep entries short; detail lives in the logs.
 
 ## 2026-10-24 — [context](./context/2026-10-24.md)
 
-**Ideation and planning; no code yet.** Read the Coinbase sponsor brief,
-researched the competition, picked the idea, and wrote the docs.
+**Session 2: Phase 0 built and deployed.** Repo public at
+`adylagad/baseland`. Engine live at `baseland-engine.onrender.com`. The demo
+Play shows in the simulator's real Dynamic Island.
+
+- **Engine:** health, live quotes, and Coinbase key connection, accepted
+  only if the key reaches exactly one non-Default portfolio. Encrypted at
+  rest. Verified end to end locally and on Render with the real, unfunded,
+  scoped key.
+- **Sandbox keys are useless** (canned data for any key, no prices, no x402),
+  so a production key on an empty portfolio is used. Ghost until Phase 4.
+- **Keep-alive is a Supabase pg_cron ping**, not cron-job.org. Pushes don't
+  auto-deploy to Render yet: use `trigger_deploy`.
+- Traps recorded: a non-Sendable `Activity`, compact Island width, SwiftPM
+  `.build/` nearly pushed, and the USDC→USD ticker relabel.
+
+**Session 1: ideation and planning; no code yet.** Read the Coinbase sponsor
+brief, researched the competition, picked the idea, and wrote the docs.
 
 - **Idea: Plays.** Short, event-scoped agent missions that live in the Dynamic
   Island (Live Activities), with Approve/Skip from the Island, x402
