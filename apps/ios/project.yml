@@ -20,7 +20,9 @@ targets:
   Baseland:
     type: application
     platform: iOS
-    sources: [App]
+    # Shared/ holds the App Intents, compiled into the app and the widget
+    # extension. They are LiveActivityIntents, so they always run in the app.
+    sources: [App, Shared]
     dependencies:
       - package: BaselandKit
       - target: BaselandWidgets
@@ -39,7 +41,7 @@ targets:
   BaselandWidgets:
     type: app-extension
     platform: iOS
-    sources: [Widgets]
+    sources: [Widgets, Shared]
     dependencies:
       - package: BaselandKit
       - sdk: WidgetKit.framework

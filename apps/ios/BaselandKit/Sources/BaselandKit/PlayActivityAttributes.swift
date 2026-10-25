@@ -49,3 +49,22 @@ public struct PlayActivityAttributes: ActivityAttributes, Sendable {
         self.isGhost = isGhost
     }
 }
+
+public enum IslandLimits {
+    /// Orders at or below this can be approved from the Island; larger ones
+    /// open the app, which asks for Face ID first.
+    public static let approvalUSD: Double = 25
+}
+
+public enum PlayLink {
+    public static func url(_ playId: String) -> URL {
+        URL(string: "baseland://play/\(playId)")!
+    }
+
+    /// The Play id from a `baseland://play/<id>` URL.
+    public static func playId(from url: URL) -> String? {
+        guard url.scheme == "baseland", url.host() == "play" else { return nil }
+        let id = url.pathComponents.dropFirst().first
+        return id?.isEmpty == false ? id : nil
+    }
+}

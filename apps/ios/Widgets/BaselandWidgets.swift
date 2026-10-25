@@ -5,5 +5,6 @@ import WidgetKit
 struct BaselandWidgets: WidgetBundle {
     var body: some Widget {
         PlayLiveActivity()
+        KillSwitchControl()
     }
 }
