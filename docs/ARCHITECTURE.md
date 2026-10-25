@@ -15,6 +15,12 @@ wins and this file is wrong — report it.
 
 ## Components
 
+![How one Play runs: arm, watch, Claude decides, approve from the Island, Leash, order](diagrams/architecture.png)
+
+How one Play runs, with every control where it sits; the submission figure
+(source `diagrams/architecture.svg`, drawn by `diagrams/architecture.py`).
+The sketch below is the component inventory.
+
 ```
 ┌──────────────────────── iPhone ─────────────────────────┐
 │ Baseland app (SwiftUI)                                   │
